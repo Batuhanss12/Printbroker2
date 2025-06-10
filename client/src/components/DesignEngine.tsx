@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Wand2, 
   Download, 
@@ -28,7 +27,9 @@ import {
   Settings,
   History,
   Layout,
-  Loader2
+  Loader2,
+  Printer,
+  Disc
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -61,7 +62,7 @@ export default function DesignEngine() {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const [prompt, setPrompt] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<DesignTemplate | null>(null);
   const [designOptions, setDesignOptions] = useState<DesignOptions>({
@@ -86,30 +87,67 @@ export default function DesignEngine() {
     queryFn: () => apiRequest('GET', '/api/design/history?page=1&limit=10'),
   });
 
-  // Generate single design
+  // Generate single design mutation
   const generateMutation = useMutation({
-    mutationFn: async ({ prompt, options }: { prompt: string; options: DesignOptions }) => {
-      const response = await apiRequest('POST', '/api/design/generate', {
-        prompt,
-        options
-      });
-      return response.data;
+    mutationFn: async (data: { prompt: string; options: DesignOptions }) => {
+      return await apiRequest('POST', '/api/design/generate', data);
     },
-    onSuccess: (images) => {
-      setGeneratedImages(images);
-      toast({
-        title: "Başarılı",
-        description: "Tasarım başarıyla oluşturuldu!",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/design/history'] });
+    onSuccess: (response) => {
+      if (response.data && response.data.length > 0) {
+        const newImages = response.data.map((item: any) => ({
+          id: response.designId || Date.now() + Math.random(),
+          url: item.url,
+          prompt: prompt,
+          seed: item.seed,
+          creditDeducted: response.creditDeducted,
+          remainingBalance: response.remainingBalance,
+          autoSaved: response.autoSaved
+        }));
+        setGeneratedImages(prev => [...newImages, ...prev]);
+
+        // Show success message with auto-save info
+        toast({
+          title: "Tasarım Oluşturuldu",
+          description: response.autoSaved 
+            ? `Tasarım otomatik kaydedildi. ${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`
+            : `${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`,
+        });
+
+        // Refresh user balance and design history
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/design/history'] });
+      }
     },
-    onError: (error) => {
-      toast({
-        title: "Hata",
-        description: "Tasarım oluşturulurken bir hata oluştu.",
-        variant: "destructive",
-      });
-    },
+    onError: (error: any) => {
+      console.error('Design generation error:', error);
+      const errorMessage = error.message || 'Tasarım oluşturulurken bir hata oluştu.';
+
+      if (errorMessage.includes('Insufficient credit')) {
+        toast({
+          title: "Yetersiz Kredi",
+          description: "Tasarım oluşturmak için yeterli krediniz yok. Lütfen kredi yükleyin.",
+          variant: "destructive",
+        });
+      } else if (errorMessage.includes('API key') || errorMessage.includes('401') || errorMessage.includes('403')) {
+        toast({
+          title: "API Hatası",
+          description: "Tasarım servisi yapılandırıldı ve çalışıyor. Tekrar deneyin.",
+          variant: "destructive",
+        });
+      } else if (errorMessage.includes('Rate limit') || errorMessage.includes('429')) {
+        toast({
+          title: "Çok Fazla İstek",
+          description: "Lütfen birkaç saniye bekleyip tekrar deneyin.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Hata",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    }
   });
 
   // Generate batch designs
@@ -158,7 +196,7 @@ export default function DesignEngine() {
         });
         return;
       }
-      
+
       const requests = validPrompts.map(prompt => ({ prompt, options: designOptions }));
       generateBatchMutation.mutate(requests);
     } else {
@@ -185,21 +223,76 @@ export default function DesignEngine() {
 
   const downloadImage = async (url: string, filename: string) => {
     try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      toast({
-        title: "Hata",
-        description: "Görsel indirilemedi.",
-        variant: "destructive",
+      // Doğrudan görseli fetch et
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors'
       });
+
+      if (!response.ok) {
+        // CORS sorunu varsa proxy kullan
+        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+        const proxyResponse = await fetch(proxyUrl);
+
+        if (!proxyResponse.ok) {
+          throw new Error('İndirme başarısız');
+        }
+
+        const blob = await proxyResponse.blob();
+        const link = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = filename || `tasarim-${Date.now()}.png`;
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(objectUrl);
+        }, 100);
+      } else {
+        // Direkt indirme
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = filename || `tasarim-${Date.now()}.png`;
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(objectUrl);
+        }, 100);
+      }
+
+      toast({
+        title: "Başarılı",
+        description: "Tasarım başarıyla indirildi.",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+
+      // Fallback: yeni pencerede aç
+      try {
+        window.open(url, '_blank');
+        toast({
+          title: "Bilgi",
+          description: "Tasarım yeni sekmede açıldı. Sağ tıklayıp 'Resmi Farklı Kaydet' seçebilirsiniz.",
+        });
+      } catch (fallbackError) {
+        toast({
+          title: "Hata",
+          description: "Görsel indirilemedi. Lütfen tekrar deneyin.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -372,7 +465,8 @@ export default function DesignEngine() {
                               <Button
                                 size="sm"
                                 variant="secondary"
-                                onClick={() => downloadImage(image.url, `design-${index + 1}.png`)}
+                                onClick={() => downloadImage(image.url, `tasarim-${Date.now()}-${index + 1}.png`)}
+                                title="Tasarımı İndir"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -395,6 +489,72 @@ export default function DesignEngine() {
                                     <p className="text-sm text-gray-600"><strong>Açıklama:</strong> {image.prompt}</p>
                                     <p className="text-sm text-gray-600"><strong>Çözünürlük:</strong> {image.resolution}</p>
                                     <p className="text-sm text-gray-600"><strong>Seed:</strong> {image.seed}</p>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+
+                            {/* Print Quote Button */}
+                            <div className="mt-3 w-full">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                                  >
+                                    <Printer className="h-4 w-4 mr-2" />
+                                    Baskı Teklifi Al
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                  <DialogHeader>
+                                    <DialogTitle>Baskı Türü Seçin</DialogTitle>
+                                    <DialogDescription>
+                                      Bu tasarım için hangi baskı türünde teklif almak istiyorsunuz?
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="space-y-3 mt-4">
+                                    <Button
+                                      onClick={() => {
+                                        window.location.href = '/quote/sheet_label';
+                                      }}
+                                      className="w-full justify-start bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200"
+                                      variant="outline"
+                                    >
+                                      <Grid3X3 className="h-5 w-5 mr-3" />
+                                      <div className="text-left">
+                                        <div className="font-medium">Yaprak Etiket</div>
+                                        <div className="text-sm opacity-75">A4 formatında kesimli etiketler</div>
+                                      </div>
+                                    </Button>
+
+                                    <Button
+                                      onClick={() => {
+                                        window.location.href = '/quote/roll_label';
+                                      }}
+                                      className="w-full justify-start bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200"
+                                      variant="outline"
+                                    >
+                                      <Disc className="h-5 w-5 mr-3" />
+                                      <div className="text-left">
+                                        <div className="font-medium">Rulo Etiket</div>
+                                        <div className="text-sm opacity-75">Sürekli form etiketler</div>
+                                      </div>
+                                    </Button>
+
+                                    <Button
+                                      onClick={() => {
+                                        window.location.href = '/quote/general_printing';
+                                      }}
+                                      className="w-full justify-start bg-green-50 hover:bg-green-100 text-green-700 border border-green-200"
+                                      variant="outline"
+                                    >
+                                      <Printer className="h-5 w-5 mr-3" />
+                                      <div className="text-left">
+                                        <div className="font-medium">Genel Baskı</div>
+                                        <div className="text-sm opacity-75">Katalog, broşür, kartvizit</div>
+                                      </div>
+                                    </Button>
                                   </div>
                                 </DialogContent>
                               </Dialog>
