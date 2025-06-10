@@ -62,7 +62,55 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Form validasyonu - zorunlu alanları kontrol et
+    if (!formData.quantity || parseInt(formData.quantity) < 1) {
+      toast({
+        title: "Eksik Bilgi",
+        description: "Lütfen miktar bilgisini giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.companyName.trim()) {
+      toast({
+        title: "Eksik Bilgi",
+        description: "Lütfen firma adını giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.contactName.trim()) {
+      toast({
+        title: "Eksik Bilgi",
+        description: "Lütfen yetkili kişi adını giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast({
+        title: "Eksik Bilgi",
+        description: "Lütfen e-posta adresini giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // E-posta formatı kontrolü
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Geçersiz E-posta",
+        description: "Lütfen geçerli bir e-posta adresi giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const response = await fetch('/api/quotes/public', {
         method: 'POST',
@@ -161,7 +209,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
             AI destekli sistemimiz devreye girecek. Bilgilerinizi girin, 60 saniyede 500+ üretici firmadan otomatik teklif alın.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -172,11 +220,12 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
                 placeholder="Örn: 5000"
                 value={formData.quantity}
                 onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                className={!formData.quantity ? "border-red-200 focus:border-red-500" : ""}
                 required
               />
               <p className="text-xs text-gray-500 mt-1">{category.minOrder}</p>
             </div>
-            
+
             <div>
               <Label htmlFor="material">Malzeme Tercihi</Label>
               <Select onValueChange={(value) => setFormData({...formData, material: value})}>
@@ -202,7 +251,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
                 onChange={(e) => setFormData({...formData, size: e.target.value})}
               />
             </div>
-            
+
             <div>
               <Label htmlFor="urgency">Teslimat Süresi</Label>
               <Select onValueChange={(value) => setFormData({...formData, urgency: value})}>
@@ -238,16 +287,18 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
                   id="companyName"
                   value={formData.companyName}
                   onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                  className={!formData.companyName.trim() ? "border-red-200 focus:border-red-500" : ""}
                   required
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="contactName">Yetkili Kişi *</Label>
                 <Input
                   id="contactName"
                   value={formData.contactName}
                   onChange={(e) => setFormData({...formData, contactName: e.target.value})}
+                  className={!formData.contactName.trim() ? "border-red-200 focus:border-red-500" : ""}
                   required
                 />
               </div>
@@ -261,10 +312,11 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className={!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? "border-red-200 focus:border-red-500" : ""}
                   required
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="phone">Telefon</Label>
                 <Input
@@ -280,7 +332,11 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1">
               İptal
             </Button>
-            <Button type="submit" className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-semibold">
+            <Button 
+              type="submit" 
+              disabled={!formData.quantity || !formData.companyName.trim() || !formData.contactName.trim() || !formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Zap className="w-4 h-4 mr-2" />
               Otomatik Sistem Başlat
             </Button>
@@ -531,9 +587,9 @@ export default function ProductCategoriesNew() {
     const matchesSearch = category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          category.seoKeywords.some(keyword => keyword.includes(searchQuery.toLowerCase()));
-    
+
     const matchesCategory = selectedCategory === "all" || category.category === selectedCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -562,12 +618,12 @@ export default function ProductCategoriesNew() {
               <Sparkles className="h-4 w-4 mr-2" />
               500+ Sertifikalı Matbaacı • ISO 9001 Kalite Garantisi
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Profesyonel Baskı Çözümleri
               <span className="text-blue-600 block">Her İhtiyaca Özel</span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               Kartvizit'ten ambalaja, etiket'ten tekstile kadar tüm baskı ihtiyaçlarınız için 
               AI destekli platform ile anında teklif alın ve %30 tasarruf edin.
@@ -586,7 +642,7 @@ export default function ProductCategoriesNew() {
                     className="pl-10 h-12 text-lg bg-white border-gray-300 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger className="w-48 h-12">
                     <SelectValue placeholder="Kategori" />
@@ -600,7 +656,7 @@ export default function ProductCategoriesNew() {
                     <SelectItem value="textile">Tekstil</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-48 h-12">
                     <SelectValue placeholder="Sırala" />
@@ -654,7 +710,7 @@ export default function ProductCategoriesNew() {
                   <div className={`w-full h-64 bg-gradient-to-r ${categoryColors[category.category as keyof typeof categoryColors]} flex items-center justify-center relative overflow-hidden`}>
                     <Package className="w-32 h-32 text-white/20 absolute" />
                     <Sparkles className="w-8 h-8 text-white absolute top-4 right-4" />
-                    
+
                     {/* Category Badge */}
                     <Badge className="absolute top-4 left-4 bg-white/20 text-white border-white/30">
                       {category.category === 'corporate' && 'Kurumsal'}
@@ -663,7 +719,7 @@ export default function ProductCategoriesNew() {
                       {category.category === 'outdoor' && 'Dış Mekan'}
                       {category.category === 'textile' && 'Tekstil'}
                     </Badge>
-                    
+
                     {/* Popularity Score */}
                     <div className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
                       <div className="flex items-center text-white text-sm">
@@ -673,7 +729,7 @@ export default function ProductCategoriesNew() {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -778,6 +834,8 @@ export default function ProductCategoriesNew() {
                       <Truck className="w-4 h-4 mr-1" />
                       Ücretsiz Kargo
                     </span>
+                  ```text
+
                   </div>
 
                   {/* Action Buttons */}
@@ -806,7 +864,7 @@ export default function ProductCategoriesNew() {
               Uluslararası sertifikalar ve kalite garantisi
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {qualityStandards.map((standard, index) => (
               <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 text-center">

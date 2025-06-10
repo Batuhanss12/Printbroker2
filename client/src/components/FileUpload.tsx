@@ -44,7 +44,10 @@ export default function FileUpload({
     'application/postscript',
     'image/svg+xml',
     'application/zip',
-    'application/x-rar-compressed'
+    'application/x-rar-compressed',
+    '.ai',
+    '.eps',
+    '.psd'
   ],
   className
 }: FileUploadProps) {
@@ -71,7 +74,6 @@ export default function FileUpload({
       return response.json();
     },
     onSuccess: (data, file) => {
-      const fileId = Date.now().toString(); // Temporary ID for UI
       setUploadedFiles(prev => prev.map(f => 
         f.name === file.name && f.status === 'uploading'
           ? { ...f, status: 'completed', progress: 100, id: data.id }
@@ -98,12 +100,19 @@ export default function FileUpload({
   });
 
   const validateFile = (file: File): string | null => {
-    if (!acceptedTypes.includes(file.type)) {
-      return 'Desteklenmeyen dosya türü. Sadece resim, PDF, AI, SVG, ZIP ve RAR dosyaları kabul edilir.';
-    }
-
     if (file.size > maxSizeInMB * 1024 * 1024) {
       return `Dosya boyutu ${maxSizeInMB}MB'dan büyük olamaz.`;
+    }
+
+    // Check both MIME type and file extension
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const isValidMimeType = acceptedTypes.includes(file.type);
+    const isValidExtension = acceptedTypes.some(type => 
+      type.startsWith('.') && type.toLowerCase() === fileExtension
+    );
+
+    if (!isValidMimeType && !isValidExtension) {
+      return `Desteklenmeyen dosya formatı. Kabul edilen formatlar: JPG, PNG, PDF, AI, SVG, ZIP, RAR, EPS, PSD`;
     }
 
     if (uploadedFiles.length >= maxFiles) {
@@ -143,7 +152,7 @@ export default function FileUpload({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     if (e.dataTransfer.files) {
       handleFileSelect(e.dataTransfer.files);
     }
@@ -215,18 +224,28 @@ export default function FileUpload({
         <Button variant="outline" type="button">
           Dosya Seç
         </Button>
-        
+
         <input
           id="file-input"
           type="file"
           multiple
-          accept={acceptedTypes.join(',')}
+          accept={acceptedTypes.map(type => 
+            type.startsWith('.') ? type : 
+            type === 'application/pdf' ? '.pdf' :
+            type === 'image/jpeg' ? '.jpg,.jpeg' :
+            type === 'image/png' ? '.png' :
+            type === 'image/gif' ? '.gif' :
+            type === 'image/svg+xml' ? '.svg' :
+            type === 'application/postscript' ? '.ai,.eps' :
+            type === 'image/vnd.adobe.photoshop' ? '.psd' :
+            type
+          ).join(',')}
           onChange={handleFileInputChange}
           className="hidden"
         />
-        
+
         <div className="mt-4 text-xs text-gray-500">
-          <p>Desteklenen formatlar: JPG, PNG, PDF, AI, SVG, ZIP, RAR</p>
+          <p>Desteklenen formatlar: JPG, PNG, PDF, AI, SVG, ZIP, RAR, EPS, PSD</p>
           <p>Maksimum dosya boyutu: {maxSizeInMB}MB</p>
           <p>Maksimum dosya sayısı: {maxFiles}</p>
         </div>
@@ -238,7 +257,7 @@ export default function FileUpload({
           <h4 className="text-sm font-medium text-gray-900">
             Yüklenen Dosyalar ({uploadedFiles.length}/{maxFiles})
           </h4>
-          
+
           {uploadedFiles.map((file) => (
             <div
               key={file.id}
@@ -247,7 +266,7 @@ export default function FileUpload({
               <div className="flex-shrink-0">
                 {getFileIcon(file.type)}
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-gray-900 truncate">
@@ -265,12 +284,12 @@ export default function FileUpload({
                      file.status === 'error' ? 'Hata' : 'Yükleniyor...'}
                   </Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-500">
                     {formatFileSize(file.size)}
                   </p>
-                  
+
                   {file.status === 'uploading' && (
                     <div className="flex-1 max-w-32 ml-2">
                       <Progress value={file.progress} className="h-1" />
@@ -278,7 +297,7 @@ export default function FileUpload({
                   )}
                 </div>
               </div>
-              
+
               <Button
                 variant="ghost"
                 size="sm"

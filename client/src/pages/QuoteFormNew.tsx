@@ -38,7 +38,18 @@ import { Link } from "wouter";
 const quoteSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
   type: z.enum(["sheet_label", "roll_label", "general_printing"]),
-  specifications: z.record(z.any()),
+  specifications: z.object({
+    quantity: z.number().min(1, "Miktar en az 1 olmalı"),
+    material: z.string().min(1, "Malzeme seçimi gerekli"),
+    size: z.string().min(1, "Boyut bilgisi gerekli"),
+    description: z.string().min(10, "En az 10 karakter açıklama gerekli")
+  }),
+  contactInfo: z.object({
+    companyName: z.string().min(1, "Firma adı gerekli"),
+    contactName: z.string().min(1, "Yetkili kişi adı gerekli"),
+    email: z.string().email("Geçerli e-posta adresi gerekli"),
+    phone: z.string().optional()
+  }),
   description: z.string().optional(),
   deadline: z.string().optional(),
   budget: z.string().optional(),
@@ -554,9 +565,9 @@ export default function QuoteForm() {
                     <h3 className="text-lg font-semibold mb-4">Dosya Yükleme</h3>
                     <FileUpload
                       onFileUpload={handleFileUpload}
-                      maxFiles={5}
+                      maxFiles={10}
                       maxSizeInMB={100}
-                      acceptedTypes={['.pdf', '.ai', '.psd', '.jpg', '.png']}
+                      acceptedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'application/postscript', 'image/vnd.adobe.photoshop']}
                       className="mb-4"
                     />
                     
@@ -771,6 +782,7 @@ export default function QuoteForm() {
                       onFileUpload={handleFileUpload}
                       maxFiles={10}
                       maxSizeInMB={100}
+                      acceptedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'application/postscript', 'image/vnd.adobe.photoshop']}
                       className="mb-4"
                     />
                     

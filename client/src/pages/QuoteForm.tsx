@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -41,7 +40,18 @@ import { Link } from "wouter";
 const quoteSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
   type: z.enum(["sheet_label", "roll_label", "general_printing"]),
-  specifications: z.record(z.any()),
+  specifications: z.object({
+    quantity: z.number().min(1, "Miktar en az 1 olmalı"),
+    material: z.string().min(1, "Malzeme seçimi gerekli"),
+    size: z.string().min(1, "Boyut bilgisi gerekli"),
+    description: z.string().min(10, "En az 10 karakter açıklama gerekli")
+  }),
+  contactInfo: z.object({
+    companyName: z.string().min(1, "Firma adı gerekli"),
+    contactName: z.string().min(1, "Yetkili kişi adı gerekli"),
+    email: z.string().email("Geçerli e-posta adresi gerekli"),
+    phone: z.string().optional()
+  }),
   description: z.string().optional(),
   deadline: z.string().optional(),
   budget: z.string().optional(),
@@ -103,7 +113,7 @@ export default function QuoteForm() {
         },
         body: JSON.stringify(quoteData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Quote submission failed:", errorData);
@@ -146,7 +156,16 @@ export default function QuoteForm() {
   };
 
   const handleFileUpload = (fileId: string) => {
-    setUploadedFiles(prev => [...prev, fileId]);
+    setUploadedFiles(prev => {
+      if (!prev.includes(fileId)) {
+        return [...prev, fileId];
+      }
+      return prev;
+    });
+    toast({
+      title: "Dosya Yüklendi",
+      description: "Dosyanız başarıyla yüklendi ve analiz edildi.",
+    });
   };
 
   const updateFormData = (key: string, value: any) => {
@@ -224,7 +243,7 @@ export default function QuoteForm() {
   const renderSurfaceProcessingOptions = () => (
     <div className="space-y-4">
       <Label className="text-base font-semibold">Yüzey İşlemleri</Label>
-      
+
       <Tabs value={surfaceProcessingTab} onValueChange={setSurfaceProcessingTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="cellophane" className="flex items-center space-x-1">
@@ -1076,9 +1095,9 @@ export default function QuoteForm() {
                     'book-paper': { label: 'Kitap Kağıdı', desc: 'Okuma dostu' },
                     'corrugated': { label: 'Oluklu Karton', desc: 'Ambalaj için' }
                   };
-                  
+
                   const paperInfo = paperLabels[paper] || { label: paper, desc: '' };
-                  
+
                   return (
                     <Button
                       key={paper}
@@ -1109,7 +1128,7 @@ export default function QuoteForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <Navigation />
-      
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/dashboard">
@@ -1118,7 +1137,7 @@ export default function QuoteForm() {
               Müşteri Dashboard
             </Button>
           </Link>
-          
+
           {/* Header Card */}
           <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white to-blue-50">
             <CardContent className="p-8">
@@ -1135,7 +1154,7 @@ export default function QuoteForm() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
                   <div className="text-sm text-gray-500 mb-1">Hızlı Teklif</div>
@@ -1193,15 +1212,7 @@ export default function QuoteForm() {
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="budget">Bütçe (TL)</Label>
-                      <Input
-                        id="budget"
-                        placeholder="Örn: 1000-5000"
-                        {...form.register("budget")}
-                        className="border-gray-300 focus:border-blue-500"
-                      />
-                    </div>
+                    
 
                     <div className="space-y-2">
                       <Label htmlFor="deadline">Teslim Tarihi</Label>
@@ -1272,10 +1283,10 @@ export default function QuoteForm() {
                       onFileUpload={handleFileUpload}
                       maxFiles={10}
                       maxSizeInMB={100}
-                      acceptedTypes={['.pdf', '.ai', '.psd', '.jpg', '.png', '.eps', '.svg']}
+                      acceptedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'application/postscript', 'image/vnd.adobe.photoshop']}
                       className="mb-4"
                     />
-                    
+
                     {uploadedFiles.length > 0 && (
                       <div className="mt-4">
                         <h4 className="font-medium mb-2">Yüklenen Dosyalar:</h4>
@@ -1317,7 +1328,7 @@ export default function QuoteForm() {
                       <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                       Teklif Özeti
                     </h3>
-                    
+
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Proje Tipi:</span>
