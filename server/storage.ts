@@ -552,10 +552,10 @@ export class DatabaseStorage implements IStorage {
     ];
   }
 
-  private async getStoredDesigns(userId: string): Promise<any[]> {
+  private getStoredDesigns(userId: string): any[] {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       if (fs.existsSync(designsPath)) {
@@ -577,10 +577,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async storeDesigns(designs: any[]): Promise<void> {
+  private storeDesigns(designs: any[]): void {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       fs.writeFileSync(designsPath, JSON.stringify(designs, null, 2));
@@ -820,10 +820,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async getStoredNotifications(): Promise<any[]> {
+  private getStoredNotifications(): any[] {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const filePath = path.join(process.cwd(), 'notifications.json');
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -960,10 +960,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async getStoredVerificationDocuments(): Promise<any[]> {
+  private getStoredVerificationDocuments(): any[] {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const filePath = path.join(process.cwd(), 'verification-documents.json');
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -974,10 +974,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async storeVerificationDocuments(documents: any[]): Promise<void> {
+  private storeVerificationDocuments(documents: any[]): void {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const filePath = path.join(process.cwd(), 'verification-documents.json');
       fs.writeFileSync(filePath, JSON.stringify(documents, null, 2));
     } catch (error) {
@@ -995,7 +995,7 @@ export class DatabaseStorage implements IStorage {
   }): Promise<any> {
     try {
       // Get all existing designs from file
-      let allDesigns = await this.getAllStoredDesigns();
+      let allDesigns = this.getAllStoredDesigns();
 
       // Enhanced design object with proper URL extraction for Ideogram V3
       const extractImageUrl = (result: any) => {
@@ -1061,7 +1061,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Store all designs back to file
-      await this.storeDesigns(allDesigns);
+      this.storeDesigns(allDesigns);
 
       console.log('✅ Design saved successfully. Total designs:', allDesigns.length);
       return newDesign;
@@ -1078,7 +1078,7 @@ export class DatabaseStorage implements IStorage {
     totalPages: number;
   }> {
     try {
-      const userDesigns = await this.getStoredDesigns(userId);
+      const userDesigns = this.getStoredDesigns(userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
@@ -1103,10 +1103,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async getAllStoredDesigns(): Promise<any[]> {
+  private getAllStoredDesigns(): any[] {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       if (fs.existsSync(designsPath)) {
@@ -1135,12 +1135,12 @@ export class DatabaseStorage implements IStorage {
 
   async deleteDesign(designId: string, userId: string): Promise<boolean> {
     try {
-      const allDesigns = await this.getAllStoredDesigns();
+      const allDesigns = this.getAllStoredDesigns();
       const designIndex = allDesigns.findIndex(design => design.id === designId && design.userId === userId);
 
       if (designIndex !== -1) {
         allDesigns.splice(designIndex, 1);
-        await this.storeDesigns(allDesigns);
+        this.storeDesigns(allDesigns);
         return true;
       }
       return false;
