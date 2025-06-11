@@ -213,7 +213,7 @@ async function createTestUsers() {
         role: 'customer',
         password: 'demo123',
         isActive: true,
-        creditBalance: '500.00',
+        creditBalance: '0.00',
         subscriptionStatus: 'inactive',
         companyAddress: 'Test Adres, İstanbul',
         companyName: 'Test Şirketi',
@@ -437,7 +437,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User authentication endpoint for dashboard access
-  app.get('/api/auth/user', (req, res) => {
+  app.get('/api/auth/user', async (req, res) => {
     if (!req.session || !(req.session as any).user) {
       return res.status(401).json({ 
         message: "Unauthorized", 
@@ -446,18 +446,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
 
-    const user = (req.session as any).user;
-    res.json({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      companyName: user.companyName,
-      profileImageUrl: user.profileImageUrl,
-      creditBalance: user.creditBalance,
-      subscriptionStatus: user.subscriptionStatus
-    });
+    try {
+      const sessionUser = (req.session as any).user;
+      
+      // Get fresh user data from database to ensure current balance
+      const freshUser = await storage.getUser(sessionUser.id);
+      
+      if (!freshUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update session with fresh data
+      (req.session as any).user = {
+        ...sessionUser,
+        creditBalance: freshUser.creditBalance,
+        subscriptionStatus: freshUser.subscriptionStatus
+      };
+
+      res.json({
+        id: freshUser.id,
+        email: freshUser.email,
+        firstName: freshUser.firstName,
+        lastName: freshUser.lastName,
+        role: freshUser.role,
+        companyName: freshUser.companyName,
+        profileImageUrl: freshUser.profileImageUrl,
+        creditBalance: freshUser.creditBalance,
+        subscriptionStatus: freshUser.subscriptionStatus
+      });
+    } catch (error) {
+      console.error("Error fetching fresh user data:", error);
+      res.status(500).json({ message: "Failed to fetch user data" });
+    }
   });
 
   // Multer error handling middleware
@@ -545,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Configure based on role
       if (role === 'customer') {
-        userData.creditBalance = '1000.00'; // Starting credit for customers
+        userData.creditBalance = '0.00'; // No starting credit - customers must purchase credits
         userData.subscriptionStatus = 'inactive';
         userData.companyAddress = address ? `${address}, ${city} ${postalCode}` : '';
         userData.companyName = companyName || '';
@@ -1804,7 +1824,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if user has enough credit (35₺ per design)
       const designCost = 35;
-      const currentBalance = parseFloat(user.creditBalance || '0');
+      
+      // Get fresh user data to ensure current balance
+      const freshUser = await storage.getUser(userId);
+      if (!freshUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const currentBalance = parseFloat(freshUser.creditBalance || '0');
+      console.log(`💰 Credit check for user ${userId}: Current balance ${currentBalance}₺, Required: ${designCost}₺`);
+      
+      // Additional debug log for troubleshooting
+      console.log(`🔍 Debug - User data: ID=${freshUser.id}, Email=${freshUser.email}, Balance=${freshUser.creditBalance}`);
 
       if (currentBalance < designCost) {
         return res.status(400).json({ 
@@ -1819,6 +1850,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Deduct credit from user balance
       const newBalance = currentBalance - designCost;
       await storage.updateUserCreditBalance(userId, newBalance.toString());
+      
+      // Force session update and save
+      if (req.session && req.session.user) {
+        req.session.user.creditBalance = newBalance.toString();
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err: any) => {
+            if (err) {
+              console.error('Session save error after credit deduction:', err);
+              reject(err);
+            } else {
+              console.log(`💾 Session updated with new balance: ${newBalance}₺`);
+              resolve();
+            }
+          });
+        });
+      }
+      
+      console.log(`💳 Credit deducted: ${designCost}₺, New balance: ${newBalance}₺`);
 
       // Auto-save design to user's history with enhanced data
       const savedDesign = await storage.saveDesignGeneration({
@@ -2347,6 +2396,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error exporting user data:", error);
       res.status(500).json({ message: "Failed to export user data" });
+    }
+  });
+
+  // Manual credit loading endpoint for admin
+  app.post('/api/admin/load-credit', requireAdmin, async (req: any, res) => {
+    try {
+      const { email, amount } = req.body;
+
+      if (!email || !amount) {
+        return res.status(400).json({ message: "Email and amount are required" });
+      }
+
+      // Find user by email
+      const users = await storage.getAllUsers();
+      const targetUser = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+      if (!targetUser) {
+        return res.status(404).json({ message: `User with email ${email} not found` });
+      }
+
+      // Calculate new balance
+      const currentBalance = parseFloat(targetUser.creditBalance || '0');
+      const creditAmount = parseFloat(amount);
+      const newBalance = currentBalance + creditAmount;
+
+      // Update user credit balance
+      await storage.updateUserCreditBalance(targetUser.id, newBalance.toString());
+
+      console.log(`💳 Admin credit load: ${email} - Added ${creditAmount}₺, New balance: ${newBalance}₺`);
+
+      res.json({
+        success: true,
+        message: `${creditAmount}₺ credit loaded to ${email}`,
+        user: {
+          email: targetUser.email,
+          oldBalance: currentBalance,
+          newBalance: newBalance,
+          addedAmount: creditAmount
+        }
+      });
+
+    } catch (error) {
+      console.error("Error loading credit:", error);
+      res.status(500).json({ message: "Failed to load credit" });
     }
   });
 

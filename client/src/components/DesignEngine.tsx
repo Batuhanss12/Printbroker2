@@ -79,6 +79,11 @@ export default function DesignEngine() {
   // Generate single design mutation
   const generateMutation = useMutation({
     mutationFn: async (data: { prompt: string; options: DesignOptions }) => {
+      console.log('🎨 Starting design generation with data:', data);
+
+      // Refresh user balance before generation to ensure we have latest data
+      await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+
       return await apiRequest('POST', '/api/design/generate', data);
     },
     onSuccess: async (response) => {
@@ -96,25 +101,31 @@ export default function DesignEngine() {
 
         // Show success message with auto-save info
         toast({
-          title: "Tasarım Oluşturuldu",
+          title: "Tasarım Oluşturuldu ✅",
           description: response.autoSaved 
             ? `Tasarım otomatik kaydedildi. ${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`
             : `${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`,
         });
 
-        // Refresh user balance and design history
+        // Immediately refresh user balance and design history for real-time updates
         await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/design/history'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/designs/history'] });
+
+        // Force re-fetch user data to update balance display
+        await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
       }
     },
-    onError: (error: any) => {
+    onError: async (error: any) => {
       console.error('Design generation error:', error);
       const errorMessage = error.message || 'Tasarım oluşturulurken bir hata oluştu.';
 
       if (errorMessage.includes('Insufficient credit')) {
+        // Refresh user balance to show current amount
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+
         toast({
-          title: "Yetersiz Kredi",
-          description: "Tasarım oluşturmak için yeterli krediniz yok. Lütfen kredi yükleyin.",
+          title: "Yetersiz Kredi 💳",
+          description: "Tasarım oluşturmak için yeterli krediniz yok. Lütfen kredi yükleyin (35₺ gerekli).",
           variant: "destructive",
         });
       } else if (errorMessage.includes('API key') || errorMessage.includes('401') || errorMessage.includes('403')) {
@@ -193,7 +204,7 @@ export default function DesignEngine() {
     }
   };
 
-  
+
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -402,7 +413,7 @@ export default function DesignEngine() {
                     </div>
                   )}
 
-                  
+
                 </CardContent>
               </Card>
 
@@ -592,7 +603,7 @@ export default function DesignEngine() {
           </div>
         </TabsContent>
 
-        
+
 
         {/* History Tab */}
         <TabsContent value="history">
