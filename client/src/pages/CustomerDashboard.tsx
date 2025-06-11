@@ -41,6 +41,13 @@ export default function CustomerDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isDesignDialogOpen, setIsDesignDialogOpen] = useState(false);
+  
+  // Reset to first page when new designs are created
+  useEffect(() => {
+    if (currentPage > 1) {
+      setCurrentPage(1);
+    }
+  }, [designHistory?.total]);
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
 
@@ -88,8 +95,10 @@ export default function CustomerDashboard() {
     enabled: isAuthenticated && user?.role === 'customer',
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
   const { data: designHistory, isLoading: designsLoading } = useQuery({
-    queryKey: ["/api/designs/history"],
+    queryKey: ["/api/designs/history", currentPage],
+    queryFn: () => apiRequest('GET', `/api/designs/history?page=${currentPage}&limit=12`),
     enabled: isAuthenticated && user?.role === 'customer',
   });
 
@@ -332,23 +341,43 @@ export default function CustomerDashboard() {
                       {designHistory.designs.map((design: any) => (
                         <Card key={design.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                           <div className="aspect-square relative group">
-                            {design.result && Array.isArray(design.result) && design.result[0] ? (
-                              <img 
-                                src={design.result[0].url} 
-                                alt={design.prompt}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : design.result && design.result.data && design.result.data[0] ? (
-                              <img 
-                                src={design.result.data[0].url} 
-                                alt={design.prompt}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                <ImageIcon className="h-12 w-12 text-gray-400" />
-                              </div>
-                            )}
+                            {(() => {
+                              let imageUrl = null;
+                              
+                              // Try different possible data structures
+                              if (design.result && Array.isArray(design.result) && design.result[0]?.url) {
+                                imageUrl = design.result[0].url;
+                              } else if (design.result && design.result.data && Array.isArray(design.result.data) && design.result.data[0]?.url) {
+                                imageUrl = design.result.data[0].url;
+                              } else if (design.result && design.result.url) {
+                                imageUrl = design.result.url;
+                              } else if (typeof design.result === 'string') {
+                                imageUrl = design.result;
+                              }
+
+                              return imageUrl ? (
+                                <img 
+                                  src={imageUrl} 
+                                  alt={design.prompt || 'Tasarım'}
+                                  className="w-full h-full object-cover rounded-lg"
+                                  onError={(e) => {
+                                    console.error('Image failed to load:', imageUrl);
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                                  }}
+                                  onLoad={() => {
+                                    console.log('Image loaded successfully:', imageUrl);
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-lg">
+                                  <ImageIcon className="h-12 w-12 text-gray-400" />
+                                </div>
+                              );
+                            })()}
+                            <div className="fallback-icon hidden w-full h-full bg-gray-100 flex items-center justify-center rounded-lg absolute inset-0">
+                              <ImageIcon className="h-12 w-12 text-gray-400" />
+                            </div>
 
                             
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -364,19 +393,34 @@ export default function CustomerDashboard() {
                                       <DialogTitle>Tasarım Önizleme</DialogTitle>
                                     </DialogHeader>
                                     <div className="space-y-4">
-                                      {design.result && Array.isArray(design.result) && design.result[0] ? (
-                                        <img 
-                                          src={design.result[0].url} 
-                                          alt={design.prompt}
-                                          className="w-full h-auto rounded-lg max-h-96 object-contain mx-auto"
-                                        />
-                                      ) : design.result && design.result.data && design.result.data[0] ? (
-                                        <img 
-                                          src={design.result.data[0].url} 
-                                          alt={design.prompt}
-                                          className="w-full h-auto rounded-lg max-h-96 object-contain mx-auto"
-                                        />
-                                      ) : null}
+                                      {(() => {
+                                        let imageUrl = null;
+                                        
+                                        if (design.result && Array.isArray(design.result) && design.result[0]?.url) {
+                                          imageUrl = design.result[0].url;
+                                        } else if (design.result && design.result.data && Array.isArray(design.result.data) && design.result.data[0]?.url) {
+                                          imageUrl = design.result.data[0].url;
+                                        } else if (design.result && design.result.url) {
+                                          imageUrl = design.result.url;
+                                        }
+
+                                        return imageUrl ? (
+                                          <img 
+                                            src={imageUrl} 
+                                            alt={design.prompt || 'Tasarım'}
+                                            className="w-full h-auto rounded-lg max-h-96 object-contain mx-auto"
+                                            onError={(e) => {
+                                              console.error('Preview image failed to load:', imageUrl);
+                                              e.currentTarget.style.display = 'none';
+                                            }}
+                                          />
+                                        ) : (
+                                          <div className="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg">
+                                            <ImageIcon className="h-16 w-16 text-gray-400" />
+                                            <span className="text-gray-500 ml-2">Görsel bulunamadı</span>
+                                          </div>
+                                        );
+                                      })()}
                                       <div className="space-y-2">
                                         <p className="text-sm text-gray-600"><strong>Açıklama:</strong> {design.prompt}</p>
                                         <p className="text-sm text-gray-600"><strong>Oluşturulma:</strong> {new Date(design.createdAt).toLocaleDateString('tr-TR', {
@@ -411,84 +455,36 @@ export default function CustomerDashboard() {
 
                                     if (imageUrl) {
                                       try {
+                                        // Create download link with forced download
+                                        const link = document.createElement('a');
+                                        link.href = imageUrl;
+                                        link.download = `tasarim-${design.id}-${Date.now()}.png`;
+                                        link.target = '_blank';
+                                        link.rel = 'noopener noreferrer';
                                         
-                                        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
-                                        const response = await fetch(proxyUrl);
+                                        // Force download by temporarily adding to DOM
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
 
-                                        if (response.ok) {
-                                          const blob = await response.blob();
-                                          const link = document.createElement('a');
-                                          const objectUrl = URL.createObjectURL(blob);
-                                          link.href = objectUrl;
-                                          link.download = `tasarim-${design.id}.png`;
-                                          link.style.display = 'none';
-
-                                          document.body.appendChild(link);
-                                          link.click();
-
-                                          setTimeout(() => {
-                                            document.body.removeChild(link);
-                                            URL.revokeObjectURL(objectUrl);
-                                          }, 100);
-
-                                          toast({
-                                            title: "Başarılı",
-                                            description: "Tasarım başarıyla indirildi.",
-                                          });
-                                        } else {
-                                          throw new Error('Proxy indirme başarısız');
-                                        }
+                                        toast({
+                                          title: "İndirme Başlatıldı",
+                                          description: "Tasarım indiriliyor. Tarayıcınızın indirme klasörünü kontrol edin.",
+                                        });
                                       } catch (error) {
-                                        
-                                        try {
-                                          const directResponse = await fetch(imageUrl, { 
-                                            mode: 'cors',
-                                            credentials: 'omit'
-                                          });
-
-                                          if (directResponse.ok) {
-                                            const blob = await directResponse.blob();
-                                            const link = document.createElement('a');
-                                            const objectUrl = URL.createObjectURL(blob);
-                                            link.href = objectUrl;
-                                            link.download = `tasarim-${design.id}.png`;
-                                            link.style.display = 'none';
-
-                                            document.body.appendChild(link);
-                                            link.click();
-
-                                            setTimeout(() => {
-                                              document.body.removeChild(link);
-                                              URL.revokeObjectURL(objectUrl);
-                                            }, 100);
-
-                                            toast({
-                                              title: "Başarılı",
-                                              description: "Tasarım başarıyla indirildi.",
-                                            });
-                                          } else {
-                                            throw new Error('Direkt indirme başarısız');
-                                          }
-                                        } catch (directError) {
-                                          
-                                          const link = document.createElement('a');
-                                          link.href = imageUrl;
-                                          link.download = `tasarim-${design.id}.png`;
-                                          link.target = '_blank';
-                                          link.rel = 'noopener noreferrer';
-
-                                          
-                                          document.body.appendChild(link);
-                                          link.click();
-                                          document.body.removeChild(link);
-
-                                          toast({
-                                            title: "İndirme Başlatıldı",
-                                            description: "Tasarım indirme işlemi başlatıldı. Tarayıcınızın indirme ayarlarını kontrol edin.",
-                                            variant: "default",
-                                          });
-                                        }
+                                        console.error('Download error:', error);
+                                        toast({
+                                          title: "İndirme Hatası",
+                                          description: "Tasarım indirilemedi. Lütfen tekrar deneyin.",
+                                          variant: "destructive",
+                                        });
                                       }
+                                    } else {
+                                      toast({
+                                        title: "Hata",
+                                        description: "Tasarım URL'si bulunamadı.",
+                                        variant: "destructive",
+                                      });
                                     }
                                   }}
                                 >
@@ -561,14 +557,7 @@ export default function CustomerDashboard() {
                           size="sm"
                           disabled={designHistory.page <= 1}
                           onClick={() => {
-                            queryClient.invalidateQueries({ 
-                              queryKey: ['/api/designs/history'],
-                              exact: false 
-                            });
-                            queryClient.refetchQueries({ 
-                              queryKey: ['/api/designs/history'],
-                              exact: false 
-                            });
+                            setCurrentPage(prev => Math.max(1, prev - 1));
                           }}
                         >
                           Önceki
@@ -583,14 +572,7 @@ export default function CustomerDashboard() {
                           size="sm"
                           disabled={designHistory.page >= designHistory.totalPages}
                           onClick={() => {
-                            queryClient.invalidateQueries({ 
-                              queryKey: ['/api/designs/history'],
-                              exact: false 
-                            });
-                            queryClient.refetchQueries({ 
-                              queryKey: ['/api/designs/history'],
-                              exact: false 
-                            });
+                            setCurrentPage(prev => Math.min(designHistory.totalPages, prev + 1));
                           }}
                         >
                           Sonraki
