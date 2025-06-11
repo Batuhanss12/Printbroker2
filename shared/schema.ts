@@ -323,10 +323,86 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ i
 export const insertContractSchema = createInsertSchema(contracts).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Types
-export type UpsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
-export type InsertQuote = z.infer<typeof insertQuoteSchema>;
+export type UpsertUser = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role?: "customer" | "printer" | "admin";
+  companyName?: string;
+  companyAddress?: string;
+  taxNumber?: string;
+  description?: string;
+  website?: string;
+  profileImageUrl?: string;
+  rating?: string;
+  totalRatings?: number;
+  isActive?: boolean;
+  creditBalance?: string;
+  subscriptionStatus?: "active" | "inactive" | "suspended";
+  subscriptionExpiresAt?: Date;
+  password?: string;
+  verificationStatus?: "pending" | "approved" | "rejected" | "under_review";
+  verificationNotes?: string;
+  verificationDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type VerificationDocument = {
+  id: string;
+  userId: string;
+  documentType: "trade_registry" | "tax_certificate" | "signature_circular" | "iso_certificate" | "other";
+  fileName: string;
+  filePath: string;
+  uploadDate: Date;
+  status: "pending" | "approved" | "rejected";
+  reviewNotes?: string;
+  reviewedBy?: string;
+  reviewDate?: Date;
+};
+
+export type InsertVerificationDocument = Omit<VerificationDocument, "id" | "uploadDate" | "status" | "reviewDate">;
+
+export const insertVerificationDocumentSchema = z.object({
+  userId: z.string(),
+  documentType: z.enum(["trade_registry", "tax_certificate", "signature_circular", "iso_certificate", "other"]),
+  fileName: z.string(),
+  filePath: z.string(),
+  reviewNotes: z.string().optional(),
+  reviewedBy: z.string().optional(),
+});
+
+export type User = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role: "customer" | "printer" | "admin";
+  companyName?: string;
+  companyAddress?: string;
+  taxNumber?: string;
+  description?: string;
+  website?: string;
+  profileImageUrl?: string;
+  rating?: string;
+  totalRatings?: number;
+  isActive: boolean;
+  creditBalance: string;
+  subscriptionStatus: "active" | "inactive" | "suspended";
+  subscriptionExpiresAt?: Date;
+  password?: string;
+  verificationStatus?: "pending" | "approved" | "rejected" | "under_review";
+  verificationNotes?: string;
+  verificationDate?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
+};
+
 export type Quote = typeof quotes.$inferSelect;
+export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type InsertPrinterQuote = z.infer<typeof insertPrinterQuoteSchema>;
 export type PrinterQuote = typeof printerQuotes.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;

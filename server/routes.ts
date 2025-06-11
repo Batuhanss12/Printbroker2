@@ -324,6 +324,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create test users if they don't exist
   await createTestUsers();
 
+  // Verification document upload
+  app.post('/api/verification/upload', isAuthenticated, upload.single('document'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No document uploaded" });
+      }
+
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { documentType } = req.body;
+      
+      if (!documentType) {
+        return res.status(400).json({ message: "Document type is required" });
+      }
+
+      const document = await storage.createVerificationDocument({
+        userId,
+        documentType,
+        fileName: req.file.originalname,
+        filePath: req.file.path
+      });
+
+      res.json({ success: true, document });
+    } catch (error) {
+      console.error("Error uploading verification document:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Get user's verification documents
+  app.get('/api/verification/documents', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const documents = await storage.getVerificationDocumentsByUser(userId);
+      res.json({ documents });
+    } catch (error) {
+      console.error("Error fetching verification documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  // Admin routes for verification
+  app.get('/api/admin/verification/pending', requireAdmin, async (req: any, res) => {
+    try {
+      const documents = await storage.getPendingVerificationDocuments();
+      res.json({ documents });
+    } catch (error) {
+      console.error("Error fetching pending verification documents:", error);
+      res.status(500).json({ message: "Failed to fetch pending documents" });
+    }
+  });
+
+  app.post('/api/admin/verification/review/:documentId', requireAdmin, async (req: any, res) => {
+    try {
+      const { documentId } = req.params;
+      const { status, reviewNotes } = req.body;
+      const reviewedBy = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+
+      if (!status || !['approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Valid status is required" });
+      }
+
+      await storage.reviewVerificationDocument(documentId, {
+        status,
+        reviewNotes,
+        reviewedBy
+      });
+
+      res.json({ success: true, message: "Document reviewed successfully" });
+    } catch (error) {
+      console.error("Error reviewing verification document:", error);
+      res.status(500).json({ message: "Failed to review document" });
+    }
+  });
+
+  app.get('/api/admin/verification/companies', requireAdmin, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const companies = users.filter(user => user.role === 'printer').map(user => ({
+        id: user.id,
+        companyName: user.companyName,
+        email: user.email,
+        verificationStatus: user.verificationStatus || 'pending',
+        verificationDate: user.verificationDate,
+        createdAt: user.createdAt
+      }));
+      
+      res.json({ companies });
+    } catch (error) {
+      console.error("Error fetching companies for verification:", error);
+      res.status(500).json({ message: "Failed to fetch companies" });
+    }
+  });
+
   // Authentication routes
   app.get('/api/login', (req, res) => {
     const returnTo = req.query.returnTo || '/';
