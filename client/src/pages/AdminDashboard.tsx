@@ -59,6 +59,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import ReportsAndAnalytics from "@/components/ReportsAndAnalytics";
+import FirmVerificationPanel from "@/components/FirmVerificationPanel";
 import { 
   Building2, 
   ShoppingCart,
@@ -260,9 +261,10 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
           <TabsTrigger value="users">Kullanıcılar</TabsTrigger>
+          <TabsTrigger value="verification">Firma Doğrulama</TabsTrigger>
           <TabsTrigger value="monitoring">İzleme</TabsTrigger>
           <TabsTrigger value="ideogram">Ideogram</TabsTrigger>
           <TabsTrigger value="reports">Raporlar</TabsTrigger>
@@ -363,6 +365,11 @@ export default function AdminDashboard() {
         {/* Users Tab */}
         <TabsContent value="users">
           <div>Kullanıcı Yönetimi</div>
+        </TabsContent>
+
+        {/* Verification Tab */}
+        <TabsContent value="verification">
+          <FirmVerificationPanel />
         </TabsContent>
 
         {/* Monitoring Tab */}

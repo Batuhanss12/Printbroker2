@@ -845,6 +845,146 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Verification Documents Management
+  async createVerificationDocument(document: any): Promise<any> {
+    try {
+      const documents = this.getStoredVerificationDocuments();
+      const newDocument = {
+        id: (await import('crypto')).randomUUID(),
+        ...document,
+        uploadDate: new Date(),
+        status: 'pending'
+      };
+      documents.push(newDocument);
+      this.storeVerificationDocuments(documents);
+      
+      // Create notification for admin
+      await this.createNotification({
+        userId: 'admin',
+        type: 'verification_document',
+        title: 'Yeni Doğrulama Belgesi',
+        message: `${document.documentType} belgesi yüklendi - ${document.fileName}`,
+        data: { documentId: newDocument.id, userId: document.userId },
+        isRead: false,
+        createdAt: new Date()
+      });
+      
+      return newDocument;
+    } catch (error) {
+      console.error('Error creating verification document:', error);
+      throw error;
+    }
+  }
+
+  async getVerificationDocumentsByUser(userId: string): Promise<any[]> {
+    const documents = this.getStoredVerificationDocuments();
+    return documents.filter(doc => doc.userId === userId);
+  }
+
+  async getPendingVerificationDocuments(): Promise<any[]> {
+    const documents = this.getStoredVerificationDocuments();
+    return documents.filter(doc => doc.status === 'pending');
+  }
+
+  async reviewVerificationDocument(documentId: string, reviewData: {
+    status: 'approved' | 'rejected';
+    reviewNotes?: string;
+    reviewedBy: string;
+  }): Promise<void> {
+    try {
+      const documents = this.getStoredVerificationDocuments();
+      const documentIndex = documents.findIndex(doc => doc.id === documentId);
+      
+      if (documentIndex !== -1) {
+        documents[documentIndex] = {
+          ...documents[documentIndex],
+          ...reviewData,
+          reviewDate: new Date()
+        };
+        
+        this.storeVerificationDocuments(documents);
+        
+        // Update user verification status if all documents approved
+        const userId = documents[documentIndex].userId;
+        await this.updateUserVerificationStatus(userId);
+      }
+    } catch (error) {
+      console.error('Error reviewing verification document:', error);
+      throw error;
+    }
+  }
+
+  async updateUserVerificationStatus(userId: string): Promise<void> {
+    try {
+      const documents = await this.getVerificationDocumentsByUser(userId);
+      
+      if (documents.length === 0) return;
+      
+      const hasRejected = documents.some(doc => doc.status === 'rejected');
+      const allApproved = documents.every(doc => doc.status === 'approved');
+      
+      let verificationStatus: string;
+      if (hasRejected) {
+        verificationStatus = 'rejected';
+      } else if (allApproved) {
+        verificationStatus = 'approved';
+      } else {
+        verificationStatus = 'under_review';
+      }
+      
+      // Update user in database
+      const user = await this.getUser(userId);
+      if (user) {
+        await this.upsertUser({
+          ...user,
+          verificationStatus: verificationStatus as any,
+          verificationDate: new Date()
+        });
+        
+        // Notify user
+        await this.createNotification({
+          userId: userId,
+          type: 'verification_status',
+          title: 'Doğrulama Durumu Güncellendi',
+          message: verificationStatus === 'approved' ? 'Firma doğrulamanız onaylandı!' : 
+                   verificationStatus === 'rejected' ? 'Firma doğrulamanız reddedildi.' :
+                   'Firma doğrulamanız inceleme aşamasında.',
+          data: { verificationStatus },
+          isRead: false,
+          createdAt: new Date()
+        });
+      }
+    } catch (error) {
+      console.error('Error updating user verification status:', error);
+      throw error;
+    }
+  }
+
+  private getStoredVerificationDocuments(): any[] {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'verification-documents.json');
+      if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  private storeVerificationDocuments(documents: any[]) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'verification-documents.json');
+      fs.writeFileSync(filePath, JSON.stringify(documents, null, 2));
+    } catch (error) {
+      console.error('Error storing verification documents:', error);
+    }
+  }
+
   // Enhanced design management
   async saveDesignGeneration(data: {
     userId: string;

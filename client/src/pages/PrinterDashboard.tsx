@@ -1,3 +1,7 @@
+The code has been modified to include file upload functionality for the printer verification process, integrating necessary components and functions for handling document uploads.
+```
+
+```replit_final_file
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -127,6 +131,36 @@ export default function PrinterDashboard() {
     queryKey: ["/api/orders"],
     enabled: isAuthenticated && user?.role === 'printer',
   });
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const handleDocumentUpload = async (event: React.ChangeEvent<HTMLInputElement>, documentType: string) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('document', file);
+    formData.append('documentType', documentType);
+
+    try {
+      const response = await apiRequest('POST', '/api/verification/upload', formData, {
+        'Content-Type': 'multipart/form-data'
+      });
+
+      if (response.success) {
+        toast({
+          title: "Başarılı",
+          description: "Belge başarıyla yüklendi ve incelemeye gönderildi",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Hata",
+        description: "Belge yüklenirken hata oluştu",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -377,10 +411,21 @@ export default function PrinterDashboard() {
                       <p className="text-sm text-gray-500 mb-4">
                         Güncel vergi levhanızın yüksek çözünürlüklü fotoğrafı
                       </p>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
+                      >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
+                      <input
+                        id="trade-registry-upload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
+                      />
                     </div>
                   </div>
 
@@ -392,10 +437,21 @@ export default function PrinterDashboard() {
                       <p className="text-sm text-gray-500 mb-4">
                         Yetkili imza sahiplerinin güncel imza sirküleri
                       </p>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
+                      >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
+                      <input
+                        id="trade-registry-upload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
+                      />
                     </div>
                   </div>
 
@@ -522,3 +578,25 @@ export default function PrinterDashboard() {
     </div>
   );
 }
+```<Button variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+```
+with
+```text
+<Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+                      <input
+                        id="trade-registry-upload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
+                      />
