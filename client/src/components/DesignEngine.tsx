@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -35,8 +36,6 @@ import {
 import { cn } from "@/lib/utils";
 import IdeogramAnalyzer from './IdeogramAnalyzer';
 
-
-
 interface GeneratedImage {
   url: string;
   is_image_safe: boolean;
@@ -47,7 +46,6 @@ interface GeneratedImage {
 
 interface DesignOptions {
   aspectRatio?: 'ASPECT_1_1' | 'ASPECT_10_16' | 'ASPECT_16_10' | 'ASPECT_9_16' | 'ASPECT_16_9' | 'ASPECT_3_2' | 'ASPECT_2_3' | 'ASPECT_4_3' | 'ASPECT_3_4';
-  model?: 'V_2' | 'V_2_TURBO';
   styleType?: 'AUTO' | 'GENERAL' | 'REALISTIC' | 'DESIGN' | 'RENDER_3D' | 'ANIME';
   magicPrompt?: 'AUTO' | 'ON' | 'OFF';
   negativePrompt?: string;
@@ -64,9 +62,8 @@ export default function DesignEngine() {
   const [prompt, setPrompt] = useState("");
   const [designOptions, setDesignOptions] = useState<DesignOptions>({
     aspectRatio: "ASPECT_1_1",
-    model: "V_2",
-    styleType: "AUTO",
-    magicPrompt: "AUTO",
+    styleType: "DESIGN",
+    magicPrompt: "ON",
     resolution: "default",
     negativePrompt: "",
     colorPalette: { members: [] }
@@ -86,7 +83,7 @@ export default function DesignEngine() {
   // Generate single design mutation
   const generateMutation = useMutation({
     mutationFn: async (data: { prompt: string; options: DesignOptions }) => {
-      console.log('🎨 Starting design generation with data:', data);
+      console.log('🎨 Starting V3 design generation with data:', data);
 
       try {
         // Refresh user balance before generation to ensure we have latest data
@@ -115,8 +112,8 @@ export default function DesignEngine() {
         toast({
           title: "Tasarım Oluşturuldu ✅",
           description: response.autoSaved 
-            ? `Tasarım otomatik kaydedildi. ${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`
-            : `${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`,
+            ? `Matbixx AI ile tasarım otomatik kaydedildi. ${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`
+            : `Matbixx AI ile tasarım oluşturuldu. ${response.creditDeducted}₺ kredi kullanıldı. Kalan bakiye: ${response.remainingBalance}₺`,
         });
 
         // Immediately refresh user balance and design history for real-time updates
@@ -128,8 +125,8 @@ export default function DesignEngine() {
       }
     },
     onError: async (error: any) => {
-      console.error('Design generation error:', error);
-      const errorMessage = error.message || 'Tasarım oluşturulurken bir hata oluştu.';
+      console.error('V3 Design generation error:', error);
+      const errorMessage = error.message || 'V3 tasarım oluşturulurken bir hata oluştu.';
 
       if (errorMessage.includes('Insufficient credit')) {
         // Refresh user balance to show current amount
@@ -154,7 +151,7 @@ export default function DesignEngine() {
         });
       } else {
         toast({
-          title: "Hata",
+          title: "Tasarım Hatası",
           description: errorMessage,
           variant: "destructive",
         });
@@ -214,7 +211,6 @@ export default function DesignEngine() {
     } else {
       const requestOptions: DesignOptions = {
         aspectRatio: designOptions.aspectRatio,
-        model: designOptions.model,
         styleType: designOptions.styleType,
         magicPrompt: designOptions.magicPrompt,
         negativePrompt: designOptions.negativePrompt,
@@ -228,8 +224,6 @@ export default function DesignEngine() {
       generateMutation.mutate({ prompt, options: requestOptions });
     }
   };
-
-
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -253,10 +247,10 @@ export default function DesignEngine() {
       // Simple and reliable download method
       const link = document.createElement('a');
       link.href = url;
-      link.download = filename || `tasarim-${Date.now()}.png`;
+      link.download = filename || `matbixx-tasarim-${Date.now()}.png`;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
-      
+
       // Add to DOM, click, and remove
       document.body.appendChild(link);
       link.click();
@@ -291,6 +285,7 @@ export default function DesignEngine() {
       setBatchPrompts(batchPrompts.filter((_, i) => i !== index));
     }
   };
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
@@ -300,12 +295,15 @@ export default function DesignEngine() {
             <Wand2 className="h-6 w-6 text-white" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Tasarım Motoru
+            Matbixx Tasarım Motoru
           </h1>
         </div>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Yapay zeka destekli profesyonel tasarım oluşturma platformu. Logo, etiket, kartvizit ve daha fazlası için.
+          Matbixx AI ile profesyonel tasarım oluşturma platformu. En gelişmiş yapay zeka ile logo, etiket, kartvizit ve daha fazlası.
         </p>
+        <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+          ✨ Matbixx AI - En Gelişmiş Model
+        </Badge>
       </div>
 
       <Tabs defaultValue="create" className="space-y-6">
@@ -356,7 +354,7 @@ export default function DesignEngine() {
 
                   {!batchMode ? (
                     <div>
-                      <Label htmlFor="prompt">Tasarım Açıklaması</Label>
+                      <Label htmlFor="prompt">V3 Tasarım Açıklaması</Label>
                       <Textarea
                         id="prompt"
                         value={prompt}
@@ -368,7 +366,7 @@ export default function DesignEngine() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <Label>Tasarım Açıklamaları (Toplu)</Label>
+                      <Label>V3 Tasarım Açıklamaları (Toplu)</Label>
                       {batchPrompts.map((prompt, index) => (
                         <div key={index} className="flex gap-2">
                           <Textarea
@@ -398,8 +396,6 @@ export default function DesignEngine() {
                       </Button>
                     </div>
                   )}
-
-
                 </CardContent>
               </Card>
 
@@ -430,7 +426,7 @@ export default function DesignEngine() {
                               <Button
                                 size="sm"
                                 variant="secondary"
-                                onClick={() => downloadImage(image.url, `tasarim-${Date.now()}-${index + 1}.png`)}
+                                onClick={() => downloadImage(image.url, `matbixx-tasarim-${Date.now()}-${index + 1}.png`)}
                                 title="Tasarımı İndir"
                               >
                                 <Download className="h-4 w-4" />
@@ -445,7 +441,7 @@ export default function DesignEngine() {
                                   <DialogHeader>
                                     <DialogTitle>Tasarım Önizleme</DialogTitle>
                                     <DialogDescription>
-                                      Tasarımınızın detaylı görünümü ve bilgileri
+                                      Matbixx AI ile oluşturulan tasarımınızın detaylı görünümü
                                     </DialogDescription>
                                   </DialogHeader>
                                   <img
@@ -454,6 +450,7 @@ export default function DesignEngine() {
                                     className="w-full h-auto rounded-lg"
                                   />
                                   <div className="space-y-2">
+                                    <p className="text-sm text-gray-600"><strong>Model:</strong> Matbixx AI</p>
                                     <p className="text-sm text-gray-600"><strong>Açıklama:</strong> {image.prompt}</p>
                                     <p className="text-sm text-gray-600"><strong>Çözünürlük:</strong> {image.resolution || 'Varsayılan'}</p>
                                     <p className="text-sm text-gray-600"><strong>Seed:</strong> {image.seed}</p>
@@ -472,6 +469,7 @@ export default function DesignEngine() {
                                   const designData = {
                                     imageUrl: image.url,
                                     prompt: image.prompt,
+                                    model: 'Matbixx AI',
                                     timestamp: Date.now()
                                   };
                                   localStorage.setItem('selectedDesign', JSON.stringify(designData));
@@ -486,6 +484,11 @@ export default function DesignEngine() {
                           <div className="absolute top-2 right-2">
                             <Badge variant={image.is_image_safe !== false ? "default" : "destructive"}>
                               {image.is_image_safe !== false ? "Güvenli" : "Dikkat"}
+                            </Badge>
+                          </div>
+                          <div className="absolute top-2 left-2">
+                            <Badge className="bg-purple-600 text-white">
+                              AI
                             </Badge>
                           </div>
                         </div>
@@ -549,44 +552,29 @@ export default function DesignEngine() {
                     </Select>
                   </div>
 
-                <div>
-                  <Label htmlFor="model">Model</Label>
-                  <Select 
-                    value={designOptions.model} 
-                    onValueChange={(value) => setDesignOptions(prev => ({ ...prev, model: value as DesignOptions['model'] }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="V_2">V2 (Latest Model)</SelectItem>
-                      <SelectItem value="V_2_TURBO">V2 Turbo (Fastest)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label>Renk Paleti (Opsiyonel)</Label>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"].map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          selectedColors.includes(color) ? 'border-gray-800' : 'border-gray-300'
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => {
-                          if (selectedColors.includes(color)) {
-                            setSelectedColors(selectedColors.filter(c => c !== color));
-                          } else if (selectedColors.length < 5) {
-                            setSelectedColors([...selectedColors, color]);
-                          }
-                        }}
-                      />
-                    ))}
+                  <div>
+                    <Label>Renk Paleti (Opsiyonel)</Label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"].map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          className={`w-8 h-8 rounded-full border-2 ${
+                            selectedColors.includes(color) ? 'border-gray-800' : 'border-gray-300'
+                          }`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => {
+                            if (selectedColors.includes(color)) {
+                              setSelectedColors(selectedColors.filter(c => c !== color));
+                            } else if (selectedColors.length < 5) {
+                              setSelectedColors([...selectedColors, color]);
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">En fazla 5 renk seçebilirsiniz</p>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">En fazla 5 renk seçebilirsiniz</p></div>
 
                   <div>
                     <Label>Negatif Açıklama (İstenmeyen)</Label>
@@ -595,6 +583,23 @@ export default function DesignEngine() {
                       onChange={(e) => setDesignOptions({...designOptions, negativePrompt: e.target.value})}
                       placeholder="Örn: bulanık, düşük kalite, metin"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="magic-prompt">Magic Prompt</Label>
+                    <Select value={designOptions.magicPrompt} onValueChange={(value) => setDesignOptions({...designOptions, magicPrompt: value as DesignOptions['magicPrompt']})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ON">Açık (Kısa prompt'ları geliştirir)</SelectItem>
+                        <SelectItem value="AUTO">Otomatik</SelectItem>
+                        <SelectItem value="OFF">Kapalı</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Magic Prompt kısa açıklamaları daha detaylı ve etkili prompt'lara dönüştürür
+                    </p>
                   </div>
 
                   <Button
@@ -621,8 +626,6 @@ export default function DesignEngine() {
           </div>
         </TabsContent>
 
-
-
         {/* History Tab */}
         <TabsContent value="history">
           {history && typeof history === 'object' && 'designs' in history && Array.isArray(history.designs) && history.designs.length > 0 ? (
@@ -636,6 +639,7 @@ export default function DesignEngine() {
                         <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
                           <Clock className="h-4 w-4" />
                           {new Date(design.createdAt).toLocaleDateString('tr-TR')}
+                          <Badge className="bg-purple-100 text-purple-800 ml-2">AI</Badge>
                         </div>
                       </div>
                       <div className="flex gap-2">

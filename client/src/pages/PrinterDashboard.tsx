@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { InkDropletsLoader, StackedPapersLoader } from "@/components/PrintingLoaders";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import Navigation from "@/components/Navigation";
@@ -38,7 +38,26 @@ import {
   Wrench,
   Target,
   Layers,
-  Bell
+  Bell,
+  Edit,
+  Trash2,
+  Search,
+  MessageSquare,
+  Star,
+  Award,
+  Factory,
+  Sparkles,
+  ArrowRight,
+  Globe,
+  Shield,
+  Truck,
+  Calculator,
+  Palette,
+  Building2,
+  Check,
+  X,
+  File,
+  FileImage
 } from "lucide-react";
 import Chat from "@/components/Chat";
 import BusinessIntelligence from "@/components/BusinessIntelligence";
