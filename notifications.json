@@ -1,14 +1,14 @@
 [
   {
-    "id": "d1c34b9d-31b2-4783-b93d-e2b43a95ce5d",
+    "id": "1bea634d-dd97-49d8-b6d1-e483028c6659",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,044 adet - ₺21146",
+    "message": "Premium Ambalaj - 19,770 adet - ₺23845",
     "data": {
-      "quoteId": "2ae9fcfb-4551-4b98-9d0e-0df156d8c165"
+      "quoteId": "e40d9975-d5bf-4bfb-aeac-09f776e0ea4e"
     },
     "isRead": false,
-    "createdAt": "2025-06-10T20:27:08.754Z"
+    "createdAt": "2025-06-11T21:20:20.596Z"
   }
 ]

@@ -854,10 +854,12 @@ export class DatabaseStorage implements IStorage {
 
   private storeNotifications(notifications: any[]) {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+      import('fs').then(fs => {
+        import('path').then(path => {
+          const filePath = path.join(process.cwd(), 'notifications.json');
+          fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+        });
+      });
     } catch (error) {
       console.error('Error storing notifications:', error);
     }
@@ -1029,7 +1031,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async bookmarkDesign(designId: string, userId: string): Promise<boolean> {
-    const designHistory = this.getStoredDesigns();
+    const designHistory = await this.getStoredDesigns();
     const design = designHistory.find(d => d.id === designId && d.userId === userId);
 
     if (design) {
@@ -1040,21 +1042,7 @@ export class DatabaseStorage implements IStorage {
     return false;
   }
 
-  async getFilesByUser(userId: string): Promise<File[]> {
-    return await db
-      .select()
-      .from(files)
-      .where(eq(files.uploadedBy, userId))
-      .orderBy(desc(files.createdAt));
-  }
 
-  async getFilesByQuote(quoteId: string): Promise<File[]> {
-    return await db
-      .select()
-      .from(files)
-      .where(eq(files.quoteId, quoteId))
-      .orderBy(desc(files.createdAt));
-  }
 }
 
 export const storage = new DatabaseStorage();
