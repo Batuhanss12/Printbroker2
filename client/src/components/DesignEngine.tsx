@@ -52,6 +52,8 @@ interface DesignOptions {
   magicPrompt?: string;
   negativePrompt?: string;
   seed?: number;
+  resolution?: string;
+  colorPalette?: { members: { color: string; weight: number }[] };
 }
 
 export default function DesignEngine() {
@@ -60,12 +62,16 @@ export default function DesignEngine() {
   const queryClient = useQueryClient();
 
   const [prompt, setPrompt] = useState("");
-  const [designOptions, setDesignOptions] = useState<DesignOptions>({
-    aspectRatio: 'ASPECT_1_1',
-    model: 'V_2',
-    styleType: 'AUTO',
-    magicPrompt: 'AUTO'
+  const [designOptions, setDesignOptions] = useState({
+    aspectRatio: "ASPECT_1_1",
+    model: "V_2",
+    styleType: "AUTO",
+    magicPrompt: "AUTO",
+    resolution: "default",
+    colorPalette: []
   });
+
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [batchMode, setBatchMode] = useState(false);
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['']);
@@ -81,10 +87,15 @@ export default function DesignEngine() {
     mutationFn: async (data: { prompt: string; options: DesignOptions }) => {
       console.log('🎨 Starting design generation with data:', data);
 
-      // Refresh user balance before generation to ensure we have latest data
-      await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+      try {
+        // Refresh user balance before generation to ensure we have latest data
+        await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
 
-      return await apiRequest('POST', '/api/design/generate', data);
+        return await apiRequest('POST', '/api/design/generate', data);
+      } catch (error) {
+        console.error('Generate mutation error:', error);
+        throw error;
+      }
     },
     onSuccess: async (response) => {
       if (response.data && response.data.length > 0) {
@@ -200,7 +211,23 @@ export default function DesignEngine() {
       const requests = validPrompts.map(prompt => ({ prompt, options: designOptions }));
       generateBatchMutation.mutate(requests);
     } else {
-      generateMutation.mutate({ prompt, options: designOptions });
+      const requestOptions = {
+        aspectRatio: designOptions.aspectRatio,
+        model: designOptions.model,
+        styleType: designOptions.styleType,
+        magicPrompt: designOptions.magicPrompt,
+        ...(designOptions.resolution && { resolution: designOptions.resolution }),
+        ...(selectedColors.length > 0 && {
+          colorPalette: {
+            members: selectedColors.map(color => ({ color, weight: 1 }))
+          }
+        })
+      };
+	  const finalOptions = {
+      ...designOptions,
+      resolution: designOptions.resolution === 'default' ? undefined : designOptions.resolution
+    };
+      generateMutation.mutate({ prompt, options: requestOptions });
     }
   };
 
@@ -215,6 +242,15 @@ export default function DesignEngine() {
   };
 
   const downloadImage = async (url: string, filename: string) => {
+    if (!url) {
+      toast({
+        title: "Hata",
+        description: "Geçersiz görsel URL'si.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Doğrudan görseli fetch et
       const response = await fetch(url, {
@@ -243,7 +279,9 @@ export default function DesignEngine() {
 
         // Cleanup
         setTimeout(() => {
-          document.body.removeChild(link);
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
           URL.revokeObjectURL(objectUrl);
         }, 100);
       } else {
@@ -260,7 +298,9 @@ export default function DesignEngine() {
 
         // Cleanup
         setTimeout(() => {
-          document.body.removeChild(link);
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
           URL.revokeObjectURL(objectUrl);
         }, 100);
       }
@@ -280,6 +320,7 @@ export default function DesignEngine() {
           description: "Tasarım yeni sekmede açıldı. Sağ tıklayıp 'Resmi Farklı Kaydet' seçebilirsiniz.",
         });
       } catch (fallbackError) {
+        console.error('Fallback error:', fallbackError);
         toast({
           title: "Hata",
           description: "Görsel indirilemedi. Lütfen tekrar deneyin.",
@@ -304,7 +345,6 @@ export default function DesignEngine() {
       setBatchPrompts(batchPrompts.filter((_, i) => i !== index));
     }
   };
-
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
@@ -428,12 +468,16 @@ export default function DesignEngine() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {generatedImages.map((image, index) => (
-                        <div key={index} className="relative group">
+                      {generatedImages.filter(image => image && image.url).map((image, index) => (
+                        <div key={`${image.url}-${index}`} className="relative group">
                           <img
                             src={image.url}
                             alt={`Generated design ${index + 1}`}
                             className="w-full h-64 object-cover rounded-lg border"
+                            onError={(e) => {
+                              console.error('Image failed to load:', image.url);
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <div className="flex gap-2">
@@ -454,6 +498,9 @@ export default function DesignEngine() {
                                 <DialogContent className="max-w-4xl">
                                   <DialogHeader>
                                     <DialogTitle>Tasarım Önizleme</DialogTitle>
+                                    <DialogDescription>
+                                      Tasarımınızın detaylı görünümü ve bilgileri
+                                    </DialogDescription>
                                   </DialogHeader>
                                   <img
                                     src={image.url}
@@ -462,7 +509,7 @@ export default function DesignEngine() {
                                   />
                                   <div className="space-y-2">
                                     <p className="text-sm text-gray-600"><strong>Açıklama:</strong> {image.prompt}</p>
-                                    <p className="text-sm text-gray-600"><strong>Çözünürlük:</strong> {image.resolution}</p>
+                                    <p className="text-sm text-gray-600"><strong>Çözünürlük:</strong> {image.resolution || 'Varsayılan'}</p>
                                     <p className="text-sm text-gray-600"><strong>Seed:</strong> {image.seed}</p>
                                   </div>
                                 </DialogContent>
@@ -491,8 +538,8 @@ export default function DesignEngine() {
                             </div>
                           </div>
                           <div className="absolute top-2 right-2">
-                            <Badge variant={image.is_image_safe ? "default" : "destructive"}>
-                              {image.is_image_safe ? "Güvenli" : "Dikkat"}
+                            <Badge variant={image.is_image_safe !== false ? "default" : "destructive"}>
+                              {image.is_image_safe !== false ? "Güvenli" : "Dikkat"}
                             </Badge>
                           </div>
                         </div>
@@ -526,26 +573,12 @@ export default function DesignEngine() {
                         <SelectItem value="ASPECT_1_1">Kare (1:1)</SelectItem>
                         <SelectItem value="ASPECT_16_9">Geniş (16:9)</SelectItem>
                         <SelectItem value="ASPECT_9_16">Dikey (9:16)</SelectItem>
-                        <SelectItem value="ASPECT_3_2">Yatay (3:2)</SelectItem>
-                        <SelectItem value="ASPECT_2_3">Dikey (2:3)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label>Model</Label>
-                    <Select
-                      value={designOptions.model}
-                      onValueChange={(value) => setDesignOptions({...designOptions, model: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="V_2">V2 (En İyi Kalite)</SelectItem>
-                        <SelectItem value="V_2_TURBO">V2 Turbo (Hızlı)</SelectItem>
-                        <SelectItem value="V_1">V1 (Klasik)</SelectItem>
-                        <SelectItem value="V_1_TURBO">V1 Turbo</SelectItem>
+                        <SelectItem value="ASPECT_16_10">Bilgisayar (16:10)</SelectItem>
+                        <SelectItem value="ASPECT_10_16">Telefon (10:16)</SelectItem>
+                        <SelectItem value="ASPECT_3_2">Fotoğraf (3:2)</SelectItem>
+                        <SelectItem value="ASPECT_2_3">Dikey Fotoğraf (2:3)</SelectItem>
+                        <SelectItem value="ASPECT_4_3">Klasik (4:3)</SelectItem>
+                        <SelectItem value="ASPECT_3_4">Dikey Klasik (3:4)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -569,6 +602,69 @@ export default function DesignEngine() {
                       </SelectContent>
                     </Select>
                   </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="model">Model</Label>
+                    <Select 
+                      value={designOptions.model} 
+                      onValueChange={(value) => setDesignOptions(prev => ({ ...prev, model: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="V_2">V2 (Recommended)</SelectItem>
+                        <SelectItem value="V_2_TURBO">V2 Turbo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="resolution">Çözünürlük (Opsiyonel)</Label>
+                    <Select 
+                      value={designOptions.resolution} 
+                      onValueChange={(value) => setDesignOptions(prev => ({ ...prev, resolution: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Varsayılan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">Varsayılan</SelectItem>
+                        <SelectItem value="512x512">512x512</SelectItem>
+                        <SelectItem value="768x768">768x768</SelectItem>
+                        <SelectItem value="1024x1024">1024x1024 (HD)</SelectItem>
+                        <SelectItem value="1360x768">1360x768 (Geniş)</SelectItem>
+                        <SelectItem value="768x1360">768x1360 (Dikey)</SelectItem>
+                        <SelectItem value="1536x640">1536x640 (Ultra Geniş)</SelectItem>
+                        <SelectItem value="640x1536">640x1536 (Ultra Dikey)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Renk Paleti (Opsiyonel)</Label>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"].map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`w-8 h-8 rounded-full border-2 ${
+                          selectedColors.includes(color) ? 'border-gray-800' : 'border-gray-300'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => {
+                          if (selectedColors.includes(color)) {
+                            setSelectedColors(selectedColors.filter(c => c !== color));
+                          } else if (selectedColors.length < 5) {
+                            setSelectedColors([...selectedColors, color]);
+                          }
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">En fazla 5 renk seçebilirsiniz</p></div>
 
                   <div>
                     <Label>Negatif Açıklama (İstenmeyen)</Label>
