@@ -642,7 +642,7 @@ export default function CustomerDashboard() {
 
                                       // Check if design data itself is Ideogram format
                                       if (designData.data && Array.isArray(designData.data) && designData.data[0]?.url) {
-                                        return designData.data[0].url;
+                                          return designData.data[0].url;
                                       }
 
                                       return null;
