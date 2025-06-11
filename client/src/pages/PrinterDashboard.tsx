@@ -8,7 +8,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import Navigation from "@/components/Navigation";
 import StatsCard from "@/components/StatsCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,7 +39,9 @@ import {
   Building2,
   Edit,
   Trash2,
-  Shield
+  Shield,
+  Upload,
+  Award
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -58,6 +60,15 @@ export default function PrinterDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  // Mock data for statistics
+  const mockStats = {
+    totalRevenue: 54200,
+    activeQuotes: 32,
+    completedJobs: 156,
+    rating: 4.8,
+    totalRatings: 245,
+  };
 
   // Fetch notifications
   const { data: notificationsData } = useQuery({
@@ -139,7 +150,7 @@ export default function PrinterDashboard() {
   const receivedQuotes = allQuotes.filter((quote: any) => quote.printerId === user.id);
   const pendingQuotes = receivedQuotes.filter((quote: any) => quote.status === 'pending');
   const approvedQuotes = receivedQuotes.filter((quote: any) => quote.status === 'approved');
-  
+
   // Filter orders
   const activeOrders = allOrders.filter((order: any) => 
     order.status === 'in_progress' && order.printerId === user.id
@@ -151,14 +162,14 @@ export default function PrinterDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Matbaa Paneli</h1>
             <p className="text-gray-600">Hoş geldiniz, {user.firstName} {user.lastName}</p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <DropdownMenu open={isNotificationOpen} onOpenChange={setIsNotificationOpen}>
               <DropdownMenuTrigger asChild>
@@ -200,7 +211,7 @@ export default function PrinterDashboard() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <Button variant="outline" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Ayarlar
@@ -211,6 +222,7 @@ export default function PrinterDashboard() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
+            <TabsTrigger value="verification">Firma Doğrulama</TabsTrigger>
             <TabsTrigger value="quotes">Teklifler</TabsTrigger>
             <TabsTrigger value="orders">Siparişler</TabsTrigger>
             <TabsTrigger value="analytics">İstatistikler</TabsTrigger>
@@ -325,6 +337,143 @@ export default function PrinterDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="verification">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Shield className="h-5 w-5 mr-2" />
+                  Firma Doğrulama ve Belgelendirme
+                </CardTitle>
+                <CardDescription>
+                  Firma belgelerinizi yükleyerek doğrulama sürecini tamamlayın
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Doğrulama Durumu */}
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
+                      <span className="text-yellow-800 font-medium">Doğrulama Bekleniyor</span>
+                    </div>
+                    <Badge variant="outline" className="text-yellow-600 border-yellow-300">
+                      Eksik Belgeler
+                    </Badge>
+                  </div>
+                  <p className="text-yellow-700 text-sm mt-2">
+                    Firma belgelerinizi yükleyerek doğrulama sürecini tamamlayın. Bu işlem 1-2 iş günü sürmektedir.
+                  </p>
+                </div>
+
+                {/* Belge Yükleme Alanları */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Vergi Levhası */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-6">
+                    <div className="text-center">
+                      <FileText className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                      <h3 className="font-medium text-gray-900 mb-2">Vergi Levhası</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Güncel vergi levhanızın yüksek çözünürlüklü fotoğrafı
+                      </p>
+                      <Button variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* İmza Sirküleri */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-6">
+                    <div className="text-center">
+                      <FileText className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                      <h3 className="font-medium text-gray-900 mb-2">İmza Sirküleri</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Yetkili imza sahiplerinin güncel imza sirküleri
+                      </p>
+                      <Button variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Faaliyet Belgesi */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-6">
+                    <div className="text-center">
+                      <FileText className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                      <h3 className="font-medium text-gray-900 mb-2">Faaliyet Belgesi</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Sanayi ve Ticaret Bakanlığı faaliyet belgesi
+                      </p>
+                      <Button variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* ISO Sertifikaları */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-6">
+                    <div className="text-center">
+                      <Award className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                      <h3 className="font-medium text-gray-900 mb-2">ISO Sertifikaları</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Kalite yönetim sistemi sertifikaları (İsteğe bağlı)
+                      </p>
+                      <Button variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Dosya Yükle
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Yüklenen Belgeler */}
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-4">Yüklenen Belgeler</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                        <div>
+                          <p className="font-medium text-green-800">vergi_levhasi.pdf</p>
+                          <p className="text-sm text-green-600">Onaylandı - 5 gün önce</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-center">
+                        <Clock className="h-5 w-5 text-yellow-600 mr-3" />
+                        <div>
+                          <p className="font-medium text-yellow-800">imza_sirkuleri.pdf</p>
+                          <p className="text-sm text-yellow-600">İnceleme aşamasında - 2 gün önce</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Doğrulama Süreci Bilgilendirme */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">Doğrulama Süreci</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Belgeleriniz yüklendikten sonra 1-2 iş günü içinde incelenir</li>
+                    <li>• Eksik veya hatalı belgeler için size bildirim gönderilir</li>
+                    <li>• Doğrulama tamamlandıktan sonra tam erişim sağlanır</li>
+                    <li>• Doğrulanmış firmalar özel rozetlerle işaretlenir</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="quotes">
