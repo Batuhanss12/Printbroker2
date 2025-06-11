@@ -820,10 +820,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private getStoredNotifications(): any[] {
+  private async getStoredNotifications(): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const filePath = path.join(process.cwd(), 'notifications.json');
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -836,8 +836,8 @@ export class DatabaseStorage implements IStorage {
 
   private storeNotifications(notifications: any[]) {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const filePath = path.join(process.cwd(), 'notifications.json');
       fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
     } catch (error) {
@@ -960,10 +960,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private getStoredVerificationDocuments(): any[] {
+  private async getStoredVerificationDocuments(): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const filePath = path.join(process.cwd(), 'verification-documents.json');
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -974,10 +974,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private storeVerificationDocuments(documents: any[]) {
+  private async storeVerificationDocuments(documents: any[]): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const filePath = path.join(process.cwd(), 'verification-documents.json');
       fs.writeFileSync(filePath, JSON.stringify(documents, null, 2));
     } catch (error) {

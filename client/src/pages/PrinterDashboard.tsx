@@ -1,7 +1,4 @@
-The code has been modified to include file upload functionality for the printer verification process, integrating necessary components and functions for handling document uploads.
-```
 
-```replit_final_file
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -414,17 +411,17 @@ export default function PrinterDashboard() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
+                        onClick={() => document.getElementById('tax-certificate-upload')?.click()}
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
                       <input
-                        id="trade-registry-upload"
+                        id="tax-certificate-upload"
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png"
                         style={{ display: 'none' }}
-                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
+                        onChange={(e) => handleDocumentUpload(e, 'tax_certificate')}
                       />
                     </div>
                   </div>
@@ -440,17 +437,17 @@ export default function PrinterDashboard() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
+                        onClick={() => document.getElementById('signature-circular-upload')?.click()}
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
                       <input
-                        id="trade-registry-upload"
+                        id="signature-circular-upload"
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png"
                         style={{ display: 'none' }}
-                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
+                        onChange={(e) => handleDocumentUpload(e, 'signature_circular')}
                       />
                     </div>
                   </div>
@@ -463,10 +460,21 @@ export default function PrinterDashboard() {
                       <p className="text-sm text-gray-500 mb-4">
                         Sanayi ve Ticaret Bakanlığı faaliyet belgesi
                       </p>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('activity-certificate-upload')?.click()}
+                      >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
+                      <input
+                        id="activity-certificate-upload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleDocumentUpload(e, 'activity_certificate')}
+                      />
                     </div>
                   </div>
 
@@ -478,10 +486,21 @@ export default function PrinterDashboard() {
                       <p className="text-sm text-gray-500 mb-4">
                         Kalite yönetim sistemi sertifikaları (İsteğe bağlı)
                       </p>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('iso-certificate-upload')?.click()}
+                      >
                         <Upload className="h-4 w-4 mr-2" />
                         Dosya Yükle
                       </Button>
+                      <input
+                        id="iso-certificate-upload"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleDocumentUpload(e, 'iso_certificate')}
+                      />
                     </div>
                   </div>
                 </div>
@@ -578,25 +597,3 @@ export default function PrinterDashboard() {
     </div>
   );
 }
-```<Button variant="outline" size="sm">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Dosya Yükle
-                      </Button>
-```
-with
-```text
-<Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => document.getElementById('trade-registry-upload')?.click()}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Dosya Yükle
-                      </Button>
-                      <input
-                        id="trade-registry-upload"
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        style={{ display: 'none' }}
-                        onChange={(e) => handleDocumentUpload(e, 'trade_registry')}
-                      />
