@@ -504,11 +504,8 @@ export default function PrinterDashboard() {
   if (isLoading) {
     console.log('Showing loading state');
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <InkDropletsLoader size={80} color="#8B5CF6" />
-          <p className="mt-4 text-gray-600">Matbaa paneli yükleniyor...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -607,7 +604,7 @@ export default function PrinterDashboard() {
 
   const handleSubmitQuote = (event: React.FormEvent) => {
     event.preventDefault();
-
+    
     if (!quoteResponse.price || !quoteResponse.estimatedDays) {
       toast({
         title: "Eksik Bilgi",
@@ -802,9 +799,11 @@ export default function PrinterDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 md:p-6">
-                {quotes
-// Removing Git conflict markers and preserving functionality.
-&& quotes.length > 0 ? (
+                {quotesLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : quotes && quotes.length > 0 ? (
                   <div className="space-y-3 md:space-y-4">
                     {quotes.map((quote: any) => (
                       <div key={quote.id} className="border border-gray-200 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-200 bg-gradient-to-r from-white to-gray-50">
@@ -1190,8 +1189,9 @@ export default function PrinterDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+        </Tabs>
 
-
+        
 
         {/* Chat Modal */}
         <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
@@ -1279,9 +1279,9 @@ export default function PrinterDashboard() {
                                       'printType': 'Baskı Türü',
                                       'notes': 'Özel Notlar'
                                     };
-
+                                    
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-
+                                    
                                     return (
                                       <div key={key} className="bg-white p-3 rounded border">
                                         <span className="font-medium text-blue-700 block">
@@ -1295,7 +1295,7 @@ export default function PrinterDashboard() {
                                   }
                                   return null;
                                 })}
-
+                                
                                 {/* Adet ve boyut bilgileri özel gösterim */}
                                 {(selectedQuote.specifications?.quantity || selectedQuote.quantity) && (
                                   <div className="bg-green-50 p-3 rounded border border-green-200">
@@ -1305,7 +1305,7 @@ export default function PrinterDashboard() {
                                     </span>
                                   </div>
                                 )}
-
+                                
                                 {/* Boyut bilgileri özel gösterim */}
                                 {(selectedQuote.specifications?.width && selectedQuote.specifications?.height) && (
                                   <div className="bg-purple-50 p-3 rounded border border-purple-200">
@@ -1315,7 +1315,7 @@ export default function PrinterDashboard() {
                                     </span>
                                   </div>
                                 )}
-
+                                
                                 {/* Özel işlemler */}
                                 {(selectedQuote.specifications?.gilding || selectedQuote.specifications?.embossing) && (
                                   <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
