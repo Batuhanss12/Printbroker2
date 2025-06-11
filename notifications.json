@@ -1,14 +1,14 @@
 [
   {
-    "id": "6c837ac5-aeed-4696-8f3f-3abe08464200",
+    "id": "d1c34b9d-31b2-4783-b93d-e2b43a95ce5d",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Endüstriyel Etiket - 74,931 adet - ₺6572",
+    "message": "Güvenlik Etiket - 39,044 adet - ₺21146",
     "data": {
-      "quoteId": "ea7f4614-d356-4190-8d91-02d9bf016e1f"
+      "quoteId": "2ae9fcfb-4551-4b98-9d0e-0df156d8c165"
     },
     "isRead": false,
-    "createdAt": "2025-06-11T17:18:16.312Z"
+    "createdAt": "2025-06-10T20:27:08.754Z"
   }
 ]

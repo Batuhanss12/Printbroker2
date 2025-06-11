@@ -552,10 +552,10 @@ export class DatabaseStorage implements IStorage {
     ];
   }
 
-  private getStoredDesigns(userId: string): any[] {
+  private async getStoredDesigns(userId: string): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       if (fs.existsSync(designsPath)) {
@@ -577,10 +577,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private storeDesigns(designs: any[]): void {
+  private async storeDesigns(designs: any[]): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       fs.writeFileSync(designsPath, JSON.stringify(designs, null, 2));
@@ -799,7 +799,7 @@ export class DatabaseStorage implements IStorage {
       ...notification
     };
     notifications.push(newNotification);
-    await this.storeNotifications(notifications);
+    this.storeNotifications(notifications);
     return newNotification;
   }
 
@@ -834,154 +834,14 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private async storeNotifications(notifications: any[]) {
+  private storeNotifications(notifications: any[]) {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
+      const fs = require('fs');
+      const path = require('path');
       const filePath = path.join(process.cwd(), 'notifications.json');
       fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
     } catch (error) {
       console.error('Error storing notifications:', error);
-    }
-  }
-
-  // Verification Documents Management
-  async createVerificationDocument(document: any): Promise<any> {
-    try {
-      const documents = this.getStoredVerificationDocuments();
-      const newDocument = {
-        id: (await import('crypto')).randomUUID(),
-        ...document,
-        uploadDate: new Date(),
-        status: 'pending'
-      };
-      documents.push(newDocument);
-      this.storeVerificationDocuments(documents);
-      
-      // Create notification for admin
-      await this.createNotification({
-        userId: 'admin',
-        type: 'verification_document',
-        title: 'Yeni Doğrulama Belgesi',
-        message: `${document.documentType} belgesi yüklendi - ${document.fileName}`,
-        data: { documentId: newDocument.id, userId: document.userId },
-        isRead: false,
-        createdAt: new Date()
-      });
-      
-      return newDocument;
-    } catch (error) {
-      console.error('Error creating verification document:', error);
-      throw error;
-    }
-  }
-
-  async getVerificationDocumentsByUser(userId: string): Promise<any[]> {
-    const documents = this.getStoredVerificationDocuments();
-    return documents.filter(doc => doc.userId === userId);
-  }
-
-  async getPendingVerificationDocuments(): Promise<any[]> {
-    const documents = this.getStoredVerificationDocuments();
-    return documents.filter(doc => doc.status === 'pending');
-  }
-
-  async reviewVerificationDocument(documentId: string, reviewData: {
-    status: 'approved' | 'rejected';
-    reviewNotes?: string;
-    reviewedBy: string;
-  }): Promise<void> {
-    try {
-      const documents = this.getStoredVerificationDocuments();
-      const documentIndex = documents.findIndex(doc => doc.id === documentId);
-      
-      if (documentIndex !== -1) {
-        documents[documentIndex] = {
-          ...documents[documentIndex],
-          ...reviewData,
-          reviewDate: new Date()
-        };
-        
-        this.storeVerificationDocuments(documents);
-        
-        // Update user verification status if all documents approved
-        const userId = documents[documentIndex].userId;
-        await this.updateUserVerificationStatus(userId);
-      }
-    } catch (error) {
-      console.error('Error reviewing verification document:', error);
-      throw error;
-    }
-  }
-
-  async updateUserVerificationStatus(userId: string): Promise<void> {
-    try {
-      const documents = await this.getVerificationDocumentsByUser(userId);
-      
-      if (documents.length === 0) return;
-      
-      const hasRejected = documents.some(doc => doc.status === 'rejected');
-      const allApproved = documents.every(doc => doc.status === 'approved');
-      
-      let verificationStatus: string;
-      if (hasRejected) {
-        verificationStatus = 'rejected';
-      } else if (allApproved) {
-        verificationStatus = 'approved';
-      } else {
-        verificationStatus = 'under_review';
-      }
-      
-      // Update user in database
-      const user = await this.getUser(userId);
-      if (user) {
-        await this.upsertUser({
-          ...user,
-          verificationStatus: verificationStatus as any,
-          verificationDate: new Date()
-        });
-        
-        // Notify user
-        await this.createNotification({
-          userId: userId,
-          type: 'verification_status',
-          title: 'Doğrulama Durumu Güncellendi',
-          message: verificationStatus === 'approved' ? 'Firma doğrulamanız onaylandı!' : 
-                   verificationStatus === 'rejected' ? 'Firma doğrulamanız reddedildi.' :
-                   'Firma doğrulamanız inceleme aşamasında.',
-          data: { verificationStatus },
-          isRead: false,
-          createdAt: new Date()
-        });
-      }
-    } catch (error) {
-      console.error('Error updating user verification status:', error);
-      throw error;
-    }
-  }
-
-  private getStoredVerificationDocuments(): any[] {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'verification-documents.json');
-      if (fs.existsSync(filePath)) {
-        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      }
-      return [];
-    } catch {
-      return [];
-    }
-  }
-
-  private storeVerificationDocuments(documents: any[]): void {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'verification-documents.json');
-      fs.writeFileSync(filePath, JSON.stringify(documents, null, 2));
-    } catch (error) {
-      console.error('Error storing verification documents:', error);
     }
   }
 
@@ -995,7 +855,7 @@ export class DatabaseStorage implements IStorage {
   }): Promise<any> {
     try {
       // Get all existing designs from file
-      let allDesigns = this.getAllStoredDesigns();
+      let allDesigns = await this.getAllStoredDesigns();
 
       // Enhanced design object with proper URL extraction for Ideogram V3
       const extractImageUrl = (result: any) => {
@@ -1061,7 +921,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Store all designs back to file
-      this.storeDesigns(allDesigns);
+      await this.storeDesigns(allDesigns);
 
       console.log('✅ Design saved successfully. Total designs:', allDesigns.length);
       return newDesign;
@@ -1078,7 +938,7 @@ export class DatabaseStorage implements IStorage {
     totalPages: number;
   }> {
     try {
-      const userDesigns = this.getStoredDesigns(userId);
+      const userDesigns = await this.getStoredDesigns(userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
@@ -1103,10 +963,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private getAllStoredDesigns(): any[] {
+  private async getAllStoredDesigns(): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       const designsPath = path.join(process.cwd(), 'design-history.json');
 
       if (fs.existsSync(designsPath)) {
@@ -1129,18 +989,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getDesignById(designId: string, userId: string): Promise<any | null> {
-    const designHistory = this.getStoredDesigns();
+    const designHistory = await this.getStoredDesigns(userId);
     return designHistory.find(design => design.id === designId && design.userId === userId) || null;
   }
 
   async deleteDesign(designId: string, userId: string): Promise<boolean> {
     try {
-      const allDesigns = this.getAllStoredDesigns();
+      const allDesigns = await this.getAllStoredDesigns();
       const designIndex = allDesigns.findIndex(design => design.id === designId && design.userId === userId);
 
       if (designIndex !== -1) {
         allDesigns.splice(designIndex, 1);
-        this.storeDesigns(allDesigns);
+        await this.storeDesigns(allDesigns);
         return true;
       }
       return false;
