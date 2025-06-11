@@ -854,10 +854,12 @@ export class DatabaseStorage implements IStorage {
 
   private storeNotifications(notifications: any[]) {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+      import('fs').then(fs => {
+        import('path').then(path => {
+          const filePath = path.join(process.cwd(), 'notifications.json');
+          fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+        });
+      });
     } catch (error) {
       console.error('Error storing notifications:', error);
     }
@@ -878,35 +880,35 @@ export class DatabaseStorage implements IStorage {
       // Enhanced design object with proper URL extraction for Ideogram V3
       const extractImageUrl = (result: any) => {
         if (!result) return null;
-        
+
         // Direct URL
         if (typeof result === 'string' && result.startsWith('http')) {
           return result;
         }
-        
+
         // Check url property
         if (result.url) return result.url;
-        
+
         // Ideogram V3 response format: data array
         if (result.data && Array.isArray(result.data) && result.data[0]?.url) {
           return result.data[0].url;
         }
-        
+
         // Ideogram V3 numbered format (0, 1, 2...)
         if (result['0'] && result['0'].url) {
           return result['0'].url;
         }
-        
+
         // Legacy format support
         if (Array.isArray(result) && result[0]?.url) {
           return result[0].url;
         }
-        
+
         return null;
       };
 
       const imageUrl = extractImageUrl(data.result);
-      
+
       const newDesign = {
         id: (await import('crypto')).randomUUID(),
         userId: data.userId,
@@ -1029,7 +1031,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async bookmarkDesign(designId: string, userId: string): Promise<boolean> {
-    const designHistory = this.getStoredDesigns();
+    const designHistory = await this.getStoredDesigns();
     const design = designHistory.find(d => d.id === designId && d.userId === userId);
 
     if (design) {

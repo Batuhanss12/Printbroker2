@@ -474,58 +474,48 @@ export default function QuoteForm() {
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Temel Özellikler</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Etiket Boyutu *</Label>
-            <Select onValueChange={(value) => updateFormData('size', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Boyut seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10x15">10 x 15 mm</SelectItem>
-                <SelectItem value="15x20">15 x 20 mm</SelectItem>
-                <SelectItem value="20x30">20 x 30 mm</SelectItem>
-                <SelectItem value="30x40">30 x 40 mm</SelectItem>
-                <SelectItem value="40x60">40 x 60 mm</SelectItem>
-                <SelectItem value="50x70">50 x 70 mm</SelectItem>
-                <SelectItem value="70x100">70 x 100 mm</SelectItem>
-                <SelectItem value="custom">Özel Boyut</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="text-xs text-gray-500">Genişlik (mm)</Label>
+            <Input 
+              placeholder="Örn: 45" 
+              onChange={(e) => updateFormData('customWidth', e.target.value)}
+              className="h-12"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs text-gray-500">Yükseklik (mm)</Label>
+            <Input 
+              placeholder="Örn: 65" 
+              onChange={(e) => updateFormData('customHeight', e.target.value)}
+              className="h-12"
+            />
           </div>
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">Miktar (Adet) *</Label>
-            <Select onValueChange={(value) => updateFormData('quantity', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Miktar seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="100">100 Adet</SelectItem>
-                <SelectItem value="250">250 Adet</SelectItem>
-                <SelectItem value="500">500 Adet</SelectItem>
-                <SelectItem value="1000">1.000 Adet</SelectItem>
-                <SelectItem value="2500">2.500 Adet</SelectItem>
-                <SelectItem value="5000">5.000 Adet</SelectItem>
-                <SelectItem value="10000">10.000 Adet</SelectItem>
-                <SelectItem value="custom">Özel Miktar</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              type="number"
+              min="100"
+              placeholder="Minimum 100 adet"
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                updateFormData('quantity', e.target.value);
+                
+                if (value > 0 && value < 100) {
+                  toast({
+                    title: "Uyarı",
+                    description: "Minimum sipariş miktarı 100 adettir.",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className="h-12"
+            />
+            {formData.quantity && parseInt(formData.quantity) < 100 && parseInt(formData.quantity) > 0 && (
+              <p className="text-sm text-red-500">Minimum sipariş miktarı 100 adettir.</p>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Renk Seçenekleri *</Label>
-            <Select onValueChange={(value) => updateFormData('color', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Renk seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="4-0">4+0 (Tek Yüz Renkli)</SelectItem>
-                <SelectItem value="4-4">4+4 (Çift Yüz Renkli)</SelectItem>
-                <SelectItem value="1-0">1+0 (Tek Yüz Siyah)</SelectItem>
-                <SelectItem value="1-1">1+1 (Çift Yüz Siyah)</SelectItem>
-                <SelectItem value="pantone">Pantone Renk</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          
         </div>
       </div>
 
@@ -600,41 +590,9 @@ export default function QuoteForm() {
         </div>
       </div>
 
-      {/* Özel Boyut Girişi */}
-      {formData.size === 'custom' && (
-        <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
-          <h4 className="font-semibold mb-4">Özel Boyut Bilgileri</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Genişlik (mm)</Label>
-              <Input 
-                placeholder="Örn: 45" 
-                onChange={(e) => updateFormData('customWidth', e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Yükseklik (mm)</Label>
-              <Input 
-                placeholder="Örn: 65" 
-                onChange={(e) => updateFormData('customHeight', e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      
 
-      {/* Özel Miktar Girişi */}
-      {formData.quantity === 'custom' && (
-        <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="space-y-2">
-            <Label>Özel Miktar</Label>
-            <Input 
-              placeholder="Adet sayısını girin" 
-              onChange={(e) => updateFormData('customQuantity', e.target.value)}
-            />
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 
@@ -643,58 +601,56 @@ export default function QuoteForm() {
       {/* Temel Özellikler */}
       <div>
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Etiket Özellikleri</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Etiket Türü *</Label>
-            <Select onValueChange={(value) => updateFormData('labelType', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Tür seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="thermal-direct">Direkt Termal</SelectItem>
-                <SelectItem value="thermal-transfer">Termal Transfer</SelectItem>
-                <SelectItem value="adhesive-permanent">Kalıcı Yapışkanlı</SelectItem>
-                <SelectItem value="adhesive-removable">Çıkarılabilir Yapışkanlı</SelectItem>
-                <SelectItem value="security">Güvenlik Etiketi</SelectItem>
-                <SelectItem value="food-grade">Gıda Uyumlu</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">Etiket Boyutu *</Label>
-            <Select onValueChange={(value) => updateFormData('rollSize', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Boyut seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="30x20">30 x 20 mm</SelectItem>
-                <SelectItem value="40x30">40 x 30 mm</SelectItem>
-                <SelectItem value="50x30">50 x 30 mm</SelectItem>
-                <SelectItem value="60x40">60 x 40 mm</SelectItem>
-                <SelectItem value="80x50">80 x 50 mm</SelectItem>
-                <SelectItem value="100x60">100 x 60 mm</SelectItem>
-                <SelectItem value="custom">Özel Boyut</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-gray-500">Genişlik (mm)</Label>
+                <Input 
+                  placeholder="Örn: 50" 
+                  onChange={(e) => updateFormData('rollWidth', e.target.value)}
+                  className="h-12"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">Yükseklik (mm)</Label>
+                <Input 
+                  placeholder="Örn: 30" 
+                  onChange={(e) => updateFormData('rollHeight', e.target.value)}
+                  className="h-12"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">Toplam Miktar *</Label>
-            <Select onValueChange={(value) => updateFormData('totalQuantity', value)}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Miktar seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1000">1.000 Adet</SelectItem>
-                <SelectItem value="2500">2.500 Adet</SelectItem>
-                <SelectItem value="5000">5.000 Adet</SelectItem>
-                <SelectItem value="10000">10.000 Adet</SelectItem>
-                <SelectItem value="25000">25.000 Adet</SelectItem>
-                <SelectItem value="50000">50.000 Adet</SelectItem>
-                <SelectItem value="custom">Özel Miktar</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="h-[20px]"></div>
+            <Input
+              type="text"
+              placeholder="Minimum 5.000 adet"
+              onChange={(e) => {
+                // Sadece sayı girişine izin ver
+                const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                e.target.value = numericValue;
+                
+                const value = parseInt(numericValue) || 0;
+                updateFormData('totalQuantity', numericValue);
+                
+                if (value > 0 && value < 5000) {
+                  toast({
+                    title: "Uyarı",
+                    description: "Minimum sipariş miktarı 5.000 adettir.",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className="h-12 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+            />
+            {formData.totalQuantity && parseInt(formData.totalQuantity) < 5000 && parseInt(formData.totalQuantity) > 0 && (
+              <p className="text-sm text-red-500">Minimum sipariş miktarı 5.000 adettir.</p>
+            )}
           </div>
         </div>
       </div>
