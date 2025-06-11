@@ -799,7 +799,7 @@ export class DatabaseStorage implements IStorage {
       ...notification
     };
     notifications.push(newNotification);
-    this.storeNotifications(notifications);
+    await this.storeNotifications(notifications);
     return newNotification;
   }
 
@@ -834,7 +834,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  private storeNotifications(notifications: any[]) {
+  private async storeNotifications(notifications: any[]) {
     try {
       const fs = await import('fs');
       const path = await import('path');
