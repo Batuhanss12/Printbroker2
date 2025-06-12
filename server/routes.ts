@@ -4238,9 +4238,20 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
 
   const httpServer = createServer(app);
 
-  // WebSocket server for real-time chat
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  // WebSocket server for real-time chat - Optimized
+  const wss = new WebSocketServer({ 
+    server: httpServer, 
+    path: '/ws',
+    perMessageDeflate: true, // Compression
+    maxPayload: 16 * 1024 * 1024 // 16MB max
+  });
   const clients = new Map<string, Set<WebSocket>>();
+  const connectionCount = { current: 0 };
+
+  // Connection monitoring
+  setInterval(() => {
+    console.log(`Active WebSocket connections: ${connectionCount.current}`);
+  }, 60000); // Every minute
 
   // Broadcast function for WebSocket
   function broadcastToRoom(roomId: string, message: any) {

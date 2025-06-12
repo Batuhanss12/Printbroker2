@@ -2,10 +2,10 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
 
-// Genel API rate limiter
+// Genel API rate limiter - Production optimized
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100, // IP başına maksimum 100 istek
+  max: process.env.NODE_ENV === 'production' ? 500 : 100, // Production'da daha yüksek limit
   message: {
     error: 'Çok fazla istek gönderildi. 15 dakika sonra tekrar deneyin.',
     code: 'RATE_LIMIT_EXCEEDED'
