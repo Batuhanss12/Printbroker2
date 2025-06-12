@@ -24,6 +24,7 @@ import {
   Download,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   Target,
   Award,
   Zap,
@@ -39,7 +40,15 @@ import {
   BarChart3,
   MessageSquare,
   Phone,
-  Mail
+  Mail,
+  Shirt,
+  Box,
+  Warehouse,
+  Tags,
+  Mountain,
+  TreePine,
+  Car,
+  Monitor
 } from "lucide-react";
 
 // Professional Quote Dialog Component
@@ -613,6 +622,17 @@ export default function ProductCategoriesNew() {
       {/* SEO Optimized Header */}
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <Button 
+              variant="outline" 
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+              onClick={() => window.location.href = '/'}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Ana Sayfaya Dön
+            </Button>
+          </div>
           <div className="text-center">
             <div className="inline-flex items-center px-4 py-2 bg-blue-50 rounded-full text-blue-800 text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4 mr-2" />
@@ -704,20 +724,70 @@ export default function ProductCategoriesNew() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {sortedCategories.map((category) => (
+            {sortedCategories.map((category) => {
+              // Her kategoriye özel icon ve renk
+              const getCategoryIcon = (cat: string) => {
+                switch(cat) {
+                  case 'corporate': return Building2;
+                  case 'industrial': return Factory;
+                  case 'packaging': return Box;
+                  case 'outdoor': return Mountain;
+                  case 'textile': return Shirt;
+                  case 'label': return Tags;
+                  case 'automotive': return Car;
+                  case 'digital': return Monitor;
+                  case 'promotional': return Sparkles;
+                  default: return Package;
+                }
+              };
+
+              const getCategoryGradient = (cat: string) => {
+                switch(cat) {
+                  case 'corporate': return 'from-blue-400 to-indigo-600';
+                  case 'industrial': return 'from-gray-400 to-slate-600';
+                  case 'packaging': return 'from-amber-400 to-orange-600';
+                  case 'outdoor': return 'from-green-400 to-emerald-600';
+                  case 'textile': return 'from-purple-400 to-pink-600';
+                  case 'label': return 'from-yellow-400 to-amber-600';
+                  case 'automotive': return 'from-red-400 to-rose-600';
+                  case 'digital': return 'from-cyan-400 to-blue-600';
+                  case 'promotional': return 'from-violet-400 to-purple-600';
+                  default: return 'from-blue-400 to-indigo-600';
+                }
+              };
+
+              const IconComponent = getCategoryIcon(category.category);
+
+              return (
               <Card key={category.id} className="group hover:shadow-xl transition-all duration-500 border-0 shadow-lg overflow-hidden">
                 <div className="relative">
-                  <div className={`w-full h-64 bg-gradient-to-r ${categoryColors[category.category as keyof typeof categoryColors]} flex items-center justify-center relative overflow-hidden`}>
-                    <Package className="w-32 h-32 text-white/20 absolute" />
-                    <Sparkles className="w-8 h-8 text-white absolute top-4 right-4" />
+                  <div className={`w-full h-64 bg-gradient-to-r ${getCategoryGradient(category.category)} flex items-center justify-center relative overflow-hidden`}>
+                    <IconComponent className="w-32 h-32 text-white/30 group-hover:scale-110 transition-transform duration-300" />
+                    
+                    {/* Dekoratif pattern */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="absolute top-6 left-6">
+                        <IconComponent className="h-12 w-12 text-white" />
+                      </div>
+                      <div className="absolute bottom-6 right-6">
+                        <IconComponent className="h-8 w-8 text-white" />
+                      </div>
+                      <div className="absolute top-1/2 right-12">
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
 
                     {/* Category Badge */}
-                    <Badge className="absolute top-4 left-4 bg-white/20 text-white border-white/30">
+                    <Badge className="absolute top-4 left-4 bg-white/20 text-white border-white/30 backdrop-blur-sm">
                       {category.category === 'corporate' && 'Kurumsal'}
                       {category.category === 'industrial' && 'Endüstriyel'}
                       {category.category === 'packaging' && 'Ambalaj'}
                       {category.category === 'outdoor' && 'Dış Mekan'}
                       {category.category === 'textile' && 'Tekstil'}
+                      {category.category === 'label' && 'Etiket'}
+                      {category.category === 'automotive' && 'Otomotiv'}
+                      {category.category === 'digital' && 'Dijital'}
+                      {category.category === 'promotional' && 'Promosyon'}
                     </Badge>
 
                     {/* Popularity Score */}
@@ -777,6 +847,7 @@ export default function ProductCategoriesNew() {
                         </div>
                       ))}
                     </div>
+
                   </div>
 
                   {/* Quality Standards */}
@@ -834,8 +905,6 @@ export default function ProductCategoriesNew() {
                       <Truck className="w-4 h-4 mr-1" />
                       Ücretsiz Kargo
                     </span>
-                  ```text
-
                   </div>
 
                   {/* Action Buttons */}
@@ -848,7 +917,8 @@ export default function ProductCategoriesNew() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
