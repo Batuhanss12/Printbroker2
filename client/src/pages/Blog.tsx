@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import Navigation from "@/components/Navigation";
 import { 
   Search, 
@@ -16,7 +18,8 @@ import {
   Factory,
   Building2,
   Lightbulb,
-  TrendingUp
+  TrendingUp,
+  X
 } from "lucide-react";
 
 interface BlogPost {
@@ -37,6 +40,8 @@ export default function Blog() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const blogPosts: BlogPost[] = [
     {
@@ -243,6 +248,11 @@ export default function Blog() {
 
   const featuredPosts = blogPosts.filter(post => post.featured);
 
+  const handleReadPost = (post: BlogPost) => {
+    setSelectedPost(post);
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -308,7 +318,7 @@ export default function Blog() {
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Öne Çıkan Yazılar</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredPosts.map((post) => (
-                <Card key={post.id} className="group hover:shadow-lg transition-shadow cursor-pointer">
+                <Card key={post.id} className="group hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="secondary">{post.category}</Badge>
@@ -320,7 +330,7 @@ export default function Blog() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <User className="h-4 w-4" />
                         {post.author}
@@ -330,13 +340,22 @@ export default function Blog() {
                         {new Date(post.publishDate).toLocaleDateString('tr-TR')}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1 mt-3">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {post.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
                       ))}
                     </div>
+                    <Button 
+                      onClick={() => handleReadPost(post)}
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full group-hover:bg-blue-50"
+                    >
+                      Yazıyı Oku
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -359,7 +378,7 @@ export default function Blog() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
-              <Card key={post.id} className="group hover:shadow-lg transition-shadow cursor-pointer">
+              <Card key={post.id} className="group hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="secondary">{post.category}</Badge>
@@ -388,7 +407,12 @@ export default function Blog() {
                       </Badge>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm" className="w-full group-hover:bg-blue-50">
+                  <Button 
+                    onClick={() => handleReadPost(post)}
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full group-hover:bg-blue-50"
+                  >
                     Yazıyı Oku
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
@@ -444,6 +468,76 @@ export default function Blog() {
           </div>
         </div>
       </section>
+
+      {/* Blog Post Detail Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>{selectedPost?.title}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedPost && (
+            <ScrollArea className="max-h-[70vh]">
+              <div className="space-y-4">
+                {/* Post Meta Info */}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 border-b pb-4">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    {selectedPost.author}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(selectedPost.publishDate).toLocaleDateString('tr-TR')}
+                  </div>
+                  <Badge variant="secondary">{selectedPost.category}</Badge>
+                  <span>{selectedPost.readTime}</span>
+                </div>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {selectedPost.tags.map((tag) => (
+                    <Badge key={tag} variant="outline">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Post Excerpt */}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-gray-700 italic">{selectedPost.excerpt}</p>
+                </div>
+
+                {/* Post Content */}
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+                />
+
+                {/* SEO Keywords */}
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-2">Anahtar Kelimeler:</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedPost.seoKeywords.map((keyword) => (
+                      <Badge key={keyword} variant="outline" className="text-xs">
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
