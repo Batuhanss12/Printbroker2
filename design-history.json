@@ -1,5 +1,269 @@
 [
   {
+    "id": "c339dc8a-f8ba-48e1-b2f3-b500f0eb2e6e",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the stylized text \"MatBixx\" in a strong, geometric sans-serif font with a dark teal color. A subtle, abstract representation of interlocking blocks forms the \"B\" in \"Bixx\", suggesting connection and structure. The logo is set against a clean white background with a thin, horizontal gray line underneath the text. This design conveys a sense of reliability and innovation, suitable for a corporate identity.",
+        "resolution": "1024x1024",
+        "seed": 980467210,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/_MtuDd9xSwOU6g_sMRLzUw.png?exp=1749912242&sig=bc4e7943612642be0d1ce5664fce95b5261dcc7bb05ec90a4b0ed02a0edae47c"
+      },
+      "generationId": "60828b88-f529-4417-a91c-dbda988ea7cf",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/_MtuDd9xSwOU6g_sMRLzUw.png?exp=1749912242&sig=bc4e7943612642be0d1ce5664fce95b5261dcc7bb05ec90a4b0ed02a0edae47c",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:44:03.004Z"
+  },
+  {
+    "id": "d3f3dd91-4883-44b3-8298-f9d82e078831",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the word \"MatBixx\" in a bold, sans-serif font with a dark teal color. The \"M\" in \"MatBixx\" is stylized to resemble a minimalist abstract mountain range, subtly conveying strength and stability. A clean, white background creates a sense of spaciousness and professionalism, while a thin, horizontal line of lighter teal runs across the bottom edge to symbolize forward motion. The overall aesthetic is clean, contemporary, and memorable, suitable for a tech or consulting firm.",
+        "resolution": "1024x1024",
+        "seed": 169764677,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/kCl78PigQTqIh4lKWOAYMQ.png?exp=1749912225&sig=b20d21a94c92ea398ed55d30b59b8adbc88921ee383fd8a2ef5d8f6b391fbc61"
+      },
+      "generationId": "52368b87-6431-43ca-be50-9e1127ba963d",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/kCl78PigQTqIh4lKWOAYMQ.png?exp=1749912225&sig=b20d21a94c92ea398ed55d30b59b8adbc88921ee383fd8a2ef5d8f6b391fbc61",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:43:46.043Z"
+  },
+  {
+    "id": "a3e5d9dd-ec48-4319-8058-c52e30514e93",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern, minimalist logo design featuring the text \"MatBixx\" in bold, geometric sans-serif font in a deep teal color. The letters are stacked vertically, with a subtle gradient that fades from teal to a lighter cyan, creating a sense of depth and innovation. A thin, stylized hexagon subtly intersects the bottom of the \"M\" in \"MatBixx\", representing technology and structure. The background is clean and white, emphasizing the logo's clarity and professionalism.",
+        "resolution": "1024x1024",
+        "seed": 1918140616,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/hnRwgelbSuW8hg2ybYNUCw.png?exp=1749912208&sig=d92e65bf206787f7de38826d6ed4e5541c5e4da48c65d8ec53ca5ce5b2bbe4b3"
+      },
+      "generationId": "5ae54e6a-b820-4225-97e1-f335a3ef1502",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/hnRwgelbSuW8hg2ybYNUCw.png?exp=1749912208&sig=d92e65bf206787f7de38826d6ed4e5541c5e4da48c65d8ec53ca5ce5b2bbe4b3",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:43:28.599Z"
+  },
+  {
+    "id": "650fe67a-5e20-4bbb-a43b-0c72dac22b88",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the text \"MatBixx\" in a bold sans-serif font with a metallic silver gradient. The text is positioned above a stylized abstract representation of a circuit board, using geometric shapes in shades of dark grey and electric blue to create a sense of innovation and technology. A subtle, blurred background of a dark charcoal grey complements the logo’s sharp lines and metallic sheen. The overall design conveys a feeling of strength, reliability, and cutting-edge technology.",
+        "resolution": "1024x1024",
+        "seed": 113456003,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/0OamIX7RSGmMfg_yqnOz8Q.png?exp=1749912193&sig=ff5e09fe636b4d1111fed54b60c624449492941633a3668cde6966dcfc36bf85"
+      },
+      "generationId": "46099791-2e1f-4cff-ac1b-ac5292d91347",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/0OamIX7RSGmMfg_yqnOz8Q.png?exp=1749912193&sig=ff5e09fe636b4d1111fed54b60c624449492941633a3668cde6966dcfc36bf85",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:43:13.760Z"
+  },
+  {
+    "id": "e6aa769b-ff4c-4460-bf3c-e078e701683f",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the text \"MatBixx\" in a bold, sans-serif typeface with a dark teal color gradient. The text is positioned centrally with a stylized, abstract geometric shape resembling a circuit board component subtly integrated behind it. A thin, silver line underlines the text \"MatBixx,\" symbolizing connection and technological precision. The background is a clean, minimalist white, emphasizing the logo's modern and professional aesthetic.",
+        "resolution": "1024x1024",
+        "seed": 1065761529,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/GNykElWKRyiHj2A_hi_TqQ.png?exp=1749912176&sig=098101b3a7e8a286eec258bdd3d42eab9c9e5a459e5abcc5f9b174a28fc4d683"
+      },
+      "generationId": "4c1df6f5-eb5c-4fa7-a542-096e09dcc204",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/GNykElWKRyiHj2A_hi_TqQ.png?exp=1749912176&sig=098101b3a7e8a286eec258bdd3d42eab9c9e5a459e5abcc5f9b174a28fc4d683",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:42:56.487Z"
+  },
+  {
+    "id": "26a68e96-7697-49bf-8ade-021ea524d7e4",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern, minimalist logo design for \"MatBixx\" featuring a stylized letter \"M\" composed of interconnected geometric shapes in a deep teal color. The \"M\" shape subtly incorporates a forward-pointing arrow to represent progress and innovation. Below the symbol, the full brand name \"MatBixx\" appears in a clean sans-serif font, colored in a complementary light gray. The background is a crisp white, ensuring a professional and versatile logo suitable for various digital and print applications.",
+        "resolution": "1024x1024",
+        "seed": 982623210,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/V_OrH-X9THiDldEokdA2qw.png?exp=1749912162&sig=24fe73d39453a9d9d90c47756b73ddef0ae0ddb508a4d28e0ca04a5a0760f163"
+      },
+      "generationId": "5d52faec-db2f-438e-ad7d-a1b55918c18d",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/V_OrH-X9THiDldEokdA2qw.png?exp=1749912162&sig=24fe73d39453a9d9d90c47756b73ddef0ae0ddb508a4d28e0ca04a5a0760f163",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:42:42.583Z"
+  },
+  {
+    "id": "eb794510-ff55-41db-841d-b357609ec08a",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the word \"MatBixx\" in a bold, geometric sans-serif font, rendered in a deep teal color. The letters are stacked vertically, with a subtle upward slant to suggest progress and innovation. A single, stylized pixel icon sits above the text, resembling a building block or a digital cube, colored in a contrasting vibrant orange. The background is a clean, minimalist white, providing ample space for the logo to stand out and communicate a sense of tech-forward stability.",
+        "resolution": "1024x1024",
+        "seed": 1459358999,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/tMHu6MYzQRKhcmC3JSOn-Q.png?exp=1749912145&sig=224f6b20725616b52bac597c5628d086aac84d529b49a1c8f441a251aebcb7b0"
+      },
+      "generationId": "b981b81c-dad4-40c9-8d1f-83b2413f337d",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/tMHu6MYzQRKhcmC3JSOn-Q.png?exp=1749912145&sig=224f6b20725616b52bac597c5628d086aac84d529b49a1c8f441a251aebcb7b0",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:42:26.017Z"
+  },
+  {
+    "id": "891533ee-0559-443d-bb59-a38ace6ba5ee",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "MatBixx için kurumsal logo tasarımı",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring the text \"MatBixx\" in a bold, geometric sans-serif font in a dark charcoal grey. A stylized, abstract cube composed of intersecting lines sits slightly above and to the left of the text, suggesting structure and innovation. The background is a clean, crisp white, emphasizing the logo's modern and professional aesthetic. Subtle shadows are cast from the cube to give it a sense of depth and three-dimensionality.",
+        "resolution": "1024x1024",
+        "seed": 1289610917,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/dXPlMIWcQP-0LeJib1-ktA.png?exp=1749912126&sig=15fc4f40d5be089bf67aa20de50ed86582a12eebc2dcdb47f6997b950ac35517"
+      },
+      "generationId": "18794863-2ecc-4c7f-912b-45682472a0a0",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/dXPlMIWcQP-0LeJib1-ktA.png?exp=1749912126&sig=15fc4f40d5be089bf67aa20de50ed86582a12eebc2dcdb47f6997b950ac35517",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-13T14:42:06.243Z"
+  },
+  {
     "id": "3d720230-61d4-40a0-a6ff-14f0d12f336e",
     "userId": "CUS-1749640755370-ACTPK3",
     "prompt": "Matbixx için modern logo tasarla",
