@@ -85,6 +85,11 @@ export default function QuoteForm() {
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Mutation submitting data:", data);
+      
+      if (!user?.id) {
+        throw new Error("Kullanıcı girişi gerekli");
+      }
+      
       const response = await fetch("/api/quotes", {
         method: "POST",
         headers: {
@@ -95,127 +100,147 @@ export default function QuoteForm() {
       });
 
       const result = await response.json();
-      console.log("Mutation response:", result);
+      console.log("Mutation response:", { status: response.status, result });
 
-      if (!response.ok || result.success === false) {
-        throw new Error(result.message || `${response.status}: ${response.statusText}`);
+      if (!response.ok) {
+        const errorMessage = result.message || `Server error: ${response.status} ${response.statusText}`;
+        throw new Error(errorMessage);
       }
+      
+      if (result.success === false) {
+        throw new Error(result.message || "Teklif oluşturulamadı");
+      }
+      
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("Quote creation successful:", result);
+      setIsSubmitting(false);
+      
       toast({
-        title: "Başarılı",
-        description: "Teklif talebiniz başarıyla gönderildi!",
+        title: "Başarılı!",
+        description: "Teklif talebiniz başarıyla gönderildi. Matbaa firmalarından yanıt bekleniyor.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/quotes"] });
+      
+      // Reset form state
       form.reset();
       setUploadedFiles([]);
-      setIsSubmitting(false);
+      setGeneratedDesigns([]);
+      setCurrentTab("details");
+      
+      // Refresh quotes data
+      queryClient.invalidateQueries({ queryKey: ["/api/quotes"] });
+      
+      // Redirect to dashboard after short delay
+      setTimeout(() => {
+        window.location.href = "/customer-dashboard";
+      }, 2000);
     },
     onError: (error) => {
+      console.error("Quote submission error:", error);
       setIsSubmitting(false);
+      
       if (isUnauthorizedError(error)) {
         toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
+          title: "Oturum Süresi Doldu",
+          description: "Lütfen tekrar giriş yapın",
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
+          window.location.href = "/?login=true";
+        }, 1000);
         return;
       }
+      
+      const errorMessage = error instanceof Error ? error.message : "Bilinmeyen hata oluştu";
+      
       toast({
-        title: "Hata",
-        description: "Teklif gönderilirken bir hata oluştu.",
+        title: "Teklif Gönderme Hatası",
+        description: errorMessage,
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    if (isSubmitting) return;
+    if (isSubmitting || mutation.isPending) return;
     
+    console.log("Form submission started with data:", data);
     setIsSubmitting(true);
     
-    // Validate required fields
-    if (!data.title?.trim()) {
-      toast({
-        title: "Hata",
-        description: "Proje başlığı gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+    try {
+      // Basic required field validation with better error messages
+      if (!data.title?.trim()) {
+        throw new Error("Proje başlığı boş olamaz");
+      }
 
-    if (!data.contactInfo?.companyName?.trim()) {
-      toast({
-        title: "Hata", 
-        description: "Firma adı gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      if (!data.contactInfo?.companyName?.trim()) {
+        throw new Error("Firma adı boş olamaz");
+      }
 
-    if (!data.contactInfo?.contactName?.trim()) {
-      toast({
-        title: "Hata",
-        description: "Yetkili kişi adı gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      if (!data.contactInfo?.contactName?.trim()) {
+        throw new Error("Yetkili kişi adı boş olamaz");
+      }
 
-    if (!data.contactInfo?.email?.trim()) {
-      toast({
-        title: "Hata",
-        description: "E-posta adresi gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-    
-    // Enhanced quote data structure for backend compatibility
-    const quantity = parseInt(data.specifications?.quantity?.toString() || '1000') || 1000;
-    
-    const submissionData = {
-      title: data.title.trim(),
-      type: data.type,
-      quantity: quantity,
-      priceRange: null,
-      estimatedBudget: data.budget ? parseFloat(data.budget) : null,
-      specifications: {
-        ...data.specifications,
+      if (!data.contactInfo?.email?.trim()) {
+        throw new Error("E-posta adresi boş olamaz");
+      }
+
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.contactInfo.email.trim())) {
+        throw new Error("Geçerli bir e-posta adresi girin");
+      }
+      
+      // Enhanced quote data structure for backend compatibility
+      const quantity = Math.max(1, parseInt(data.specifications?.quantity?.toString() || '1000') || 1000);
+      
+      const submissionData = {
+        title: data.title.trim(),
+        type: data.type || 'general_printing',
+        category: 'general',
         quantity: quantity,
-        material: data.specifications?.material || 'Standart',
-        size: data.specifications?.size || 'A4',
-        color: data.specifications?.color || 'CMYK',
-        uploadedFiles: uploadedFiles
-      },
-      description: data.description || '',
-      deadline: data.deadline || null,
-      contactInfo: {
-        companyName: data.contactInfo.companyName.trim(),
-        contactName: data.contactInfo.contactName.trim(),
-        email: data.contactInfo.email.trim(),
-        phone: data.contactInfo?.phone?.trim() || ""
-      },
-      files: uploadedFiles,
-      generatedDesigns: generatedDesigns.map(design => ({
-        id: design.id,
-        url: design.url || design.result?.url || design.result?.[0]?.url,
-        prompt: design.prompt
-      })),
-      status: 'pending',
-      autoGenerated: false
-    };
+        priceRange: null,
+        estimatedBudget: data.budget ? Math.max(0, parseFloat(data.budget)) : null,
+        specifications: {
+          quantity: quantity,
+          material: data.specifications?.material?.trim() || 'Standart',
+          size: data.specifications?.size?.trim() || 'A4',
+          color: data.specifications?.color?.trim() || 'CMYK',
+          description: data.specifications?.description?.trim() || '',
+          uploadedFiles: uploadedFiles || []
+        },
+        description: data.description?.trim() || '',
+        deadline: data.deadline || null,
+        contactInfo: {
+          companyName: data.contactInfo.companyName.trim(),
+          contactName: data.contactInfo.contactName.trim(),
+          email: data.contactInfo.email.trim().toLowerCase(),
+          phone: data.contactInfo?.phone?.trim() || ""
+        },
+        files: uploadedFiles || [],
+        generatedDesigns: (generatedDesigns || []).map(design => ({
+          id: design.id || crypto.randomUUID(),
+          url: design.url || design.result?.url || design.result?.[0]?.url || '',
+          prompt: design.prompt || ''
+        })),
+        status: 'pending',
+        autoGenerated: false,
+        customerId: user?.id
+      };
 
-    console.log("Quote form submitted with data:", submissionData);
-    mutation.mutate(submissionData);
+      console.log("Processed quote data for submission:", submissionData);
+      mutation.mutate(submissionData);
+      
+    } catch (error) {
+      console.error("Form validation error:", error);
+      setIsSubmitting(false);
+      toast({
+        title: "Form Hatası",
+        description: error instanceof Error ? error.message : "Form verilerinde hata var",
+        variant: "destructive",
+      });
+    }
   };
 
 
