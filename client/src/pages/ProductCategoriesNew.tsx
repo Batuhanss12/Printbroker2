@@ -816,7 +816,7 @@ export default function ProductCategoriesNew() {
                   case 'industrial': return 'from-gray-400 to-slate-600';
                   case 'packaging': return 'from-amber-400 to-orange-600';
                   case 'outdoor': return 'from-green-400 to-emerald-600';
-                  Corrected quote submission logic in ProfessionalQuoteDialog component.                  case 'textile': return 'from-purple-400 to-pink-600';
+                  case 'textile': return 'from-purple-400 to-pink-600';
                   case 'label': return 'from-yellow-400 to-amber-600';
                   case 'automotive': return 'from-red-400 to-rose-600';
                   case 'digital': return 'from-cyan-400 to-blue-600';
