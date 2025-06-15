@@ -110,8 +110,10 @@ export default function QuoteForm() {
       queryClient.invalidateQueries({ queryKey: ["/api/quotes"] });
       form.reset();
       setUploadedFiles([]);
+      setIsSubmitting(false);
     },
     onError: (error) => {
+      setIsSubmitting(false);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
@@ -132,6 +134,10 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
     // Enhanced quote data structure for backend compatibility
     const quantity = parseInt(data.specifications?.quantity?.toString() || '1000') || 1000;
     
@@ -906,10 +912,10 @@ export default function QuoteForm() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={mutation.isPending || !form.formState.isValid}
-                      className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
+                      disabled={isSubmitting || mutation.isPending}
+                      className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {mutation.isPending ? (
+                      {(isSubmitting || mutation.isPending) ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           Gönderiliyor...
