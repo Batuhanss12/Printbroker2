@@ -982,7 +982,7 @@ export class DatabaseStorage implements IStorage {
         total: 0,
         page: options.page,
         totalPages: 0
-      };```typescript
+      };
     }
   }
   // Chat operations
