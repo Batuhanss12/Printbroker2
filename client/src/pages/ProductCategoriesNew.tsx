@@ -110,9 +110,9 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
 
       const quantity = Math.max(1, parseInt(quantityStr) || 1000);
 
-    const submitData = {
-      title: `${category.title} - ${quantity} adet`,
-      type: 'general_printing',
+      const submitData = {
+        title: `${category.title} - ${quantity} adet`,
+        type: 'general_printing',
       category: category.category || 'general',
       status: 'pending',
       quantity: quantity,
@@ -183,13 +183,22 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         throw new Error(result.message || 'Quote submission failed');
       }
     } catch (error) {
+        console.error('❌ Quote submission error:', error);
+        toast({
+          title: "Hata",
+          description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
       console.error('❌ Quote submission error:', error);
       toast({
         title: "Hata",
         description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
