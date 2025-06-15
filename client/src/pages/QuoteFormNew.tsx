@@ -80,6 +80,7 @@ export default function QuoteForm() {
       deadline: "",
       budget: "",
     },
+    mode: "onChange", // Only validate on change, don't submit
   });
 
   const mutation = useMutation({
@@ -160,8 +161,14 @@ export default function QuoteForm() {
     },
   });
 
-const onSubmit = async (data: QuoteFormData) => {
-    console.log("Form submitted with data:", data);
+const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) => {
+    console.log("Form submitted with data:", data, "Explicit submit:", isExplicitSubmit);
+
+    // Prevent automatic submissions - only allow explicit button clicks
+    if (!isExplicitSubmit) {
+      console.log("🚫 Blocking automatic form submission");
+      return;
+    }
 
     // Prevent duplicate submissions
     if (isSubmitting || mutation.isPending) {
@@ -497,9 +504,8 @@ const onSubmit = async (data: QuoteFormData) => {
 
               <form onSubmit={(e) => {
                 e.preventDefault();
-                console.log("🎯 Form submit event triggered");
-                // Block all automatic submissions - only allow explicit button clicks
-                console.log("🚫 Automatic form submission blocked");
+                console.log("🎯 Form submit event triggered - BLOCKED");
+                // Block ALL form submissions - only allow explicit button clicks
                 return false;
               }} className="space-y-6">
                 <TabsContent value="details" className="space-y-6">
@@ -1077,7 +1083,7 @@ const onSubmit = async (data: QuoteFormData) => {
                         // Manual validation and submission
                         const isValid = await form.trigger();
                         if (isValid && currentTab === "submit") {
-                          await onSubmit(formValues);
+                          await onSubmit(formValues, true); // Pass true for explicit submission
                         } else {
                           console.log("🚫 Form validation failed or not on submit tab");
                           toast({
