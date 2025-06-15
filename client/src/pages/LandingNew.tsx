@@ -293,9 +293,6 @@ export default function LandingNew() {
               <Link href="/references" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Referanslar
               </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                Blog
-              </Link>
 
               {/* Search Bar */}
               <div className="relative">
