@@ -454,7 +454,7 @@ export default function QuoteForm() {
             </Button>
             <Button
               variant={formData.embossType === 'combination' ? 'default' : 'outline'}
-              onClick={()={() => updateFormData('embossType', 'combination')}
+              onClick={() => updateFormData('embossType', 'combination')}
               className="h-auto p-4 justify-start"
             >
               <div className="text-left">
