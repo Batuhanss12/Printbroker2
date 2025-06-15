@@ -461,7 +461,7 @@ export default function LandingNew() {
                   {isAuthenticated && user ? (
                     <>
                       <div className="text-sm font-medium text-gray-900 mb-3">Hesap Bilgileri</div>
-                      
+
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
                         <div className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</div>
                         <div className="text-xs text-gray-500">{user.email}</div>
@@ -742,7 +742,7 @@ export default function LandingNew() {
                 <div className="relative overflow-hidden rounded-t-lg">
                   <div className={`h-48 bg-gradient-to-br ${getCategoryGradient(category.category)} flex items-center justify-center relative`}>
                     <IconComponent className={`h-20 w-20 ${getCategoryIconColor(category.category)} group-hover:scale-110 transition-transform duration-300`} />
-                    
+
                     {/* Dekoratif pattern */}
                     <div className="absolute inset-0 opacity-10">
                       <div className="absolute top-4 left-4">
@@ -1016,17 +1016,17 @@ export default function LandingNew() {
             <div>
               <h3 className="font-semibold mb-4">Müşteri İlişkileri</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/about'}>Hakkımızda</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/kvkk'}>KVKK Aydınlatma Metni</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/terms-of-service'}>Üyelik Sözleşmesi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Çerez Politikası</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Mesafeli Satış Sözleşmesi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Güvenli Alışveriş</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Kargo</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Kullanım Koşulları</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Bize Ulaşın</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Yardım Merkezi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">İşlem Rehberi</span></li>
+                <li><Link href="/about" className="hover:text-white transition-colors">Hakkımızda</Link></li>
+                <li><Link href="/kvkk" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</Link></li>
+                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</a></li>
+                <li><Link href="/cookie-policy" className="hover:text-white transition-colors">Çerez Politikası</Link></li>
+                <li><Link href="/distance-sales-contract" className="hover:text-white transition-colors">Mesafeli Satış Sözleşmesi</Link></li>
+                <li><Link href="/secure-shopping" className="hover:text-white transition-colors">Güvenli Alışveriş</Link></li>
+                <li><Link href="/shipping" className="hover:text-white transition-colors">Kargo</Link></li>
+                <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Kullanım Koşulları</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Bize Ulaşın</Link></li>
+                <li><Link href="/help-center" className="hover:text-white transition-colors">Yardım Merkezi</Link></li>
+                <li><Link href="/user-guide" className="hover:text-white transition-colors">İşlem Rehberi</Link></li>
               </ul>
             </div>
 
@@ -1051,7 +1051,7 @@ export default function LandingNew() {
                   <Mail className="h-4 w-4 mr-2" />
                   info@matbixx.com
                 </li>
-                
+
               </ul>
             </div>
           </div>

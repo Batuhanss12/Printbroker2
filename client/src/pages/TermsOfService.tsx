@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
@@ -28,7 +27,7 @@ export default function TermsOfService() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
+
         {/* Introduction */}
         <Card>
           <CardHeader>
@@ -154,9 +153,11 @@ export default function TermsOfService() {
               <h3 className="font-semibold text-lg mb-2">Baskı Hizmetleri</h3>
               <ul className="list-disc pl-6 space-y-1 text-gray-700">
                 <li>Matbaa firmaları kendi kalite standartlarından sorumludur</li>
-                <li>Teslimat süreleri matbaa firması tarafından belirlenir</li>
-                <li>Kargo/teslimat masrafları ayrıca hesaplanır</li>
-                <li>Baskı kalitesi endüstri standartlarına uygun olmalıdır</li>
+                <li>Teslimat süreleri matbaa firması tarafından teklif formunda belirtilen süre geçerlidir</li>
+                <li>Termin gecikmeleri durumunda matbaa firması müşteri ile iletişime geçmekle yükümlüdür</li>
+                <li>Ödeme işlemi tamamlandıktan sonra üretim süreci başlar</li>
+                <li>Kargo ve teslimat masrafları ayrıca hesaplanır</li>
+                <li>Teslim edilen ürünlerin kalite kontrolü müşteri sorumluluğundadır</li>
               </ul>
             </div>
 
