@@ -499,7 +499,7 @@ export default function QuoteForm() {
               onChange={(e) => {
                 const value = parseInt(e.target.value) || 0;
                 updateFormData('quantity', e.target.value);
-                
+
                 if (value > 0 && value < 100) {
                   toast({
                     title: "Uyarı",
@@ -515,7 +515,7 @@ export default function QuoteForm() {
             )}
           </div>
 
-          
+
         </div>
       </div>
 
@@ -589,9 +589,9 @@ export default function QuoteForm() {
         </div>
       </div>
 
-      
 
-      
+
+
     </div>
   );
 
@@ -633,10 +633,10 @@ export default function QuoteForm() {
                 // Sadece sayı girişine izin ver
                 const numericValue = e.target.value.replace(/[^0-9]/g, '');
                 e.target.value = numericValue;
-                
+
                 const value = parseInt(numericValue) || 0;
                 updateFormData('totalQuantity', numericValue);
-                
+
                 if (value > 0 && value < 5000) {
                   toast({
                     title: "Uyarı",
@@ -1569,7 +1569,7 @@ export default function QuoteForm() {
                       )}
                     </div>
 
-                    
+
 
                     </div>
 

@@ -8,33 +8,51 @@ async function throwIfResNotOk(res: Response) {
 }
 
 // Real API request implementation
-export const apiRequest = async (method: string, url: string, data?: any) => {
-  const options: RequestInit = {
+export async function apiRequest(method: string, url: string, data?: any): Promise<any> {
+  console.log(`Making ${method} request to ${url}`, data ? { data } : '');
+
+  const config: any = {
     method,
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include', // Important for session cookies
   };
 
-  if (data && method !== 'GET') {
-    options.body = JSON.stringify(data);
+  if (data) {
+    config.body = JSON.stringify(data);
   }
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, config);
+
+    console.log(`Response status: ${response.status} for ${method} ${url}`);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(`${response.status}: ${errorData.message || 'Request failed'}`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { message: `HTTP error! status: ${response.status}` };
+      }
+
+      console.error('API request failed:', errorData);
+
+      if (response.status === 401) {
+        window.location.href = '/?login=required';
+        throw new Error('Unauthorized');
+      }
+
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log(`Response data for ${method} ${url}:`, result);
+    return result;
   } catch (error) {
-    console.error(`API Request failed: ${method} ${url}`, error);
+    console.error(`Error in ${method} request to ${url}:`, error);
     throw error;
   }
-};
+}
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
