@@ -547,7 +547,8 @@ export class DatabaseStorage implements IStorage {
     totalPages: number;
   }> {
     try {
-      const userDesigns = await this.getStoredDesigns(userId);
+      const allDesigns = await this.getAllStoredDesigns();
+      const userDesigns = allDesigns.filter(design => design.userId === userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
@@ -958,7 +959,8 @@ export class DatabaseStorage implements IStorage {
     totalPages: number;
   }> {
     try {
-      const userDesigns = await this.getStoredDesigns(userId);
+      const allDesigns = await this.getAllStoredDesigns();
+      const userDesigns = allDesigns.filter(design => design.userId === userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
@@ -982,44 +984,6 @@ export class DatabaseStorage implements IStorage {
       };
     }
   }
-
-  private async getAllStoredDesigns(): Promise<any[]> {
-    try {
-      const fs = await import('fs');
-      const path = await import('path');
-      const designsPath = path.join(process.cwd(), 'design-history.json');
-
-      if (fs.existsSync(designsPath)) {
-        const data = fs.readFileSync(designsPath, 'utf8');
-        let allDesigns = JSON.parse(data);
-
-        // Ensure allDesigns is an array
-        if (!Array.isArray(allDesigns)) {
-          console.warn('Design history file corrupted, resetting to empty array');
-          allDesigns = [];
-        }
-
-        return allDesigns;
-      }
-      return [];
-    } catch (error) {
-      console.error('Error reading all designs:', error);
-      return [];
-    }
-  }
-
-  private async storeDesigns(designs: any[]): Promise<void> {
-    try {
-      const fs = await import('fs');
-      const path = await import('path');
-      const designsPath = path.join(process.cwd(), 'design-history.json');
-
-      fs.writeFileSync(designsPath, JSON.stringify(designs, null, 2));
-    } catch (error) {
-      console.error('Error storing designs:', error);
-    }
-  }
-
   // Chat operations
   async createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom> {
     const [room] = await db

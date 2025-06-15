@@ -1728,8 +1728,7 @@ export default function QuoteForm() {
                       Geri
                     </Button>
                     <Button
-                      type="button"
-                      onClick={form.handleSubmit(onSubmit)}
+                      type="submit"
                       disabled={mutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
