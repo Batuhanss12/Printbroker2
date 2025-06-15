@@ -1017,10 +1017,10 @@ export default function LandingNew() {
             <div>
               <h3 className="font-semibold mb-4">Ürünler</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Kartvizit Baskı</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Etiket & Sticker</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Broşür & Katalog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Ambalaj Çözümleri</a></li>
+                <li>Kartvizit Baskı</li>
+                <li>Etiket & Sticker</li>
+                <li>Broşür & Katalog</li>
+                <li>Ambalaj Çözümleri</li>
               </ul>
             </div>
 
