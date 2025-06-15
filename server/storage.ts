@@ -114,6 +114,7 @@ export interface IStorage {
   signContract(id: string, userId: string, signature: string): Promise<void>;
 
   createUser(userData: any): Promise<User>;
+  updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -978,7 +979,7 @@ export class DatabaseStorage implements IStorage {
       console.error('Error fetching design history:', error);
       return {
         designs: [],
-        total: 0,
+        total:0,
         page: options.page,
         totalPages: 0
       };

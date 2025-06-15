@@ -1031,7 +1031,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Quote submission endpoint
+  // Enhanced quote creation endpoint
+  app.post('/api/quotes', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Kullanıcı doğrulanamadı" });
+      }
+
+      const {
+        title,
+        type,
+        specifications,
+        description,
+        deadline,
+        budget,
+        files,
+        generatedDesigns,
+        status = 'pending'
+      } = req.body;
+
+      console.log('📤 Processing new quote creation:', { 
+        userId, 
+        type, 
+        title: title || `${type} Teklif Talebi` 
+      });
+
+      // Validate required fields
+      if (!type) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Teklif türü gerekli" 
+        });
+      }
+
+      // Create quote with proper structure
+      const quoteData = {
+        id: randomUUID(),
+        userId,
+        title: title || `${type} Teklif Talebi`,
+        type,
+        specifications: specifications || {},
+        description: description || '',
+        deadline: deadline || '',
+        budget: budget || '',
+        files: files || [],
+        generatedDesigns: generatedDesigns || [],
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Save quote to storage
+      const savedQuote = await storage.createQuote(quoteData);
+      
+      console.log('✅ Quote created successfully:', savedQuote.id);
+
+      // Notify printers about new quote
+      setTimeout(async () => {
+        try {
+          await notifyPrintersForNewQuote(savedQuote);
+        } catch (notificationError) {
+          console.error('Printer notification error:', notificationError);
+        }
+      }, 1000);
+
+      res.json({ 
+        success: true, 
+        message: "Teklif başarıyla oluşturuldu",
+        quote: savedQuote 
+      });
+
+    } catch (error) {
+      console.error('❌ Quote creation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Teklif oluşturulurken hata oluştu" 
+      });
+    }
+  });
+
+  // Quote submission endpoint (for updating existing quotes)
   app.post('/api/quotes/submit', isAuthenticated, async (req: any, res) => {
     try {
       const { quoteId, submittedAt } = req.body;
