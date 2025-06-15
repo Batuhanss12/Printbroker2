@@ -75,7 +75,18 @@ export default function QuoteForm() {
     defaultValues: {
       title: "",
       type: (type as any) || "sheet_label",
-      specifications: {},
+      specifications: {
+        quantity: 1000,
+        material: "",
+        size: "",
+        description: ""
+      },
+      contactInfo: {
+        companyName: "",
+        contactName: "",
+        email: "",
+        phone: ""
+      },
       description: "",
       deadline: "",
       budget: "",
@@ -221,8 +232,8 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
       }
 
       // Enhanced quote data structure for backend compatibility - ensure numeric values
-      const quantityStr = data.specifications?.quantity?.toString()?.trim() || '';
-      const quantity = quantityStr && quantityStr !== '' && !isNaN(parseInt(quantityStr)) ? Math.max(1, parseInt(quantityStr)) : 1000;
+      const quantityValue = data.specifications?.quantity || 1000;
+      const quantity = typeof quantityValue === 'number' ? Math.max(1, quantityValue) : Math.max(1, parseInt(quantityValue?.toString() || '1000') || 1000);
 
       const budgetStr = data.budget?.toString()?.trim() || '';
       const estimatedBudget = budgetStr && budgetStr !== '' && !isNaN(parseFloat(budgetStr)) ? Math.max(0, parseFloat(budgetStr)) : null;
@@ -502,12 +513,7 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                 </TabsTrigger>
               </TabsList>
 
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                console.log("🎯 Form submit event triggered - BLOCKED");
-                // Block ALL form submissions - only allow explicit button clicks
-                return false;
-              }} className="space-y-6">
+              <div className="space-y-6">
                 <TabsContent value="details" className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -1108,7 +1114,7 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                     </Button>
                   </div>
                 </TabsContent>
-              </form>
+              </div>
             </Tabs>
           </CardContent>
         </Card>
