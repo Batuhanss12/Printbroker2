@@ -40,18 +40,7 @@ import { Link } from "wouter";
 const quoteSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
   type: z.enum(["sheet_label", "roll_label", "general_printing"]),
-  specifications: z.object({
-    quantity: z.number().min(1, "Miktar en az 1 olmalı"),
-    material: z.string().min(1, "Malzeme seçimi gerekli"),
-    size: z.string().min(1, "Boyut bilgisi gerekli"),
-    description: z.string().min(10, "En az 10 karakter açıklama gerekli")
-  }),
-  contactInfo: z.object({
-    companyName: z.string().min(1, "Firma adı gerekli"),
-    contactName: z.string().min(1, "Yetkili kişi adı gerekli"),
-    email: z.string().email("Geçerli e-posta adresi gerekli"),
-    phone: z.string().optional()
-  }),
+  specifications: z.object({}).optional(),
   description: z.string().optional(),
   deadline: z.string().optional(),
   budget: z.string().optional(),
@@ -79,6 +68,7 @@ export default function QuoteForm() {
       deadline: "",
       budget: "",
     },
+    mode: "onChange"
   });
 
   const mutation = useMutation({
@@ -166,15 +156,21 @@ export default function QuoteForm() {
     const submissionData = {
       ...data,
       contactInfo: {
-        companyName: user?.companyName || form.getValues("contactInfo.companyName") || "Belirtilmedi",
-        contactName: user?.firstName + " " + user?.lastName || form.getValues("contactInfo.contactName") || "Belirtilmedi", 
-        email: user?.email || form.getValues("contactInfo.email") || "email@example.com",
-        phone: form.getValues("contactInfo.phone") || ""
+        companyName: user?.companyName || "Belirtilmedi",
+        contactName: (user?.firstName || "") + " " + (user?.lastName || "") || "Belirtilmedi", 
+        email: user?.email || "email@example.com",
+        phone: user?.phone || ""
       },
       specifications: {
         ...data.specifications,
         ...formData,
         uploadedFiles,
+        quantity: parseInt(formData.quantity || "1"),
+        material: formData.material || formData.paperType || "Belirtilmedi",
+        size: formData.customWidth && formData.customHeight ? 
+          `${formData.customWidth}x${formData.customHeight}mm` : 
+          formData.size || "Belirtilmedi",
+        description: data.description || "Özel teklif talebi"
       }
     };
     

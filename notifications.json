@@ -1,14 +1,14 @@
 [
   {
-    "id": "2bcd35d2-7756-4df6-ae78-f14642a57441",
+    "id": "49d5bec7-6b26-481c-b901-4064c583a820",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,298 adet - ₺24745",
+    "message": "Kozmetik - 47,440 adet - ₺15835",
     "data": {
-      "quoteId": "a62448d7-7ab5-427b-83d9-9b23486c4a1a"
+      "quoteId": "cff89720-3794-4c0f-9c66-6d88d33ae50f"
     },
     "isRead": false,
-    "createdAt": "2025-06-15T17:41:25.448Z"
+    "createdAt": "2025-06-15T18:26:00.287Z"
   }
 ]
