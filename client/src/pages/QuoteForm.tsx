@@ -153,7 +153,7 @@ export default function QuoteForm() {
 
   const onSubmit = (data: QuoteFormData) => {
     console.log("Form submitted with data:", data);
-    mutation.mutate(data);mutate(data);
+    mutation.mutate(data);
   };
 
   const handleFileUpload = (fileId: string) => {
@@ -454,7 +454,7 @@ export default function QuoteForm() {
             </Button>
             <Button
               variant={formData.embossType === 'combination' ? 'default' : 'outline'}
-              onClick={() => updateFormData('embossType', 'combination')}
+              onClick={()={() => updateFormData('embossType', 'combination')}
               className="h-auto p-4 justify-start"
             >
               <div className="text-left">
@@ -1713,7 +1713,7 @@ export default function QuoteForm() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={mutation.isPending}
+                      disabled={mutation.isPending || !form.formState.isValid}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (
