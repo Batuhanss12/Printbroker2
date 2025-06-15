@@ -152,8 +152,24 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    console.log("Form submitted with data:", data);
-    mutation.mutate(data);
+    // Ensure required fields are present
+    const submissionData = {
+      ...data,
+      contactInfo: {
+        companyName: user?.companyName || form.getValues("contactInfo.companyName") || "Belirtilmedi",
+        contactName: user?.firstName + " " + user?.lastName || form.getValues("contactInfo.contactName") || "Belirtilmedi", 
+        email: user?.email || form.getValues("contactInfo.email") || "email@example.com",
+        phone: form.getValues("contactInfo.phone") || ""
+      },
+      specifications: {
+        ...data.specifications,
+        ...formData,
+        uploadedFiles,
+      }
+    };
+    
+    console.log("Form submitted with data:", submissionData);
+    mutation.mutate(submissionData);
   };
 
   const handleFileUpload = (fileId: string) => {
@@ -1714,7 +1730,7 @@ export default function QuoteForm() {
                     <Button
                       type="button"
                       onClick={form.handleSubmit(onSubmit)}
-                      disabled={mutation.isPending || !form.getValues("title")}
+                      disabled={mutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (
