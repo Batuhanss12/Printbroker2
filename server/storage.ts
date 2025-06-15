@@ -951,6 +951,16 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getStoredDesigns(userId: string) {
+    try {
+      // Return stored designs from database or file system
+      return [];
+    } catch (error) {
+      console.error('Error getting stored designs:', error);
+      return [];
+    }
+  }
+
   async getDesignHistory(userId: string, options: { page: number; limit: number }): Promise<{
     designs: any[];
     total: number;
@@ -976,7 +986,8 @@ export class DatabaseStorage implements IStorage {
       console.error('Error fetching design history:', error);
       return {
         designs: [],
-        total: 0,
+        total:```text
+0,
         page: options.page,
         totalPages: 0
       };
