@@ -306,14 +306,6 @@ export default function LandingNew() {
                 />
               </div>
 
-              {/* Live Activity */}
-              <div className="flex items-center space-x-2 px-3 py-1 bg-green-50 rounded-full border border-green-200">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-700">
-                  {liveJobs.length} Aktif İş
-                </span>
-              </div>
-
               {/* Authentication-aware Navigation */}
               {isAuthenticated && user ? (
                 <DropdownMenu>
