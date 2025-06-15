@@ -144,8 +144,16 @@ export default function QuoteForm() {
     },
   });
 
-  const onSubmit = (data: QuoteFormData) => {
+  const [isExplicitSubmit, setIsExplicitSubmit] = useState(false);
 
+  const onSubmit = (data: QuoteFormData) => {
+    // Only allow explicit submissions via submit button
+    if (!isExplicitSubmit) {
+      return;
+    }
+    
+    // Reset the explicit submit flag
+    setIsExplicitSubmit(false);
     
     // Ensure required fields are present
     const submissionData = {
@@ -1730,7 +1738,7 @@ export default function QuoteForm() {
                     <Button
                       type="submit"
                       disabled={mutation.isPending}
-
+                      onClick={() => setIsExplicitSubmit(true)}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (
