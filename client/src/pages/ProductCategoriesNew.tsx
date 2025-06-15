@@ -95,7 +95,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         formData.email = 'musteri@example.com';
       }
     }
-    
+
     const submitData = {
       title: `${category.title} - ${formData.quantity || 'Belirtilmemiş'} adet`,
       type: 'general_printing',
@@ -166,16 +166,22 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
   };
 
   const handleQuoteRequest = () => {
+    console.log('🎯 Quote request triggered for category:', category.title);
+    console.log('🔐 Authentication status:', isAuthenticated);
+
     if (!isAuthenticated) {
       toast({
-        title: "Üyelik Gerekli",
-        description: "Teklif almak için önce üye olmanız gerekiyor.",
+        title: "Giriş Gerekli",
+        description: "Teklif almak için önce giriş yapmalısınız.",
         variant: "destructive",
       });
-      window.location.href = "/customer-register";
       return;
     }
-    setIsOpen(true);
+
+    // Redirect to quote form with proper category type
+    const quoteType = category.type || 'general_printing';
+    console.log('📝 Redirecting to quote form:', `/quote/${quoteType}`);
+    window.location.href = `/quote/${quoteType}`;
   };
 
   const handleQuoteSubmit = async () => {

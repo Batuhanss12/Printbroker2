@@ -68,6 +68,7 @@ export default function QuoteForm() {
   const [generatedDesigns, setGeneratedDesigns] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<QuoteFormData>({
     resolver: zodResolver(quoteSchema),
@@ -149,6 +150,81 @@ export default function QuoteForm() {
 
     console.log("New form submitted with data:", submissionData);
     mutation.mutate(submissionData);
+  };
+
+  const handleSubmit = async (data: QuoteFormData) => {
+    try {
+      console.log('📤 Starting quote submission:', data);
+      setIsSubmitting(true);
+
+      // Enhanced quote data structure
+      const quoteData = {
+        title: data.title || `${data.type} Teklif Talebi`,
+        type: data.type,
+        specifications: {
+          ...data.specifications,
+          quantity: data.specifications?.quantity || 1000,
+          material: data.specifications?.material || 'Standart',
+          size: data.specifications?.size || 'A4',
+          color: data.specifications?.color || 'CMYK'
+        },
+        description: data.description,
+        deadline: data.deadline,
+        budget: data.budget,
+        files: uploadedFiles,
+        generatedDesigns: generatedDesigns.map(design => ({
+          id: design.id,
+          url: design.url || design.result?.url || design.result?.[0]?.url,
+          prompt: design.prompt
+        })),
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+
+      console.log('📋 Quote data prepared:', quoteData);
+
+      const response = await fetch('/api/quotes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(quoteData),
+      });
+
+      console.log('📡 Response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Bilinmeyen hata' }));
+        throw new Error(errorData.message || 'Teklif gönderilemedi');
+      }
+
+      const result = await response.json();
+      console.log('✅ Quote submitted successfully:', result);
+
+      toast({
+        title: "Başarılı",
+        description: "Teklif talebiniz başarıyla gönderildi! Matbaa firmalarından teklifler almaya başlayacaksınız.",
+      });
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/quotes'] });
+
+      // Redirect to customer dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = '/customer-dashboard';
+      }, 1000);
+
+    } catch (error) {
+      console.error('❌ Quote submission error:', error);
+      toast({
+        title: "Hata",
+        description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // AI Design Functions
