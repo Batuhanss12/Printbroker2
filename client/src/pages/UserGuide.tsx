@@ -1,4 +1,5 @@
 
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,6 @@ import {
   Users,
   Building2
 } from "lucide-react";
-import { useState } from "react";
 
 export default function UserGuide() {
   const [activeStep, setActiveStep] = useState(0);
@@ -244,7 +244,7 @@ export default function UserGuide() {
             <Card className="sticky top-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <steps[activeStep].icon className="h-5 w-5 text-blue-600" />
+                  {React.createElement(steps[activeStep].icon, { className: "h-5 w-5 text-blue-600" })}
                   {steps[activeStep].title}
                 </CardTitle>
                 <CardDescription>
