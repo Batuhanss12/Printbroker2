@@ -1,14 +1,14 @@
 [
   {
-    "id": "9590376b-bcc1-452a-a64e-34a7879482c9",
+    "id": "df67b2fb-ad4d-44d4-b605-62cfc0f3ea34",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Katalog & Broşür - 26,717 adet - ₺13242",
+    "message": "Premium Ambalaj - 16,545 adet - ₺21617",
     "data": {
-      "quoteId": "f3b43087-a22a-4229-b81f-517dee85d125"
+      "quoteId": "5816905a-50bb-4a64-b8a3-0471077677cf"
     },
     "isRead": false,
-    "createdAt": "2025-06-15T13:10:09.441Z"
+    "createdAt": "2025-06-15T14:37:29.369Z"
   }
 ]
