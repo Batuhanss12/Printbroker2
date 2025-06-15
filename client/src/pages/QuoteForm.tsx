@@ -111,15 +111,18 @@ export default function QuoteForm() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify(quoteData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Quote submission failed:", errorData);
-        throw new Error(errorData.message || `${response.status}: ${response.statusText}`);
+      const result = await response.json();
+      console.log("Quote response:", result);
+
+      if (!response.ok || result.success === false) {
+        console.error("Quote submission failed:", result);
+        throw new Error(result.message || `${response.status}: ${response.statusText}`);
       }
-      return response.json();
+      return result;
     },
     onSuccess: () => {
       toast({
