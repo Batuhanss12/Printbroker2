@@ -93,10 +93,10 @@ export default function QuoteForm() {
         credentials: 'include',
         body: JSON.stringify(data),
       });
-      
+
       const result = await response.json();
       console.log("Mutation response:", result);
-      
+
       if (!response.ok || result.success === false) {
         throw new Error(result.message || `${response.status}: ${response.statusText}`);
       }
@@ -841,8 +841,7 @@ export default function QuoteForm() {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      </div>)}
                   </div>
 
                   <div className="flex justify-between">
@@ -903,7 +902,7 @@ export default function QuoteForm() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={mutation.isPending}
+                      disabled={mutation.isPending || !form.formState.isValid}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (
@@ -928,3 +927,7 @@ export default function QuoteForm() {
     </div>
   );
 }
+```
+
+```text
+1.  The code was modified to fix the button disabled logic in the quote form, ensuring that the form is only submittable when all required fields are valid.

@@ -74,7 +74,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
 
     console.log('📤 Starting quote submission:', formData);
 
-    // Form validation
+    // Basic form validation
     if (!formData.quantity || parseInt(formData.quantity) < 1) {
       toast({
         title: "Hata",
@@ -106,16 +106,6 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
       toast({
         title: "Hata",
         description: "E-posta adresi gerekli.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Hata",
-        description: "Geçerli bir e-posta adresi girin.",
         variant: "destructive",
       });
       return;
@@ -405,7 +395,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className={!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? "border-red-200 focus:border-red-500" : ""}
+                  className={!formData.email?.trim() ? "border-red-200 focus:border-red-500" : ""}
                   required
                 />
               </div>
@@ -427,7 +417,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
             </Button>
             <Button 
               type="submit" 
-              disabled={!formData.quantity || !formData.companyName.trim() || !formData.contactName.trim() || !formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)}
+              disabled={!formData.quantity || parseInt(formData.quantity) < 1 || !formData.companyName?.trim() || !formData.contactName?.trim() || !formData.email?.trim()}
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Zap className="w-4 h-4 mr-2" />
