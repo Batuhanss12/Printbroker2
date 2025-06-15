@@ -1,5 +1,38 @@
 [
   {
+    "id": "4c18eb0e-03c9-439c-b809-acbccfa0809d",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "Matbixx için logo tasarımı yap",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern logo design featuring \"Matbixx\" in a bold sans-serif font with a gradient transitioning from deep teal to vibrant turquoise. Below the text, a stylized geometric shape resembling a pixelated mountain peak subtly hints at technology and exploration. The background is a clean, minimalist white space, ensuring the logo is versatile and easily adaptable across various platforms. This design aims to convey innovation and reliability with a contemporary aesthetic.",
+        "resolution": "1024x1024",
+        "seed": 1886520719,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/-vVHlRcsQ--FYFcVnt_59Q.png?exp=1750088327&sig=d2395bb41ceb899d641193d1d8703f9ec7d9e82135dff60e03764754bb96558a"
+      },
+      "generationId": "473bbcce-2420-4321-aaa3-3e19ecb22b61",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/-vVHlRcsQ--FYFcVnt_59Q.png?exp=1750088327&sig=d2395bb41ceb899d641193d1d8703f9ec7d9e82135dff60e03764754bb96558a",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-15T15:38:47.819Z"
+  },
+  {
     "id": "e85fcca1-4e73-45db-af19-d3e94a11e704",
     "userId": "CUS-1749640755370-ACTPK3",
     "prompt": "Matbixx için profesyonel ve kurumsal logo tasarla\n",
