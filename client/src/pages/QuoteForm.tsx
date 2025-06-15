@@ -152,7 +152,8 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    mutation.mutate(data);
+    console.log("Form submitted with data:", data);
+    mutation.mutate(data);mutate(data);
   };
 
   const handleFileUpload = (fileId: string) => {

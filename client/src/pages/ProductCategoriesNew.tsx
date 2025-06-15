@@ -197,6 +197,70 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
     setIsOpen(true);
   };
 
+  const handleQuoteSubmit = async () => {
+    try {
+      // Validate required fields
+      if (!formData.companyName || !formData.contactName || !formData.email || !formData.quantity) {
+        toast({
+          title: "Eksik Bilgi",
+          description: "Lütfen tüm gerekli alanları doldurun.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const submitData = {
+        ...formData,
+        categoryTitle: category.title,
+        categoryId: category.id,
+        productType: category.id,
+        title: `${category.title} - ${formData.quantity} adet`
+      };
+
+      console.log('Submitting quote data:', submitData);
+
+      const response = await fetch('/api/quotes/public', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+        credentials: 'include'
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        toast({
+          title: "Teklif Talebi Başarıyla Gönderildi",
+          description: "Teklifiniz matbaa firmalarına iletildi. En kısa sürede dönüş yapılacaktır.",
+        });
+        setIsOpen(false);
+        setFormData({
+          productType: category.id,
+          quantity: '',
+          material: '',
+          size: '',
+          description: '',
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          urgency: 'normal'
+        });
+      } else {
+        throw new Error(result.message || 'Quote submission failed');
+      }
+    } catch (error) {
+      console.error('Quote submission error:', error);
+      toast({
+        title: "Hata",
+        description: "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -752,7 +816,7 @@ export default function ProductCategoriesNew() {
                   case 'industrial': return 'from-gray-400 to-slate-600';
                   case 'packaging': return 'from-amber-400 to-orange-600';
                   case 'outdoor': return 'from-green-400 to-emerald-600';
-                  case 'textile': return 'from-purple-400 to-pink-600';
+                  Corrected quote submission logic in ProfessionalQuoteDialog component.                  case 'textile': return 'from-purple-400 to-pink-600';
                   case 'label': return 'from-yellow-400 to-amber-600';
                   case 'automotive': return 'from-red-400 to-rose-600';
                   case 'digital': return 'from-cyan-400 to-blue-600';
@@ -768,7 +832,7 @@ export default function ProductCategoriesNew() {
                 <div className="relative">
                   <div className={`w-full h-64 bg-gradient-to-r ${getCategoryGradient(category.category)} flex items-center justify-center relative overflow-hidden`}>
                     <IconComponent className="w-32 h-32 text-white/30 group-hover:scale-110 transition-transform duration-300" />
-                    
+
                     {/* Dekoratif pattern */}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute top-6 left-6">

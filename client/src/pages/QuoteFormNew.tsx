@@ -132,7 +132,8 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    mutation.mutate(data);
+    console.log("New form submitted with data:", data);
+    mutation.mutate(data);mutate(data);
   };
 
   // AI Design Functions
