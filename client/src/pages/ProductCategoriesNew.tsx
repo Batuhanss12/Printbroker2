@@ -209,10 +209,8 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
       return;
     }
 
-    // Redirect to quote form with proper category type
-    const quoteType = category.type || 'general_printing';
-    console.log('📝 Redirecting to quote form:', `/quote/${quoteType}`);
-    window.location.href = `/quote/${quoteType}`;
+    // Open the dialog instead of redirecting
+    setIsOpen(true);
   };
 
   const handleQuoteSubmit = async () => {
@@ -289,7 +287,6 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
               : "bg-gray-400 cursor-not-allowed text-gray-200"
           }`}
           disabled={!isAuthenticated}
-          onClick={handleQuoteRequest}
         >
           <Sparkles className="w-4 h-4 mr-2" />
           {isAuthenticated ? 'Otomatik Teklif Al' : 'Giriş Yapın'}
