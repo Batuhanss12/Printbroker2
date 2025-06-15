@@ -1867,6 +1867,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authenticated quote routes
   app.post('/api/quotes', isAuthenticated, async (req: any, res) => {
     try {
+      console.log("Quote creation request received:", {
+        body: req.body,
+        session: req.session?.user?.id,
+        userAgent: req.headers['user-agent']
+      });
+      
       // Enhanced user ID extraction for session-based auth
       const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
       
@@ -1876,13 +1882,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: req.user?.id, 
           sessionUser: req.session?.user 
         });
-        return res.status(401).json({ message: "User session not found" });
+        return res.status(401).json({ 
+          message: "User session not found",
+          code: "AUTH_REQUIRED" 
+        });
       }
 
       const user = await storage.getUser(userId);
 
-      if (!user || user.role !== 'customer') {
+      if (!user) {
+        console.error("User not found in database:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.role !== 'customer') {
+        console.error("Non-customer trying to create quote:", { userId, role: user.role });
         return res.status(403).json({ message: "Only customers can create quotes" });
+      }
+
+      // Validate required fields
+      if (!req.body.title || req.body.title.trim() === '') {
+        return res.status(400).json({ message: "Quote title is required" });
+      }
+
+      if (!req.body.type) {
+        return res.status(400).json({ message: "Quote type is required" });
       }
 
       // Prepare quote data with proper type conversion
@@ -1893,7 +1917,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Convert date strings to Date objects if they exist
       if (quoteInput.deadline && typeof quoteInput.deadline === 'string') {
-        quoteInput.deadline = new Date(quoteInput.deadline);
+        try {
+          quoteInput.deadline = new Date(quoteInput.deadline);
+          if (isNaN(quoteInput.deadline.getTime())) {
+            console.warn("Invalid deadline date provided:", req.body.deadline);
+            delete quoteInput.deadline;
+          }
+        } catch (e) {
+          console.warn("Error parsing deadline date:", req.body.deadline);
+          delete quoteInput.deadline;
+        }
       }
 
       // Remove empty or undefined date fields
@@ -1905,25 +1938,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: quoteInput.title,
         type: quoteInput.type,
         customerId: userId,
-        hasDeadline: !!quoteInput.deadline
+        hasDeadline: !!quoteInput.deadline,
+        specificationsKeys: quoteInput.specifications ? Object.keys(quoteInput.specifications) : []
       });
 
       const quoteData = insertQuoteSchema.parse(quoteInput);
       const quote = await storage.createQuote(quoteData);
       
-      console.log("Quote created successfully:", quote.id);
-      res.json(quote);
+      console.log("Quote created successfully:", {
+        id: quote.id,
+        title: quote.title,
+        customerId: quote.customerId
+      });
+      
+      res.json({
+        ...quote,
+        message: "Quote created successfully"
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error("Quote validation error:", error.errors);
+        console.error("Quote validation error:", {
+          errors: error.errors,
+          received: req.body
+        });
         return res.status(400).json({ 
-          message: "Invalid quote data", 
+          message: "Invalid quote data: " + error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', '),
           errors: error.errors,
           received: req.body 
         });
       }
       console.error("Error creating quote:", error);
-      res.status(500).json({ message: "Failed to create quote" });
+      res.status(500).json({ 
+        message: "Failed to create quote: " + (error instanceof Error ? error.message : 'Unknown error')
+      });
     }
   });
 
