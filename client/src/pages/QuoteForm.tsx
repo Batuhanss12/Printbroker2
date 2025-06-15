@@ -68,7 +68,7 @@ export default function QuoteForm() {
       deadline: "",
       budget: "",
     },
-    mode: "onChange"
+    mode: "onSubmit"
   });
 
   const mutation = useMutation({
@@ -145,12 +145,7 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    console.log("=== FORM SUBMISSION STARTED ===");
-    console.log("Raw form data:", data);
-    console.log("Form validation errors:", form.formState.errors);
-    console.log("Form state valid:", form.formState.isValid);
-    console.log("Additional form data:", formData);
-    console.log("Uploaded files:", uploadedFiles);
+
     
     // Ensure required fields are present
     const submissionData = {
@@ -174,11 +169,7 @@ export default function QuoteForm() {
       }
     };
     
-    console.log("Final submission data:", submissionData);
-    console.log("Mutation pending:", mutation.isPending);
-    
     mutation.mutate(submissionData);
-    console.log("=== MUTATION CALLED ===");
   };
 
   const handleFileUpload = (fileId: string) => {
@@ -1739,19 +1730,7 @@ export default function QuoteForm() {
                     <Button
                       type="submit"
                       disabled={mutation.isPending}
-                      onClick={(e) => {
-                        console.log("=== SUBMIT BUTTON CLICKED ===");
-                        console.log("Button disabled:", mutation.isPending);
-                        console.log("Form errors:", form.formState.errors);
-                        console.log("Form values:", form.getValues());
-                        console.log("Form is valid:", form.formState.isValid);
-                        console.log("Additional formData:", formData);
-                        
-                        // Force validation check
-                        form.trigger().then(isValid => {
-                          console.log("Manual validation result:", isValid);
-                        });
-                      }}
+
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (

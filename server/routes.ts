@@ -1073,6 +1073,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Extract quantity from specifications if not provided directly
+      const finalQuantity = quantity || 
+        (specifications?.quantity ? parseInt(specifications.quantity) : null) || 
+        1;
+
       // Create quote with proper structure
       const quoteData = {
         id: randomUUID(),
@@ -1081,7 +1086,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: title || `${type} Teklif Talebi`,
         type,
         category: category || 'general',
-        quantity: quantity || 1,
+        quantity: finalQuantity,
         specifications: specifications || {},
         contactInfo: contactInfo || {},
         description: description || '',
