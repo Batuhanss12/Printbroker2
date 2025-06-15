@@ -1,14 +1,14 @@
 [
   {
-    "id": "c86ebbce-3a3c-40ef-84be-706f0e4bbaa3",
+    "id": "1df3b2c0-e326-4678-ba0f-83abd220f269",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 33,777 adet - ₺26184",
+    "message": "Farmasötik - 69,193 adet - ₺21348",
     "data": {
-      "quoteId": "b3f2a2e7-a848-4ca4-ad8a-b7cf7a4ec609"
+      "quoteId": "80d727fb-2421-4857-9422-082c691ae283"
     },
     "isRead": false,
-    "createdAt": "2025-06-15T16:03:42.423Z"
+    "createdAt": "2025-06-15T16:10:57.605Z"
   }
 ]
