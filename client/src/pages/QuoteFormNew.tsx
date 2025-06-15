@@ -169,6 +169,12 @@ const onSubmit = async (data: QuoteFormData) => {
       return;
     }
 
+    // Only proceed if we're on the submit tab and have intentional submission
+    if (currentTab !== "submit") {
+      console.log("🚫 Form submission blocked - not on submit tab");
+      return;
+    }
+
     // Additional check to ensure this is an intentional submission
     if (!data.title || !data.contactInfo?.companyName || !data.contactInfo?.email) {
       console.log("🚫 Form not ready for submission - missing required fields");
@@ -492,14 +498,9 @@ const onSubmit = async (data: QuoteFormData) => {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 console.log("🎯 Form submit event triggered");
-
-                // Only proceed if this is an intentional submission
-                if (isSubmitting || mutation.isPending) {
-                  console.log("🚫 Already submitting, ignoring event");
-                  return;
-                }
-
-                form.handleSubmit(onSubmit)(e);
+                // Block all automatic submissions - only allow explicit button clicks
+                console.log("🚫 Automatic form submission blocked");
+                return false;
               }} className="space-y-6">
                 <TabsContent value="details" className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1062,9 +1063,30 @@ const onSubmit = async (data: QuoteFormData) => {
                       Geri
                     </Button>
                     <Button
-                      type="submit"
+                      type="button"
                       disabled={isSubmitting || mutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("🎯 Explicit submit button clicked");
+                        
+                        // Get current form values
+                        const formValues = form.getValues();
+                        
+                        // Manual validation and submission
+                        const isValid = await form.trigger();
+                        if (isValid && currentTab === "submit") {
+                          await onSubmit(formValues);
+                        } else {
+                          console.log("🚫 Form validation failed or not on submit tab");
+                          toast({
+                            title: "Form Hatası",
+                            description: "Lütfen tüm gerekli alanları doldurun ve son adımda olduğunuzdan emin olun",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                     >
                       {(isSubmitting || mutation.isPending) ? (
                         <>
