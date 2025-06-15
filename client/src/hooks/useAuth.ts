@@ -176,14 +176,6 @@ export const useAuth = () => {
 
   const isAuthenticated = !!user && !error;
 
-    // Log authentication state
-    console.log('useAuth state:', {
-        user,
-        isLoading,
-        error,
-        isAuthenticated
-    });
-
   // Session check function
   const checkSession = async () => {
     try {
