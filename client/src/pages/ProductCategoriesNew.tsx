@@ -72,50 +72,75 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basit form validasyonu - sadece temel alanları kontrol et
+    console.log('📤 Starting quote submission:', formData);
+
+    // Form validation
     if (!formData.quantity || parseInt(formData.quantity) < 1) {
-      // Varsayılan miktar ata
-      formData.quantity = '100';
+      toast({
+        title: "Hata",
+        description: "Lütfen geçerli bir miktar girin.",
+        variant: "destructive",
+      });
+      return;
     }
 
     if (!formData.companyName?.trim()) {
-      formData.companyName = 'Belirtilmemiş Firma';
+      toast({
+        title: "Hata", 
+        description: "Firma adı gerekli.",
+        variant: "destructive",
+      });
+      return;
     }
 
     if (!formData.contactName?.trim()) {
-      formData.contactName = 'Belirtilmemiş Kişi';
+      toast({
+        title: "Hata",
+        description: "Yetkili kişi adı gerekli.",
+        variant: "destructive",
+      });
+      return;
     }
 
     if (!formData.email?.trim()) {
-      formData.email = 'musteri@example.com';
-    } else {
-      // E-posta formatı kontrolü (basit)
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        formData.email = 'musteri@example.com';
-      }
+      toast({
+        title: "Hata",
+        description: "E-posta adresi gerekli.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Hata",
+        description: "Geçerli bir e-posta adresi girin.",
+        variant: "destructive",
+      });
+      return;
     }
 
     const submitData = {
-      title: `${category.title} - ${formData.quantity || 'Belirtilmemiş'} adet`,
+      title: `${category.title} - ${formData.quantity} adet`,
       type: 'general_printing',
       category: category.category || 'general',
       status: 'pending',
-      quantity: parseInt(formData.quantity) || 1,
+      quantity: parseInt(formData.quantity),
       specifications: {
-        quantity: parseInt(formData.quantity) || 1,
+        quantity: parseInt(formData.quantity),
         material: formData.material || 'Standart',
         size: formData.size || 'Standart boyut',
         urgency: formData.urgency || 'normal',
-        description: formData.description || 'Açıklama eklenmemiş',
+        description: formData.description || '',
         categoryTitle: category.title,
         categoryId: category.id,
         productType: category.id
       },
       contactInfo: {
-        companyName: formData.companyName || 'Belirtilmemiş',
-        contactName: formData.contactName || 'Belirtilmemiş',
-        email: formData.email || 'email@example.com',
+        companyName: formData.companyName,
+        contactName: formData.contactName,
+        email: formData.email,
         phone: formData.phone || ''
       },
       priceRange: category.priceRange,
@@ -124,15 +149,21 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
     };
 
     try {
+      console.log('📋 Sending quote data:', submitData);
+
       const response = await fetch('/api/quotes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(submitData),
       });
 
+      console.log('📡 Response status:', response.status);
+
       const result = await response.json();
+      console.log('📋 Response data:', result);
 
       if (response.ok && result.success !== false) {
         toast({
@@ -156,10 +187,10 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         throw new Error(result.message || 'Quote submission failed');
       }
     } catch (error) {
-      console.error('Quote submission error:', error);
+      console.error('❌ Quote submission error:', error);
       toast({
         title: "Hata",
-        description: "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     }
