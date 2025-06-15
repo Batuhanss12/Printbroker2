@@ -1016,27 +1016,27 @@ export default function LandingNew() {
             <div>
               <h3 className="font-semibold mb-4">Müşteri İlişkileri</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/privacy-policy" className="hover:text-white transition-colors">Hakkımızda</a></li>
-                <li><a href="/kvkk" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</a></li>
-                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Çerez Politikası</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Mesafeli Satış Sözleşmesi</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Güvenli Alışveriş</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Kargo</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Kullanım Koşulları</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Bize Ulaşın</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Yardım Merkezi</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">İşlem Rehberi</a></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/about'}>Hakkımızda</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/kvkk'}>KVKK Aydınlatma Metni</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/terms-of-service'}>Üyelik Sözleşmesi</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Çerez Politikası</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Mesafeli Satış Sözleşmesi</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Güvenli Alışveriş</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Kargo</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Kullanım Koşulları</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Bize Ulaşın</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">Yardım Merkezi</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer">İşlem Rehberi</span></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Kurumsal</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/about" className="hover:text-white transition-colors">Hakkımızda</a></li>
-                <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="/faq" className="hover:text-white transition-colors">Sıkça Sorulan Sorular</a></li>
-                <li><a href="/career" className="hover:text-white transition-colors">Kariyer</a></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/about'}>Hakkımızda</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/blog'}>Blog</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/faq'}>Sıkça Sorulan Sorular</span></li>
+                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/career'}>Kariyer</span></li>
               </ul>
             </div>
 

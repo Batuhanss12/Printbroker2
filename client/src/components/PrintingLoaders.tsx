@@ -21,7 +21,7 @@ export function PrinterLoader({ size = 80, color = "#3B82F6" }: { size?: number;
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Paper Tray */}
         <motion.div
           className="absolute bottom-0 left-1/2 w-3/4 h-2 rounded-sm"
@@ -38,7 +38,7 @@ export function PrinterLoader({ size = 80, color = "#3B82F6" }: { size?: number;
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Print Head */}
         <motion.div
           className="absolute top-1/3 w-full h-1 rounded-full"
@@ -52,7 +52,7 @@ export function PrinterLoader({ size = 80, color = "#3B82F6" }: { size?: number;
             ease: "linear"
           }}
         />
-        
+
         {/* Paper Coming Out */}
         <motion.div
           className="absolute -right-2 top-1/2 w-6 h-8 bg-white border-2 rounded-sm"
@@ -69,7 +69,7 @@ export function PrinterLoader({ size = 80, color = "#3B82F6" }: { size?: number;
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -110,7 +110,7 @@ export function RollingPaperLoader({ size = 80, color = "#10B981" }: { size?: nu
             ease: "linear"
           }}
         />
-        
+
         {/* Unrolling Paper */}
         <motion.div
           className="absolute left-8 top-1/2 h-1 rounded-full"
@@ -128,7 +128,7 @@ export function RollingPaperLoader({ size = 80, color = "#10B981" }: { size?: nu
             times: [0, 0.4, 0.8, 1]
           }}
         />
-        
+
         {/* Print Dots */}
         {[...Array(3)].map((_, i) => (
           <motion.div
@@ -152,7 +152,7 @@ export function RollingPaperLoader({ size = 80, color = "#10B981" }: { size?: nu
           />
         ))}
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -200,7 +200,7 @@ export function InkDropletsLoader({ size = 80, colors = ["#EF4444", "#3B82F6", "
             }}
           />
         ))}
-        
+
         {/* Paper Base */}
         <motion.div
           className="absolute bottom-2 left-1/2 w-3/4 h-8 bg-white border-2 border-gray-300 rounded-sm"
@@ -214,7 +214,7 @@ export function InkDropletsLoader({ size = 80, colors = ["#EF4444", "#3B82F6", "
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Color Mixing Effect */}
         <motion.div
           className="absolute bottom-4 left-1/2 w-1/2 h-4 rounded-sm"
@@ -232,7 +232,7 @@ export function InkDropletsLoader({ size = 80, colors = ["#EF4444", "#3B82F6", "
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium text-gray-700"
         animate={{
@@ -277,7 +277,7 @@ export function StackedPapersLoader({ size = 80, color = "#8B5CF6" }: { size?: n
             }}
           />
         ))}
-        
+
         {/* Flying Paper */}
         <motion.div
           className="absolute w-3/4 h-3 bg-white border-2 rounded-sm shadow-lg"
@@ -296,7 +296,7 @@ export function StackedPapersLoader({ size = 80, color = "#8B5CF6" }: { size?: n
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Printer Top */}
         <motion.div
           className="absolute top-0 left-1/4 w-1/2 h-4 rounded-t-lg border-2"
@@ -314,7 +314,7 @@ export function StackedPapersLoader({ size = 80, color = "#8B5CF6" }: { size?: n
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -358,7 +358,7 @@ export function DigitalPrintLoader({ size = 80, color = "#EC4899" }: { size?: nu
             />
           ))}
         </div>
-        
+
         {/* Scanner Line */}
         <motion.div
           className="absolute left-0 right-0 h-0.5 rounded-full"
@@ -373,7 +373,7 @@ export function DigitalPrintLoader({ size = 80, color = "#EC4899" }: { size?: nu
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -412,7 +412,7 @@ export function PrintSpinner({ size = 20, color = "#3B82F6" }: { size?: number; 
           ease: "linear"
         }}
       />
-      
+
       {/* Inner Dot */}
       <motion.div
         className="absolute top-1/2 left-1/2 w-1 h-1 rounded-full"
@@ -450,7 +450,7 @@ export function PrintingProgressBar({
         <span className="text-sm font-medium text-gray-700">{label}</span>
         <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
       </div>
-      
+
       <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
         <motion.div
           className="h-full rounded-full"
@@ -459,7 +459,7 @@ export function PrintingProgressBar({
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
-        
+
         {/* Animated print head */}
         <motion.div
           className="absolute top-0 h-full w-1 bg-white rounded-full shadow-lg"
@@ -469,7 +469,7 @@ export function PrintingProgressBar({
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
       </div>
-      
+
       <div className="mt-2 flex justify-center">
         {[...Array(5)].map((_, i) => (
           <motion.div
@@ -503,7 +503,7 @@ export function LayerPrintingLoader({ size = 80, color = "#10B981" }: { size?: n
           className="absolute bottom-2 left-1/2 w-3/4 h-2 bg-gray-300 rounded-sm"
           style={{ transform: "translateX(-50%)" }}
         />
-        
+
         {/* Printing Layers */}
         {[...Array(6)].map((_, i) => (
           <motion.div
@@ -527,7 +527,7 @@ export function LayerPrintingLoader({ size = 80, color = "#10B981" }: { size?: n
             }}
           />
         ))}
-        
+
         {/* Print Nozzle */}
         <motion.div
           className="absolute w-2 h-4 rounded-b-full"
@@ -547,7 +547,7 @@ export function LayerPrintingLoader({ size = 80, color = "#10B981" }: { size?: n
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -573,7 +573,7 @@ export function BindingLoader({ size = 80, color = "#8B5CF6" }: { size?: number;
       <div className="relative" style={{ width: size, height: size }}>
         {/* Paper Stack */}
         <div className="absolute left-1/4 top-1/3 w-1/2 h-1/3 bg-white border-2 border-gray-300 rounded-sm" />
-        
+
         {/* Spiral Binding */}
         {[...Array(8)].map((_, i) => (
           <motion.div
@@ -596,7 +596,7 @@ export function BindingLoader({ size = 80, color = "#8B5CF6" }: { size?: number;
             }}
           />
         ))}
-        
+
         {/* Binding Machine */}
         <motion.div
           className="absolute right-1/4 top-1/4 w-1/4 h-1/2 rounded-lg border-2"
@@ -611,7 +611,7 @@ export function BindingLoader({ size = 80, color = "#8B5CF6" }: { size?: number;
           }}
         />
       </div>
-      
+
       <motion.p
         className="text-sm font-medium"
         style={{ color }}
@@ -641,9 +641,9 @@ export function RandomPrintingLoader({ size = 80 }: { size?: number }) {
     <LayerPrintingLoader size={size} />,
     <BindingLoader size={size} />
   ];
-  
+
   const randomLoader = loaders[Math.floor(Math.random() * loaders.length)];
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
