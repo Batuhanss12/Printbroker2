@@ -1746,7 +1746,15 @@ export default function QuoteForm() {
                       onClick={(e) => {
                         console.log("=== SUBMIT BUTTON CLICKED ===");
                         console.log("Button disabled:", mutation.isPending);
-                        console.log("Event:", e);
+                        console.log("Form errors:", form.formState.errors);
+                        console.log("Form values:", form.getValues());
+                        console.log("Form is valid:", form.formState.isValid);
+                        console.log("Additional formData:", formData);
+                        
+                        // Force validation check
+                        form.trigger().then(isValid => {
+                          console.log("Manual validation result:", isValid);
+                        });
                       }}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
