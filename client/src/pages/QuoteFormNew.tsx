@@ -215,17 +215,17 @@ const onSubmit = async (data: QuoteFormData) => {
 
       // Enhanced quote data structure for backend compatibility - ensure numeric values
       const quantityStr = data.specifications?.quantity?.toString()?.trim() || '';
-      const quantity = quantityStr && quantityStr !== '' ? Math.max(1, parseInt(quantityStr) || 1000) : 1000;
+      const quantity = quantityStr && quantityStr !== '' && !isNaN(parseInt(quantityStr)) ? Math.max(1, parseInt(quantityStr)) : 1000;
 
       const budgetStr = data.budget?.toString()?.trim() || '';
-      const estimatedBudget = budgetStr && budgetStr !== '' ? Math.max(0, parseFloat(budgetStr)) : null;
+      const estimatedBudget = budgetStr && budgetStr !== '' && !isNaN(parseFloat(budgetStr)) ? Math.max(0, parseFloat(budgetStr)) : null;
 
       const submissionData = {
         title: data.title.trim(),
         type: data.type || 'general_printing',
         category: 'general',
         quantity: quantity,
-        priceRange: null,
+        priceRange: estimatedBudget ? `${estimatedBudget}` : null,
         estimatedBudget: estimatedBudget,
         specifications: {
           quantity: quantity,
