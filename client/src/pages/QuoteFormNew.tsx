@@ -139,7 +139,7 @@ export default function QuoteForm() {
   // AI Design Functions
   const handleGenerateDesign = async () => {
     if (!designPrompt.trim()) return;
-    
+
     setIsGenerating(true);
     try {
       const response = await apiRequest(`/api/design/generate`, {
@@ -154,7 +154,7 @@ export default function QuoteForm() {
           }
         }),
       });
-      
+
       if (response.data) {
         setGeneratedDesigns(prev => [...prev, ...response.data]);
         toast({
@@ -186,7 +186,7 @@ export default function QuoteForm() {
     // Add design to uploaded files as a design file
     const designFile = `design_${Date.now()}.png`;
     setUploadedFiles(prev => [...prev, designFile]);
-    
+
     toast({
       title: "Tasarım Eklendi",
       description: "Tasarım dosyalara eklendi ve teklif ile birlikte gönderilecek.",
@@ -289,7 +289,7 @@ export default function QuoteForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <Navigation />
-      
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/dashboard">
@@ -298,7 +298,7 @@ export default function QuoteForm() {
               Dashboard'a Dön
             </Button>
           </Link>
-          
+
           {/* Header Card */}
           <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white to-blue-50">
             <CardContent className="p-8">
@@ -315,7 +315,7 @@ export default function QuoteForm() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
                   <div className="text-sm text-gray-500 mb-1">Hızlı Teklif</div>
@@ -574,7 +574,7 @@ export default function QuoteForm() {
                       acceptedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'application/postscript', 'image/vnd.adobe.photoshop']}
                       className="mb-4"
                     />
-                    
+
                     {uploadedFiles.length > 0 && (
                       <div className="mt-4">
                         <h4 className="font-medium mb-2">Yüklenen Dosyalar:</h4>
@@ -619,7 +619,7 @@ export default function QuoteForm() {
                     <p className="text-gray-600 mb-4">
                       Yapay zeka ile profesyonel tasarımlar oluşturun ve projelerinize ekleyin.
                     </p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Design Templates */}
                       <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -781,7 +781,7 @@ export default function QuoteForm() {
                     <p className="text-gray-600 mb-4">
                       Matbaa işiniz için gerekli dosyaları yükleyin. AI tasarım motoru ile oluşturulan tasarımlar otomatik olarak eklenir.
                     </p>
-                    
+
                     <FileUpload
                       onFileUpload={handleFileUpload}
                       maxFiles={10}
@@ -789,7 +789,7 @@ export default function QuoteForm() {
                       acceptedTypes={['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'application/postscript', 'image/vnd.adobe.photoshop']}
                       className="mb-4"
                     />
-                    
+
                     {uploadedFiles.length > 0 && (
                       <div className="mt-4">
                         <h4 className="font-medium mb-2">Yüklenen Dosyalar:</h4>
@@ -838,7 +838,7 @@ export default function QuoteForm() {
                       <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                       Teklif Özeti
                     </h3>
-                    
+
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Proje Tipi:</span>
