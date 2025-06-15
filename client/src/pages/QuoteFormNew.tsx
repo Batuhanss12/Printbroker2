@@ -93,10 +93,10 @@ export default function QuoteForm() {
         credentials: 'include',
         body: JSON.stringify(data),
       });
-      
+
       const result = await response.json();
       console.log("Mutation response:", result);
-      
+
       if (!response.ok || result.success === false) {
         throw new Error(result.message || `${response.status}: ${response.statusText}`);
       }
@@ -133,12 +133,17 @@ export default function QuoteForm() {
 
   const onSubmit = (data: QuoteFormData) => {
     // Enhanced quote data structure for backend compatibility
+    const quantity = parseInt(data.specifications?.quantity?.toString() || '1000') || 1000;
+    
     const submissionData = {
       title: data.title || `${data.type} Teklif Talebi`,
       type: data.type,
+      quantity: quantity,
+      priceRange: null,
+      estimatedBudget: data.budget ? parseFloat(data.budget) : null,
       specifications: {
         ...data.specifications,
-        quantity: data.specifications?.quantity || 1000,
+        quantity: quantity,
         material: data.specifications?.material || 'Standart',
         size: data.specifications?.size || 'A4',
         color: data.specifications?.color || 'CMYK',
@@ -146,7 +151,6 @@ export default function QuoteForm() {
       },
       description: data.description,
       deadline: data.deadline,
-      budget: data.budget,
       contactInfo: data.contactInfo || {
         companyName: "Belirtilmemiş",
         contactName: "Belirtilmemiş", 
@@ -841,8 +845,7 @@ export default function QuoteForm() {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      </div>)}
                   </div>
 
                   <div className="flex justify-between">
@@ -903,7 +906,7 @@ export default function QuoteForm() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={mutation.isPending}
+                      disabled={mutation.isPending || !form.formState.isValid}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8"
                     >
                       {mutation.isPending ? (
@@ -928,3 +931,7 @@ export default function QuoteForm() {
     </div>
   );
 }
+```
+
+```text
+1.  The code was modified to fix the button disabled logic in the quote form, ensuring that the form is only submittable when all required fields are valid.
