@@ -1,3 +1,4 @@
+typescript
 import {
   users,
   quotes,
@@ -981,7 +982,7 @@ export class DatabaseStorage implements IStorage {
         total: 0,
         page: options.page,
         totalPages: 0
-      };
+      };```typescript
     }
   }
   // Chat operations
@@ -1237,6 +1238,45 @@ export class DatabaseStorage implements IStorage {
       fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
     } catch (error) {
       console.error('Error storing notifications:', error);
+    }
+  }
+
+  async updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null> {
+    try {
+      const [updatedQuote] = await db
+        .update(quotes)
+        .set({
+          ...updateData,
+          updatedAt: new Date(),
+        })
+        .where(eq(quotes.id, id))
+        .returning();
+
+      return updatedQuote || null;
+    } catch (error) {
+      console.error('Error updating quote:', error);
+      return null;
+    }
+  }
+
+  async updateQuoteStatus(id: string, status: string): Promise<Quote | null> {
+    try {
+      console.log('📝 Updating quote status:', { id, status });
+
+      const [updatedQuote] = await db
+        .update(quotes)
+        .set({
+          status: status as any,
+          updatedAt: new Date(),
+        })
+        .where(eq(quotes.id, id))
+        .returning();
+
+      console.log('✅ Quote status updated:', updatedQuote?.id);
+      return updatedQuote || null;
+    } catch (error) {
+      console.error('❌ Error updating quote status:', error);
+      return null;
     }
   }
 }

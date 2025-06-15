@@ -1031,6 +1031,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quote submission endpoint
+  app.post('/api/quotes/submit', isAuthenticated, async (req: any, res) => {
+    try {
+      const { quoteId, submittedAt } = req.body;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Kullanıcı doğrulanamadı" });
+      }
+
+      if (!quoteId) {
+        return res.status(400).json({ success: false, message: "Teklif ID gerekli" });
+      }
+
+      console.log('📤 Processing quote submission:', { quoteId, userId });
+
+      // Update quote status to submitted
+      const updatedQuote = await storage.updateQuoteStatus(quoteId, 'submitted');
+      
+      if (!updatedQuote) {
+        return res.status(404).json({ success: false, message: "Teklif bulunamadı" });
+      }
+
+      // Log the submission
+      console.log('✅ Quote submitted successfully:', quoteId);
+
+      res.json({ 
+        success: true, 
+        message: "Teklif başarıyla gönderildi",
+        quote: updatedQuote 
+      });
+
+    } catch (error) {
+      console.error('❌ Quote submission error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Teklif gönderilirken hata oluştu" 
+      });
+    }
+  });
+
   // Professional Quote API
   app.post('/api/quotes/create', async (req, res) => {
     try {
