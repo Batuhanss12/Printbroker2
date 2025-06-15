@@ -472,11 +472,10 @@ export default function CustomerDashboard() {
                                         if (fallback) fallback.classList.remove('hidden');
                                       }}
                                       onLoad={(e) => {
-                                        console.log('✅ Image loaded successfully:', imageUrl);
                                         const target = e.currentTarget as HTMLImageElement;
                                         target.style.opacity = '1';
                                       }}
-                                      style={{ opacity: '0' }}
+                                      style={{ opacity: '0', transition: 'opacity 0.3s ease-in-out' }}
                                     />
                                     <div className="fallback-icon hidden absolute inset-0 bg-gray-100 flex items-center justify-center rounded-lg">
                                       <ImageIcon className="h-12 w-12 text-gray-400" />
@@ -557,7 +556,7 @@ export default function CustomerDashboard() {
                                               src={`/api/proxy/image?url=${encodeURIComponent(imageUrl)}`} 
                                               alt={design.prompt || 'Tasarım'}
                                               className="w-full h-auto rounded-lg max-h-96 object-contain mx-auto"
-                                              style={{ opacity: 0 }}
+                                              style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                                               onError={(e) => {
                                                 console.error('Preview image failed to load:', imageUrl);
                                                 const target = e.currentTarget as HTMLImageElement;
@@ -569,12 +568,9 @@ export default function CustomerDashboard() {
                                                 }
                                               }}
                                               onLoad={(e) => {
-                                                console.log('Image loaded successfully:', imageUrl);
                                                 const target = e.currentTarget as HTMLImageElement;
                                                 target.style.opacity = '1';
-                                                target.style.transition = 'opacity 0.3s ease-in-out';
                                               }}
-                                              style={{ opacity: '0' }}
                                             />
                                             <div className="preview-fallback hidden w-full h-64 bg-gray-100 flex flex-col items-center justify-center rounded-lg">
                                               <ImageIcon className="h-16 w-16 text-gray-400 mb-2" />
@@ -665,10 +661,10 @@ export default function CustomerDashboard() {
                                     if (imageUrl) {
                                       try {
                                         const sanitizedFilename = `tasarim-${design.id}-${Date.now()}.png`;
-                                        
+
                                         // Use proxy endpoint for reliable downloading
                                         const downloadUrl = `/api/download/image?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(sanitizedFilename)}`;
-                                        
+
                                         const link = document.createElement('a');
                                         link.href = downloadUrl;
                                         link.download = sanitizedFilename;
@@ -748,8 +744,7 @@ export default function CustomerDashboard() {
 
                           <CardContent className="p-4">
                             <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                              {design.prompt}
-                            </p>
+                              {design.prompt}</p>
                             <div className="flex items-center justify-between">
                               <span className="text-xs text-gray-500">
                                 {new Date(design.createdAt).toLocaleDateString('tr-TR')}
