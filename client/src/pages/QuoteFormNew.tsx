@@ -132,8 +132,23 @@ export default function QuoteForm() {
   });
 
   const onSubmit = (data: QuoteFormData) => {
-    console.log("New form submitted with data:", data);
-    mutation.mutate(data);mutate(data);
+    // Ensure required data is present
+    const submissionData = {
+      ...data,
+      specifications: {
+        ...data.specifications,
+        uploadedFiles,
+      },
+      contactInfo: data.contactInfo || {
+        companyName: "Belirtilmemiş",
+        contactName: "Belirtilmemiş", 
+        email: "email@example.com",
+        phone: ""
+      }
+    };
+
+    console.log("New form submitted with data:", submissionData);
+    mutation.mutate(submissionData);
   };
 
   // AI Design Functions
