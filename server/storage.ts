@@ -986,8 +986,7 @@ export class DatabaseStorage implements IStorage {
       console.error('Error fetching design history:', error);
       return {
         designs: [],
-        total:```text
-0,
+        total: 0,
         page: options.page,
         totalPages: 0
       };

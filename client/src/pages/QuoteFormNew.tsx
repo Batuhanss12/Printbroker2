@@ -850,7 +850,6 @@ export default function QuoteForm() {
                 <TabsContent value="submit" className="space-y-6">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      ```python
                       <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                       Teklif Özeti
                     </h3>
