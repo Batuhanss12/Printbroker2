@@ -128,6 +128,7 @@ function AppRouter() {
       <Route path="/contact" component={Contact} />
       <Route path="/help-center" component={HelpCenter} />
       <Route path="/user-guide" component={UserGuide} />
+      <Route path="/kvkk" component={KVKK} />
       <Route component={NotFound} />
     </Switch>
   );
