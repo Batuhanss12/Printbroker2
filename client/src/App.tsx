@@ -25,9 +25,16 @@ import DesignQuote from "./pages/DesignQuote";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
 import KVKK from "@/pages/KVKK";
-import About from "@/pages/About";
-import FAQ from "@/pages/FAQ";
-import Career from "@/pages/Career";
+import About from "./pages/About";
+import FAQ from "./pages/FAQ";
+import Career from "./pages/Career";
+import CookiePolicy from "./pages/CookiePolicy";
+import DistanceSalesContract from "./pages/DistanceSalesContract";
+import SecureShopping from "./pages/SecureShopping";
+import Shipping from "./pages/Shipping";
+import Contact from "./pages/Contact";
+import HelpCenter from "./pages/HelpCenter";
+import UserGuide from "./pages/UserGuide";
 import NotFound from "@/pages/not-found";
 
 function AppRouter() {
@@ -114,6 +121,13 @@ function AppRouter() {
       <Route path="/about" component={About} />
       <Route path="/faq" component={FAQ} />
       <Route path="/career" component={Career} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
+      <Route path="/distance-sales-contract" component={DistanceSalesContract} />
+      <Route path="/secure-shopping" component={SecureShopping} />
+      <Route path="/shipping" component={Shipping} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/help-center" component={HelpCenter} />
+      <Route path="/user-guide" component={UserGuide} />
       <Route component={NotFound} />
     </Switch>
   );

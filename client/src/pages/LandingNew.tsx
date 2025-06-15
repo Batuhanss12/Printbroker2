@@ -1016,17 +1016,17 @@ export default function LandingNew() {
             <div>
               <h3 className="font-semibold mb-4">Müşteri İlişkileri</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/about'}>Hakkımızda</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/kvkk'}>KVKK Aydınlatma Metni</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = '/terms-of-service'}>Üyelik Sözleşmesi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Çerez Politikası</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Mesafeli Satış Sözleşmesi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Güvenli Alışveriş</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Kargo</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Kullanım Koşulları</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Bize Ulaşın</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Yardım Merkezi</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">İşlem Rehberi</span></li>
+                <li><Link href="/about" className="hover:text-white transition-colors">Hakkımızda</Link></li>
+                <li><Link href="/kvkk" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</Link></li>
+                <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</Link></li>
+                <li><Link href="/cookie-policy" className="hover:text-white transition-colors">Çerez Politikası</Link></li>
+                <li><Link href="/distance-sales-contract" className="hover:text-white transition-colors">Mesafeli Satış Sözleşmesi</Link></li>
+                <li><Link href="/secure-shopping" className="hover:text-white transition-colors">Güvenli Alışveriş</Link></li>
+                <li><Link href="/shipping" className="hover:text-white transition-colors">Kargo</Link></li>
+                <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Kullanım Koşulları</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Bize Ulaşın</Link></li>
+                <li><Link href="/help-center" className="hover:text-white transition-colors">Yardım Merkezi</Link></li>
+                <li><Link href="/user-guide" className="hover:text-white transition-colors">İşlem Rehberi</Link></li>
               </ul>
             </div>
 
