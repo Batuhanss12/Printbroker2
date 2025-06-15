@@ -83,54 +83,55 @@ export default function QuoteForm() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      console.log("Mutation submitting data:", data);
-      
-      if (!user?.id) {
-        throw new Error("Kullanıcı girişi gerekli");
-      }
-      
-      const response = await fetch("/api/quotes", {
-        method: "POST",
+    mutationFn: async (data: QuoteFormData) => {
+      console.log("📤 Submitting quote with data:", data);
+
+      const response = await fetch('/api/quotes', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify(data),
       });
 
+      console.log("📡 Response status:", response.status);
       const result = await response.json();
-      console.log("Mutation response:", { status: response.status, result });
+      console.log("📋 Response data:", result);
 
       if (!response.ok) {
         const errorMessage = result.message || `Server error: ${response.status} ${response.statusText}`;
         throw new Error(errorMessage);
       }
-      
+
       if (result.success === false) {
         throw new Error(result.message || "Teklif oluşturulamadı");
       }
-      
+
       return result;
+    },
+    onMutate: () => {
+      // Set submitting state when mutation starts
+      setIsSubmitting(true);
     },
     onSuccess: (result) => {
       console.log("Quote creation successful:", result);
       setIsSubmitting(false);
-      
+
       toast({
         title: "Başarılı!",
         description: "Teklif talebiniz başarıyla gönderildi. Matbaa firmalarından yanıt bekleniyor.",
       });
-      
+
       // Reset form state
       form.reset();
       setUploadedFiles([]);
       setGeneratedDesigns([]);
       setCurrentTab("details");
-      
+
       // Refresh quotes data
       queryClient.invalidateQueries({ queryKey: ["/api/quotes"] });
-      
+
       // Redirect to dashboard after short delay
       setTimeout(() => {
         window.location.href = "/customer-dashboard";
@@ -139,7 +140,7 @@ export default function QuoteForm() {
     onError: (error) => {
       console.error("Quote submission error:", error);
       setIsSubmitting(false);
-      
+
       if (isUnauthorizedError(error)) {
         toast({
           title: "Oturum Süresi Doldu",
@@ -149,29 +150,49 @@ export default function QuoteForm() {
         setTimeout(() => {
           window.location.href = "/?login=true";
         }, 1000);
-        return;
+      } else {
+        toast({
+          title: "Hata",
+          description: error instanceof Error ? error.message : "Teklif gönderilirken hata oluştu",
+          variant: "destructive",
+        });
       }
-      
-      const errorMessage = error instanceof Error ? error.message : "Bilinmeyen hata oluştu";
-      
-      toast({
-        title: "Teklif Gönderme Hatası",
-        description: errorMessage,
-        variant: "destructive",
-      });
     },
   });
 
-  const onSubmit = (data: QuoteFormData) => {
-    if (isSubmitting || mutation.isPending) return;
-    
-    console.log("Form submission started with data:", data);
+const onSubmit = async (data: QuoteFormData) => {
+    console.log("Form submitted with data:", data);
+
+    // Prevent duplicate submissions
+    if (isSubmitting || mutation.isPending) {
+      console.log("🚫 Preventing duplicate submission");
+      return;
+    }
+
+    // Only proceed if we're on the submit tab and have intentional submission
+    if (currentTab !== "submit") {
+      console.log("🚫 Form submission blocked - not on submit tab");
+      return;
+    }
+
+    // Additional check to ensure this is an intentional submission
+    if (!data.title || !data.contactInfo?.companyName || !data.contactInfo?.email) {
+      console.log("🚫 Form not ready for submission - missing required fields");
+      toast({
+        title: "Form Eksik",
+        description: "Lütfen tüm gerekli alanları doldurun",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log("✅ Form validation passed, proceeding with submission");
     setIsSubmitting(true);
-    
+
     try {
-      // Basic required field validation with better error messages
+      // Enhanced validation
       if (!data.title?.trim()) {
-        throw new Error("Proje başlığı boş olamaz");
+        throw new Error("Başlık alanı boş olamaz");
       }
 
       if (!data.contactInfo?.companyName?.trim()) {
@@ -179,7 +200,7 @@ export default function QuoteForm() {
       }
 
       if (!data.contactInfo?.contactName?.trim()) {
-        throw new Error("Yetkili kişi adı boş olamaz");
+        throw new Error("İletişim kişisi adı boş olamaz");
       }
 
       if (!data.contactInfo?.email?.trim()) {
@@ -191,17 +212,21 @@ export default function QuoteForm() {
       if (!emailRegex.test(data.contactInfo.email.trim())) {
         throw new Error("Geçerli bir e-posta adresi girin");
       }
-      
-      // Enhanced quote data structure for backend compatibility
-      const quantity = Math.max(1, parseInt(data.specifications?.quantity?.toString() || '1000') || 1000);
-      
+
+      // Enhanced quote data structure for backend compatibility - ensure numeric values
+      const quantityStr = data.specifications?.quantity?.toString()?.trim() || '';
+      const quantity = quantityStr && quantityStr !== '' ? Math.max(1, parseInt(quantityStr) || 1000) : 1000;
+
+      const budgetStr = data.budget?.toString()?.trim() || '';
+      const estimatedBudget = budgetStr && budgetStr !== '' ? Math.max(0, parseFloat(budgetStr)) : null;
+
       const submissionData = {
         title: data.title.trim(),
         type: data.type || 'general_printing',
         category: 'general',
         quantity: quantity,
         priceRange: null,
-        estimatedBudget: data.budget ? Math.max(0, parseFloat(data.budget)) : null,
+        estimatedBudget: estimatedBudget,
         specifications: {
           quantity: quantity,
           material: data.specifications?.material?.trim() || 'Standart',
@@ -231,7 +256,7 @@ export default function QuoteForm() {
 
       console.log("Processed quote data for submission:", submissionData);
       mutation.mutate(submissionData);
-      
+
     } catch (error) {
       console.error("Form validation error:", error);
       setIsSubmitting(false);
@@ -470,7 +495,13 @@ export default function QuoteForm() {
                 </TabsTrigger>
               </TabsList>
 
-              <form onSubmit={form.handleSubmit(onSubmit)}>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                console.log("🎯 Form submit event triggered");
+                // Block all automatic submissions - only allow explicit button clicks
+                console.log("🚫 Automatic form submission blocked");
+                return false;
+              }} className="space-y-6">
                 <TabsContent value="details" className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -865,7 +896,7 @@ export default function QuoteForm() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setCurrentTab("design")}
+                      onClick={() => setCurrentTab("files")}
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Geri
@@ -1032,9 +1063,30 @@ export default function QuoteForm() {
                       Geri
                     </Button>
                     <Button
-                      type="submit"
+                      type="button"
                       disabled={isSubmitting || mutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("🎯 Explicit submit button clicked");
+                        
+                        // Get current form values
+                        const formValues = form.getValues();
+                        
+                        // Manual validation and submission
+                        const isValid = await form.trigger();
+                        if (isValid && currentTab === "submit") {
+                          await onSubmit(formValues);
+                        } else {
+                          console.log("🚫 Form validation failed or not on submit tab");
+                          toast({
+                            title: "Form Hatası",
+                            description: "Lütfen tüm gerekli alanları doldurun ve son adımda olduğunuzdan emin olun",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                     >
                       {(isSubmitting || mutation.isPending) ? (
                         <>
@@ -1058,7 +1110,3 @@ export default function QuoteForm() {
     </div>
   );
 }
-```
-
-```text
-1.  The code was modified to fix the button disabled logic in the quote form, ensuring that the form is only submittable when all required fields are valid.

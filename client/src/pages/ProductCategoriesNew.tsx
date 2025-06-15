@@ -72,70 +72,47 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (isSubmitting) return;
+
+    if (isSubmitting) {
+      console.log('🚫 Already submitting, preventing duplicate submission');
+      return;
+    }
+
+    console.log('📤 Starting quote submission with data:', formData);
     setIsSubmitting(true);
 
-    console.log('📤 Starting quote submission:', formData);
+    try {
+      // Enhanced validation with specific checks
+      const quantityStr = formData.quantity?.toString()?.trim() || '';
+      if (!quantityStr || quantityStr === '' || isNaN(parseInt(quantityStr))) {
+        throw new Error('Geçerli bir miktar bilgisi gereklidir');
+      }
 
-    // Enhanced form validation
-    if (!formData.quantity || parseInt(formData.quantity) < 1) {
-      toast({
-        title: "Hata",
-        description: "Lütfen geçerli bir miktar girin.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      if (!formData.companyName || formData.companyName.trim() === '') {
+        throw new Error('Firma adı gereklidir');
+      }
 
-    if (!formData.companyName?.trim()) {
-      toast({
-        title: "Hata", 
-        description: "Firma adı gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      if (!formData.contactName || formData.contactName.trim() === '') {
+        throw new Error('Yetkili kişi adı gereklidir');
+      }
 
-    if (!formData.contactName?.trim()) {
-      toast({
-        title: "Hata",
-        description: "Yetkili kişi adı gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      if (!formData.email || formData.email.trim() === '') {
+        throw new Error('E-posta adresi gereklidir');
+      }
 
-    if (!formData.email?.trim()) {
-      toast({
-        title: "Hata",
-        description: "E-posta adresi gerekli.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        throw new Error('Geçerli bir e-posta adresi girin');
+      }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
-      toast({
-        title: "Hata",
-        description: "Geçerli bir e-posta adresi girin.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+      console.log('✅ All validations passed, proceeding with submission');
 
-    const quantity = parseInt(formData.quantity) || 1000;
-    
-    const submitData = {
-      title: `${category.title} - ${quantity} adet`,
-      type: 'general_printing',
+      const quantity = Math.max(1, parseInt(quantityStr) || 1000);
+
+      const submitData = {
+        title: `${category.title} - ${quantity} adet`,
+        type: 'general_printing',
       category: category.category || 'general',
       status: 'pending',
       quantity: quantity,
@@ -206,13 +183,22 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         throw new Error(result.message || 'Quote submission failed');
       }
     } catch (error) {
+        console.error('❌ Quote submission error:', error);
+        toast({
+          title: "Hata",
+          description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
       console.error('❌ Quote submission error:', error);
       toast({
         title: "Hata",
         description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
