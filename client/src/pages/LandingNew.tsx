@@ -1025,12 +1025,19 @@ export default function LandingNew() {
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Platform</h3>
+              <h3 className="font-semibold mb-4">Müşteri İlişkileri</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Matbaa Ol</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Fiyatlandırma</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Dokümantasyonu</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Kalite Standartları</a></li>
+                <li><a href="/privacy-policy" className="hover:text-white transition-colors">Hakkımızda</a></li>
+                <li><a href="/kvkk" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</a></li>
+                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Çerez Politikası</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Mesafeli Satış Sözleşmesi</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Güvenli Alışveriş</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Kargo</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Kullanım Koşulları</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Bize Ulaşın</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Yardım Merkezi</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">İşlem Rehberi</a></li>
               </ul>
             </div>
 
