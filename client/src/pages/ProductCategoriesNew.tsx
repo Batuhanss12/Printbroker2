@@ -56,6 +56,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     productType: category.id,
     quantity: '',
@@ -71,6 +72,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     console.log('📤 Starting quote submission:', formData);
 
@@ -81,6 +83,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         description: "Lütfen geçerli bir miktar girin.",
         variant: "destructive",
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -90,6 +93,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         description: "Firma adı gerekli.",
         variant: "destructive",
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -99,6 +103,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         description: "Yetkili kişi adı gerekli.",
         variant: "destructive",
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -108,6 +113,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         description: "E-posta adresi gerekli.",
         variant: "destructive",
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -185,6 +191,8 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         description: error instanceof Error ? error.message : "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -419,11 +427,20 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
             </Button>
             <Button 
               type="submit" 
-              disabled={!formData.quantity || parseInt(formData.quantity) < 1 || !formData.companyName?.trim() || !formData.contactName?.trim() || !formData.email?.trim()}
+              disabled={isSubmitting || !formData.quantity || parseInt(formData.quantity) < 1 || !formData.companyName?.trim() || !formData.contactName?.trim() || !formData.email?.trim()}
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Zap className="w-4 h-4 mr-2" />
-              Otomatik Sistem Başlat
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Gönderiliyor...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 mr-2" />
+                  Otomatik Sistem Başlat
+                </>
+              )}
             </Button>
           </div>
         </form>
