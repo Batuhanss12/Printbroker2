@@ -1018,7 +1018,7 @@ export default function LandingNew() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link href="/about" className="hover:text-white transition-colors">Hakkımızda</Link></li>
                 <li><Link href="/kvkk" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</Link></li>
-                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</a></li>
+                <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Üyelik Sözleşmesi</Link></li>
                 <li><Link href="/cookie-policy" className="hover:text-white transition-colors">Çerez Politikası</Link></li>
                 <li><Link href="/distance-sales-contract" className="hover:text-white transition-colors">Mesafeli Satış Sözleşmesi</Link></li>
                 <li><Link href="/secure-shopping" className="hover:text-white transition-colors">Güvenli Alışveriş</Link></li>
@@ -1061,20 +1061,14 @@ export default function LandingNew() {
               © 2024 MatBixx. Tüm hakları saklıdır.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy-policy">
-                <a className="text-sm text-gray-400 hover:text-white transition-colors">
-                  Gizlilik Politikası
-                </a>
+              <Link href="/privacy-policy" className="text-sm text-gray-400 hover:text-white transition-colors">
+                Gizlilik Politikası
               </Link>
-              <Link href="/terms-of-service">
-                <a className="text-sm text-gray-400 hover:text-white transition-colors">
-                  Kullanım Koşulları
-                </a>
+              <Link href="/terms-of-service" className="text-sm text-gray-400 hover:text-white transition-colors">
+                Kullanım Koşulları
               </Link>
-              <Link href="/kvkk">
-                <a className="text-sm text-gray-400 hover:text-white transition-colors">
-                  KVKK
-                </a>
+              <Link href="/kvkk" className="text-sm text-gray-400 hover:text-white transition-colors">
+                KVKK
               </Link>
             </div>
           </div>
