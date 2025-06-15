@@ -192,8 +192,12 @@ export default function QuoteForm() {
         throw new Error("Geçerli bir e-posta adresi girin");
       }
       
-      // Enhanced quote data structure for backend compatibility
-      const quantity = Math.max(1, parseInt(data.specifications?.quantity?.toString() || '1000') || 1000);
+      // Enhanced quote data structure for backend compatibility - ensure numeric values
+      const quantityStr = data.specifications?.quantity?.toString()?.trim() || '';
+      const quantity = quantityStr && quantityStr !== '' ? Math.max(1, parseInt(quantityStr) || 1000) : 1000;
+      
+      const budgetStr = data.budget?.toString()?.trim() || '';
+      const estimatedBudget = budgetStr && budgetStr !== '' ? Math.max(0, parseFloat(budgetStr)) : null;
       
       const submissionData = {
         title: data.title.trim(),
@@ -201,7 +205,7 @@ export default function QuoteForm() {
         category: 'general',
         quantity: quantity,
         priceRange: null,
-        estimatedBudget: data.budget ? Math.max(0, parseFloat(data.budget)) : null,
+        estimatedBudget: estimatedBudget,
         specifications: {
           quantity: quantity,
           material: data.specifications?.material?.trim() || 'Standart',
