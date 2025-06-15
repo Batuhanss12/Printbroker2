@@ -293,9 +293,6 @@ export default function LandingNew() {
               <Link href="/references" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Referanslar
               </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                Blog
-              </Link>
 
               {/* Search Bar */}
               <div className="relative">
@@ -1038,6 +1035,16 @@ export default function LandingNew() {
                 <li><a href="#" className="hover:text-white transition-colors">Bize Ulaşın</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Yardım Merkezi</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">İşlem Rehberi</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Kurumsal</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="/about" className="hover:text-white transition-colors">Hakkımızda</a></li>
+                <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="/faq" className="hover:text-white transition-colors">Sıkça Sorulan Sorular</a></li>
+                <li><a href="/career" className="hover:text-white transition-colors">Kariyer</a></li>
               </ul>
             </div>
 
