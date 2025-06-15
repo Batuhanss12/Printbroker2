@@ -22,10 +22,13 @@ import ProductCategoriesNew from "./pages/ProductCategoriesNew";
 import References from "./pages/References";
 import ReferencesNew from "./pages/ReferencesNew";
 import DesignQuote from "./pages/DesignQuote";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import KVKK from "./pages/KVKK";
-import NotFound from "./pages/not-found";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfService from "@/pages/TermsOfService";
+import KVKK from "@/pages/KVKK";
+import About from "@/pages/About";
+import FAQ from "@/pages/FAQ";
+import Career from "@/pages/Career";
+import NotFound from "@/pages/not-found";
 
 function AppRouter() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -46,7 +49,6 @@ function AppRouter() {
           <Route path="/old" component={Landing} />
           <Route path="/old-products" component={ProductCategories} />
           <Route path="/references" component={ReferencesNew} />
-          <Route path="/old-references" component={References} />
           <Route path="/customer-register" component={CustomerRegister} />
           <Route path="/printer-register" component={PrinterRegister} />
           <Route path="/payment" component={Payment} />
@@ -109,6 +111,9 @@ function AppRouter() {
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/kvkk" component={KVKK} />
+      <Route path="/about" component={About} />
+      <Route path="/faq" component={FAQ} />
+      <Route path="/career" component={Career} />
       <Route component={NotFound} />
     </Switch>
   );
