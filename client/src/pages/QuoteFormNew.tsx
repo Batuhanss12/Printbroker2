@@ -138,11 +138,52 @@ export default function QuoteForm() {
     
     setIsSubmitting(true);
     
+    // Validate required fields
+    if (!data.title?.trim()) {
+      toast({
+        title: "Hata",
+        description: "Proje başlığı gerekli.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!data.contactInfo?.companyName?.trim()) {
+      toast({
+        title: "Hata", 
+        description: "Firma adı gerekli.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!data.contactInfo?.contactName?.trim()) {
+      toast({
+        title: "Hata",
+        description: "Yetkili kişi adı gerekli.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!data.contactInfo?.email?.trim()) {
+      toast({
+        title: "Hata",
+        description: "E-posta adresi gerekli.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+    
     // Enhanced quote data structure for backend compatibility
     const quantity = parseInt(data.specifications?.quantity?.toString() || '1000') || 1000;
     
     const submissionData = {
-      title: data.title || `${data.type} Teklif Talebi`,
+      title: data.title.trim(),
       type: data.type,
       quantity: quantity,
       priceRange: null,
@@ -155,13 +196,13 @@ export default function QuoteForm() {
         color: data.specifications?.color || 'CMYK',
         uploadedFiles: uploadedFiles
       },
-      description: data.description,
-      deadline: data.deadline,
-      contactInfo: data.contactInfo || {
-        companyName: "Belirtilmemiş",
-        contactName: "Belirtilmemiş", 
-        email: "email@example.com",
-        phone: ""
+      description: data.description || '',
+      deadline: data.deadline || null,
+      contactInfo: {
+        companyName: data.contactInfo.companyName.trim(),
+        contactName: data.contactInfo.contactName.trim(),
+        email: data.contactInfo.email.trim(),
+        phone: data.contactInfo?.phone?.trim() || ""
       },
       files: uploadedFiles,
       generatedDesigns: generatedDesigns.map(design => ({
@@ -897,6 +938,61 @@ export default function QuoteForm() {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Yüklenen Dosya:</span>
                         <span className="font-medium">{uploadedFiles.length} dosya</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Information Form */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4">İletişim Bilgileri</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="companyName">Firma Adı *</Label>
+                        <Input
+                          id="companyName"
+                          placeholder="Firma adınız"
+                          {...form.register("contactInfo.companyName")}
+                          className={form.formState.errors.contactInfo?.companyName ? "border-red-500" : ""}
+                        />
+                        {form.formState.errors.contactInfo?.companyName && (
+                          <p className="text-sm text-red-500">{form.formState.errors.contactInfo.companyName.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="contactName">Yetkili Kişi *</Label>
+                        <Input
+                          id="contactName"
+                          placeholder="Ad Soyad"
+                          {...form.register("contactInfo.contactName")}
+                          className={form.formState.errors.contactInfo?.contactName ? "border-red-500" : ""}
+                        />
+                        {form.formState.errors.contactInfo?.contactName && (
+                          <p className="text-sm text-red-500">{form.formState.errors.contactInfo.contactName.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="email">E-posta *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="email@example.com"
+                          {...form.register("contactInfo.email")}
+                          className={form.formState.errors.contactInfo?.email ? "border-red-500" : ""}
+                        />
+                        {form.formState.errors.contactInfo?.email && (
+                          <p className="text-sm text-red-500">{form.formState.errors.contactInfo.email.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Telefon</Label>
+                        <Input
+                          id="phone"
+                          placeholder="0555 123 4567"
+                          {...form.register("contactInfo.phone")}
+                        />
                       </div>
                     </div>
                   </div>
