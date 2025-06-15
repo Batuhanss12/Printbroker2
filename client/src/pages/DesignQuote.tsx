@@ -161,15 +161,18 @@ export default function DesignQuote() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(quoteData),
+        credentials: 'include' // Include cookies for authentication
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success !== false) {
         // Clear stored design data
         localStorage.removeItem('selectedDesign');
         
         toast({
           title: "Teklif Başarıyla Gönderildi",
-          description: "Tasarımınız için teklif talebiniz matbaa firmalarına iletildi. En kısa sürede size dönüş yapılacaktır.",
+          description: result.message || "Tasarımınız için teklif talebiniz matbaa firmalarına iletildi. En kısa sürede size dönüş yapılacaktır.",
         });
 
         // Redirect based on authentication
@@ -181,7 +184,7 @@ export default function DesignQuote() {
           }
         }, 2000);
       } else {
-        throw new Error('Quote submission failed');
+        throw new Error(result.message || 'Quote submission failed');
       }
     } catch (error) {
       console.error('Quote submission error:', error);

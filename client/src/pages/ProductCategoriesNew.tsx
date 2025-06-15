@@ -153,11 +153,12 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
         credentials: 'include'
       });
 
-      if (response.ok) {
-        const result = await response.json();
+      const result = await response.json();
+      
+      if (response.ok && result.success !== false) {
         toast({
           title: "Teklif Talebi Başarıyla Gönderildi",
-          description: "Otomatik sistemimiz devreye girdi. 60 saniye içinde 500+ üretici firmadan teklifler gelmeye başlayacak.",
+          description: result.message || "Otomatik sistemimiz devreye girdi. 60 saniye içinde 500+ üretici firmadan teklifler gelmeye başlayacak.",
         });
         setIsOpen(false);
         setFormData({
@@ -173,7 +174,7 @@ const ProfessionalQuoteDialog = ({ category }: { category: any }) => {
           urgency: 'normal'
         });
       } else {
-        throw new Error('Quote submission failed');
+        throw new Error(result.message || 'Quote submission failed');
       }
     } catch (error) {
       console.error('Quote submission error:', error);
