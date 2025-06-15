@@ -1,5 +1,38 @@
 [
   {
+    "id": "e85fcca1-4e73-45db-af19-d3e94a11e704",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "prompt": "Matbixx için profesyonel ve kurumsal logo tasarla\n",
+    "options": {
+      "aspectRatio": "1x1",
+      "styleType": "DESIGN",
+      "magicPrompt": "ON",
+      "negativePrompt": ""
+    },
+    "result": {
+      "0": {
+        "is_image_safe": true,
+        "prompt": "A modern, minimalist logo design featuring the text \"Matbixx\" in a bold, sans-serif font with a subtle gradient transitioning from deep grey to charcoal black. The wordmark is centered around a stylized, geometric representation of a circuit board node, depicted as a glowing cyan sphere. A thin, linear network of interconnected nodes extends outwards from the central sphere, fading into the background, suggesting connectivity and innovation. The background is a clean, flat dark grey, allowing the logo to appear professional and sophisticated.",
+        "resolution": "1024x1024",
+        "seed": 682913171,
+        "style_type": "DESIGN",
+        "url": "https://ideogram.ai/api/images/ephemeral/I_gRbhsnTWyRp1yr5ymWlQ.png?exp=1750035683&sig=43413d597179f71ef93d83fee40ca6c433312d3b83233e3c768b8e571bdbd6ba"
+      },
+      "generationId": "02bc9ef1-bc2e-4edc-9147-1f4fb36c8854",
+      "metadata": {
+        "model": "V_2",
+        "aspectRatio": "1x1",
+        "styleType": "DESIGN",
+        "creditCost": 35
+      }
+    },
+    "url": "https://ideogram.ai/api/images/ephemeral/I_gRbhsnTWyRp1yr5ymWlQ.png?exp=1750035683&sig=43413d597179f71ef93d83fee40ca6c433312d3b83233e3c768b8e571bdbd6ba",
+    "status": "completed",
+    "downloadCount": 0,
+    "isBookmarked": false,
+    "createdAt": "2025-06-15T01:01:23.781Z"
+  },
+  {
     "id": "c339dc8a-f8ba-48e1-b2f3-b500f0eb2e6e",
     "userId": "CUS-1749640755370-ACTPK3",
     "prompt": "MatBixx için kurumsal logo tasarımı",
