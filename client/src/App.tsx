@@ -134,6 +134,26 @@ function AppRouter() {
   );
 }
 
+// Enhanced global error handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  
+  // Log additional details for debugging
+  if (event.reason instanceof Error) {
+    console.error('Error stack:', event.reason.stack);
+    console.error('Error message:', event.reason.message);
+  }
+  
+  // Prevent the default browser behavior
+  event.preventDefault();
+});
+
+// Global error boundary for uncaught errors
+window.addEventListener('error', (event) => {
+  console.error('Uncaught error:', event.error);
+  event.preventDefault();
+});
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
