@@ -7,6 +7,7 @@ import fs from "fs";
 import { randomUUID } from "crypto";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { notificationService } from "./notificationService";
 
 // Admin middleware
 const requireAdmin = async (req: any, res: any, next: any) => {
@@ -189,7 +190,7 @@ async function notifyPrintersForNewQuote(quote: any) {
           });
 
           // Broadcast real-time notification via WebSocket
-          broadcastToRoom(printer.id, {
+          notificationService.broadcastToUser(printer.id, {
             type: 'new_quote_notification',
             title: 'Yeni Teklif Talebi',
             message: `${quote.category} - ${quote.quantity?.toLocaleString()} adet - ₺${quote.totalPrice}`,
@@ -2198,8 +2199,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             createdAt: new Date()
           });
 
-          // Broadcast real-time notification to customer
-          broadcastToRoom(quote.customerId, {
+          // Broadcast real-time notification to customer via WebSocket
+          notificationService.broadcastToUser(quote.customerId, {
             type: 'quote_response_notification',
             title: 'Teklif Yanıtı Alındı',
             message: `${user.companyName || 'Matbaa'} firmasından teklif geldi: ₺${price} - ${estimatedDays} gün`,
@@ -4503,13 +4504,26 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
   }
 
   wss.on('connection', (ws: WebSocket, req) => {
+    connectionCount.current++;
     console.log('WebSocket client connected');
+    let currentUserId: string | null = null;
 
     ws.on('message', async (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString());
 
-        if (message.type === 'join_room') {
+        if (message.type === 'authenticate') {
+          // User authentication for notifications
+          const { userId } = message;
+          if (userId) {
+            currentUserId = userId;
+            notificationService.addClient(userId, ws);
+            ws.send(JSON.stringify({
+              type: 'authenticated',
+              userId
+            }));
+          }
+        } else if (message.type === 'join_room') {
           const { roomId } = message;
 
           // Verify room exists and user has access
@@ -4564,7 +4578,14 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
     });
 
     ws.on('close', () => {
-      // Remove client from all rooms
+      connectionCount.current--;
+      
+      // Remove client from notification service
+      if (currentUserId) {
+        notificationService.removeClient(currentUserId, ws);
+      }
+      
+      // Remove client from all chat rooms
       clients.forEach((roomClients, roomId) => {
         roomClients.delete(ws);
         if (roomClients.size === 0) {
