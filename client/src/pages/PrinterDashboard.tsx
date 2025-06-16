@@ -1,3 +1,4 @@
+typescript
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1315,13 +1316,40 @@ export default function PrinterDashboard() {
 
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
+                                    // Değer karşılıkları için mapping
+                                    
+
+                                    const getDisplayValue = (val: any): string => {
+                                      const strVal = String(val).toLowerCase();
+
+                                      switch (strVal) {
+                                        case 'straight': return 'Düz Kesim';
+                                        case 'thermal-direct': return 'Termal Direkt';
+                                        case 'thermal-transfer': return 'Termal Transfer';
+                                        case 'permanent': return 'Kalıcı';
+                                        case 'removable': return 'Çıkarılabilir';
+                                        case 'yes': case 'true': return 'Evet';
+                                        case 'no': case 'false': return 'Hayır';
+                                        case 'business-card': return 'Kartvizit';
+                                        case 'brochure': return 'Broşür';
+                                        case 'poster': return 'Poster';
+                                        case 'a4': return 'A4';
+                                        case 'a3': return 'A3';
+                                        case 'color': return 'Renkli';
+                                        case 'bw': return 'Siyah Beyaz';
+                                        default: return String(val);
+                                      }
+                                    };
+
+                                    const displayValue = getDisplayValue(value);
+
                                     return (
                                       <div key={key} className="bg-white p-3 rounded border">
                                         <span className="font-medium text-blue-700 block">
                                           {displayName}:
                                         </span> 
                                         <span className="text-blue-900 text-base">
-                                          {Array.isArray(value) ? value.join(', ') : String(value)}
+                                          {displayValue}
                                         </span>
                                       </div>
                                     );
