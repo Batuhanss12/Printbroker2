@@ -1,0 +1,48 @@
+Refused to load the script 'https://replit.com/public/js/replit-dev-banner.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.ideogram.ai *.replit.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+Understand this error
+client:536 WebSocket connection to 'wss://localhost:3001/?token=Gxyx-BkdIwXq' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+client:560 [vite] server connection lost. Polling for restart...
+client:736 
+            
+            
+           GET https://localhost:3001/ net::ERR_CONNECTION_REFUSED
+ping @ client:736
+waitForSuccessfulPing @ client:749
+(anonymous) @ client:561Understand this error
+chunk-RPCDYKBN.js?v=2adbb380:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+NotificationSystem.tsx:32 NotificationSystem WebSocket connected
+NotificationSystem.tsx:45 User authenticated for notifications: CUS-1749640755370-ACTPK3
+client:736 
+            
+            
+           GET https://localhost:3001/ net::ERR_CONNECTION_REFUSED
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
+client:736 
+            
+            
+           GET https://localhost:3001/ net::ERR_CONNECTION_REFUSED
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
+client:736 
+            
+            
+           GET https://localhost:3001/ net::ERR_CONNECTION_REFUSED
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
+client:736 
+            
+            
+           GET https://localhost:3001/ net::ERR_CONNECTION_REFUSED
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561Understand this error
