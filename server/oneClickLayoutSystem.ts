@@ -1,213 +1,194 @@
-import { advancedLayoutEngine } from "./advancedLayoutEngine";
-import { fileProcessingService } from "./fileProcessingService";
-import { nodePDFGenerator } from "./pdfGeneratorJS";
-import { aiLayoutOptimizer } from "./aiLayoutOptimizer";
-import { aiDesignAnalyzer } from "./aiDesignAnalyzer";
-
-interface OneClickLayoutRequest {
-  designIds: string[];
-  sheetSettings: {
-    width: number;
-    height: number;
-    margin: number;
-    bleedMargin: number;
-  };
-  cuttingSettings: {
-    enabled: boolean;
-    markLength: number;
-    markWidth: number;
-  };
-}
-
-interface ProcessedDesign {
+interface DesignItem {
   id: string;
   name: string;
   width: number;
   height: number;
   filePath: string;
-  vectorContent: boolean;
-  quality: 'low' | 'medium' | 'high';
+}
+
+interface LayoutResult {
+  success: boolean;
+  arrangements: Array<{
+    id: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    rotation: number;
+  }>;
+  efficiency: number;
+  pdfPath?: string;
+  message: string;
 }
 
 export class OneClickLayoutSystem {
-  
-  async processOneClickLayout(
-    designs: any[], 
-    settings: OneClickLayoutRequest
-  ): Promise<{
-    success: boolean;
-    arrangements: any[];
-    pdfPath?: string;
-    efficiency: number;
-    statistics: {
-      totalDesigns: number;
-      arrangedDesigns: number;
-      rotatedItems: number;
-      wastePercentage: number;
-    };
-    message?: string;
-  }> {
-    try {
-      console.log('🚀 OneClick layout processing started');
-      console.log('Designs to process:', designs.length);
-      console.log('Sheet settings:', settings.sheetSettings);
-
-      if (!designs || designs.length === 0) {
-        return {
-          success: false,
-          arrangements: [],
-          efficiency: 0,
-          statistics: {
-            totalDesigns: 0,
-            arrangedDesigns: 0,
-            rotatedItems: 0,
-            wastePercentage: 100
-          },
-          message: 'No designs provided for layout'
-        };
-      }
-
-      // Convert designs to layout format with proper dimension extraction
-      const layoutDesigns = designs.map(design => {
-        // Try to get dimensions from various sources in priority order
-        let width = 50; // default fallback
-        let height = 30; // default fallback
-        
-        // Check smartDimensions first (most accurate)
-        if (design.smartDimensions?.width && design.smartDimensions?.height) {
-          width = design.smartDimensions.width;
-          height = design.smartDimensions.height;
-          console.log(`Using smartDimensions for ${design.id}: ${width}x${height}mm`);
-        }
-        // Check realDimensionsMM
-        else if (design.realDimensionsMM?.widthMM && design.realDimensionsMM?.heightMM) {
-          width = design.realDimensionsMM.widthMM;
-          height = design.realDimensionsMM.heightMM;
-          console.log(`Using realDimensionsMM for ${design.id}: ${width}x${height}mm`);
-        }
-        // Check direct MM fields
-        else if (design.widthMM && design.heightMM) {
-          width = design.widthMM;
-          height = design.heightMM;
-          console.log(`Using widthMM/heightMM for ${design.id}: ${width}x${height}mm`);
-        }
-        // Check generic width/height
-        else if (design.width && design.height) {
-          width = design.width;
-          height = design.height;
-          console.log(`Using width/height for ${design.id}: ${width}x${height}mm`);
-        }
-        // Parse from realDimensionsMM string format
-        else if (design.realDimensionsMM && typeof design.realDimensionsMM === 'string') {
-          const match = design.realDimensionsMM.match(/(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)mm/);
-          if (match) {
-            width = parseFloat(match[1]);
-            height = parseFloat(match[2]);
-            console.log(`Parsed from string for ${design.id}: ${width}x${height}mm`);
-          }
-        }
-        else {
-          console.warn(`No dimensions found for design ${design.id}, using defaults: ${width}x${height}mm`);
-        }
-
-        return {
-          id: design.id,
-          name: design.name || design.originalName || `Design_${design.id}`,
-          width,
-          height,
-          canRotate: true
-        };
-      });
-
-      console.log('Prepared layout designs:', layoutDesigns);
-
-      // Layout settings
-      const layoutSettings = {
-        sheetWidth: settings.sheetSettings.width,
-        sheetHeight: settings.sheetSettings.height,
-        margin: settings.sheetSettings.margin,
-        spacing: 5,
-        allowRotation: true,
-        optimizeForWaste: true
-      };
-
-      console.log('Layout settings:', layoutSettings);
-
-      // Generate optimal layout using advanced engine
-      const layoutResult = advancedLayoutEngine.generateOptimalLayout(
-        layoutDesigns,
-        layoutSettings
-      );
-
-      console.log('Layout result:', {
-        arrangedCount: layoutResult.arrangements.length,
-        efficiency: layoutResult.efficiency
-      });
-
-      // Calculate statistics
-      const rotatedItems = layoutResult.arrangements.filter(item => item.rotation !== 0).length;
-      const usedArea = layoutResult.arrangements.reduce((total, item) => 
-        total + (item.width * item.height), 0);
-      const totalSheetArea = settings.sheetSettings.width * settings.sheetSettings.height;
-      const wastePercentage = Math.max(0, ((totalSheetArea - usedArea) / totalSheetArea) * 100);
-
-      console.log('Statistics calculated:', {
-        totalDesigns: designs.length,
-        arrangedDesigns: layoutResult.arrangements.length,
-        rotatedItems,
-        wastePercentage: Math.round(wastePercentage * 100) / 100
-      });
-
-      return {
-        success: true,
-        arrangements: layoutResult.arrangements,
-        efficiency: layoutResult.efficiency,
-        statistics: {
-          totalDesigns: designs.length,
-          arrangedDesigns: layoutResult.arrangements.length,
-          rotatedItems,
-          wastePercentage: Math.round(wastePercentage * 100) / 100
-        }
-      };
-
-    } catch (error) {
-      console.error('OneClick layout processing error:', error);
+  async generateInstantLayout(
+    designs: DesignItem[], 
+    sheetWidth: number = 210, 
+    sheetHeight: number = 297,
+    margin: number = 10
+  ): Promise<LayoutResult> {
+    console.log(`⚡ One-click layout for ${designs.length} designs`);
+    
+    if (!designs || designs.length === 0) {
       return {
         success: false,
         arrangements: [],
         efficiency: 0,
-        statistics: {
-          totalDesigns: designs.length,
-          arrangedDesigns: 0,
-          rotatedItems: 0,
-          wastePercentage: 100
-        },
-        message: error instanceof Error ? error.message : 'Layout processing failed'
+        message: 'No designs provided'
       };
     }
+
+    const arrangements = this.performQuickLayout(designs, sheetWidth, sheetHeight, margin);
+    const efficiency = this.calculateEfficiency(arrangements, sheetWidth, sheetHeight);
+    
+    return {
+      success: true,
+      arrangements,
+      efficiency: Math.round(efficiency),
+      message: `Layout generated with ${efficiency.toFixed(1)}% efficiency`
+    };
   }
 
-  private async analyzeAndProcessDesignsWithAI(designs: any[]): Promise<ProcessedDesign[]> {
-    const processedDesigns: ProcessedDesign[] = [];
+  private performQuickLayout(
+    designs: DesignItem[], 
+    sheetWidth: number, 
+    sheetHeight: number, 
+    margin: number
+  ) {
+    const arrangements: any[] = [];
+    const usableWidth = sheetWidth - (2 * margin);
+    const usableHeight = sheetHeight - (2 * margin);
+    
+    // Simple row-based layout
+    let currentX = margin;
+    let currentY = margin;
+    let rowHeight = 0;
     
     for (const design of designs) {
-      try {
-        const processed: ProcessedDesign = {
-          id: design.id,
-          name: design.name || `Design_${design.id}`,
-          width: design.realDimensionsMM?.widthMM || design.widthMM || 50,
-          height: design.realDimensionsMM?.heightMM || design.heightMM || 30,
-          filePath: design.filePath || '',
-          vectorContent: design.mimeType?.includes('pdf') || design.mimeType?.includes('svg') || false,
-          quality: design.status === 'ready' ? 'high' : 'medium'
-        };
-        processedDesigns.push(processed);
-      } catch (error) {
-        console.error(`Error processing design ${design.id}:`, error);
+      // Check if design fits in current row
+      if (currentX + design.width > sheetWidth - margin) {
+        // Move to next row
+        currentX = margin;
+        currentY += rowHeight + 5; // 5mm spacing between rows
+        rowHeight = 0;
       }
+      
+      // Check if design fits vertically
+      if (currentY + design.height > sheetHeight - margin) {
+        console.warn(`Design ${design.name} doesn't fit, skipping`);
+        continue;
+      }
+      
+      // Place design
+      arrangements.push({
+        id: design.id,
+        name: design.name,
+        x: currentX,
+        y: currentY,
+        width: design.width,
+        height: design.height,
+        rotation: 0
+      });
+      
+      currentX += design.width + 5; // 5mm spacing
+      rowHeight = Math.max(rowHeight, design.height);
     }
     
-    return processedDesigns;
+    return arrangements;
+  }
+
+  private calculateEfficiency(arrangements: any[], sheetWidth: number, sheetHeight: number): number {
+    const totalDesignArea = arrangements.reduce((sum, arr) => sum + (arr.width * arr.height), 0);
+    const sheetArea = sheetWidth * sheetHeight;
+    return (totalDesignArea / sheetArea) * 100;
+  }
+
+  async optimizeLayout(
+    designs: DesignItem[], 
+    sheetWidth: number, 
+    sheetHeight: number
+  ): Promise<LayoutResult> {
+    console.log(`🎯 Optimizing layout for better efficiency`);
+    
+    // Try different arrangements and pick the best
+    const layouts = await Promise.all([
+      this.generateInstantLayout(designs, sheetWidth, sheetHeight, 10),
+      this.generateInstantLayout(designs, sheetWidth, sheetHeight, 5),
+      this.generateRotatedLayout(designs, sheetWidth, sheetHeight, 10)
+    ]);
+    
+    // Find the most efficient layout
+    const bestLayout = layouts.reduce((best, current) => 
+      current.efficiency > best.efficiency ? current : best
+    );
+    
+    bestLayout.message = `Optimized layout with ${bestLayout.efficiency}% efficiency`;
+    return bestLayout;
+  }
+
+  private async generateRotatedLayout(
+    designs: DesignItem[], 
+    sheetWidth: number, 
+    sheetHeight: number, 
+    margin: number
+  ): Promise<LayoutResult> {
+    // Try rotating designs that might fit better
+    const rotatedDesigns = designs.map(design => ({
+      ...design,
+      width: design.height,
+      height: design.width,
+      rotated: true
+    }));
+    
+    const arrangements = this.performQuickLayout(rotatedDesigns, sheetWidth, sheetHeight, margin);
+    
+    // Mark rotated arrangements
+    const rotatedArrangements = arrangements.map(arr => ({
+      ...arr,
+      rotation: 90,
+      width: arr.height,
+      height: arr.width
+    }));
+    
+    const efficiency = this.calculateEfficiency(rotatedArrangements, sheetWidth, sheetHeight);
+    
+    return {
+      success: true,
+      arrangements: rotatedArrangements,
+      efficiency: Math.round(efficiency),
+      message: `Rotated layout with ${efficiency.toFixed(1)}% efficiency`
+    };
+  }
+
+  async generateMultipleOptions(
+    designs: DesignItem[], 
+    sheetWidth: number = 210, 
+    sheetHeight: number = 297
+  ): Promise<{
+    options: LayoutResult[];
+    recommended: LayoutResult;
+  }> {
+    console.log(`📋 Generating multiple layout options`);
+    
+    const options = await Promise.all([
+      this.generateInstantLayout(designs, sheetWidth, sheetHeight, 10),
+      this.generateInstantLayout(designs, sheetWidth, sheetHeight, 5),
+      this.generateRotatedLayout(designs, sheetWidth, sheetHeight, 10),
+      this.generateInstantLayout(designs, 297, 420, 10), // A3 option
+    ]);
+    
+    // Add descriptive names
+    options[0].message = 'Standard layout (10mm margin)';
+    options[1].message = 'Compact layout (5mm margin)';
+    options[2].message = 'Rotated designs layout';
+    options[3].message = 'A3 size layout';
+    
+    const recommended = options.reduce((best, current) => 
+      current.efficiency > best.efficiency ? current : best
+    );
+    
+    return { options, recommended };
   }
 }
 

@@ -1,361 +1,204 @@
-import { enhancedPDFAnalyzer } from './enhancedPDFAnalyzer';
-import { pythonAnalyzerService } from './pythonAnalyzerService';
-import { fileProcessingService } from './fileProcessingService';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
-export interface AnalysisResult {
+interface AnalysisResult {
   success: boolean;
-  fileName: string;
-  filePath: string;
   dimensions: {
     widthMM: number;
     heightMM: number;
+    category: string;
     confidence: number;
-    method: string;
     description: string;
+    shouldRotate?: boolean;
   };
-  contentAnalysis: {
-    hasVectorContent: boolean;
-    hasRasterContent: boolean;
-    hasText: boolean;
-    isEmpty: boolean;
-    contentBounds?: any;
-  };
-  qualityReport: {
-    isVectorBased: boolean;
-    hasProperBoxes: boolean;
-    needsOptimization: boolean;
-    warnings: string[];
-    recommendations: string[];
-  };
+  detectedDesigns: number;
   processingNotes: string[];
-  thumbnailPath?: string;
-  requiresManualInput: boolean;
-  alternativeMethods: string[];
   error?: string;
 }
 
-export interface ManualDimensionInput {
-  widthMM: number;
-  heightMM: number;
-  userNote?: string;
-}
-
 export class MultiMethodAnalyzer {
-  private uploadDir = path.join(process.cwd(), 'uploads');
-  private thumbnailDir = path.join(this.uploadDir, 'thumbnails');
-
-  constructor() {
-    this.ensureDirectories();
-  }
-
-  private ensureDirectories() {
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
-    }
-    if (!fs.existsSync(this.thumbnailDir)) {
-      fs.mkdirSync(this.thumbnailDir, { recursive: true });
-    }
-  }
-
-  async analyzeDesignFile(filePath: string, fileName: string, mimeType: string): Promise<AnalysisResult> {
-    console.log(`🔍 Multi-method analysis starting: ${fileName}`);
-    
-    const result: AnalysisResult = {
-      success: false,
-      fileName,
-      filePath,
-      dimensions: {
-        widthMM: 50,
-        heightMM: 30,
-        confidence: 0.1,
-        method: 'fallback',
-        description: 'Analysis failed'
-      },
-      contentAnalysis: {
-        hasVectorContent: false,
-        hasRasterContent: false,
-        hasText: false,
-        isEmpty: true
-      },
-      qualityReport: {
-        isVectorBased: false,
-        hasProperBoxes: false,
-        needsOptimization: true,
-        warnings: [],
-        recommendations: []
-      },
-      processingNotes: [],
-      requiresManualInput: false,
-      alternativeMethods: []
-    };
-
+  async analyzeFile(filePath: string, fileName: string, mimeType: string): Promise<AnalysisResult> {
     try {
-      // PDF dosyaları için gelişmiş analiz
-      if (mimeType === 'application/pdf') {
-        const pdfResult = await this.analyzePDFFile(filePath, fileName);
-        if (pdfResult.success && pdfResult.dimensions.confidence > 0.5) {
-          return this.enhanceResult(pdfResult, fileName, filePath);
-        }
-        
-        // PDF analizi başarısız - fallback yöntemleri dene
-        result.processingNotes.push('PDF analysis failed, trying fallback methods');
-        result.alternativeMethods.push('enhanced-pdf-analysis');
-      }
-
-      // Python tabanlı analiz (tüm dosya türleri için)
-      try {
-        const pythonResult = await pythonAnalyzerService.analyzeFile(filePath, fileName, mimeType);
-        if (pythonResult.success) {
-          return this.convertPythonResult(pythonResult, fileName, filePath);
-        }
-        result.alternativeMethods.push('python-analysis');
-      } catch (error) {
-        result.processingNotes.push(`Python analysis failed: ${error}`);
-      }
-
-      // Dosya işleme servisi ile temel analiz
-      try {
-        const fileResult = await fileProcessingService.processFile(filePath, mimeType);
-        if (fileResult.realDimensionsMM) {
-          return this.convertFileProcessingResult(fileResult, fileName, filePath);
-        }
-        result.alternativeMethods.push('file-processing');
-      } catch (error) {
-        result.processingNotes.push(`File processing failed: ${error}`);
-      }
-
-      // Tüm yöntemler başarısız - manuel girdi gerekli
-      result.requiresManualInput = true;
-      result.qualityReport.warnings.push('Automatic dimension detection failed');
-      result.qualityReport.recommendations.push('Manual dimension input required');
-      result.processingNotes.push('All automatic analysis methods failed');
+      console.log(`🔍 Multi-method analysis starting for: ${fileName}`);
       
-      return result;
-
+      // Determine file type and analyze accordingly
+      if (mimeType === 'application/pdf') {
+        return await this.analyzePDF(filePath, fileName);
+      } else if (mimeType === 'image/svg+xml') {
+        return await this.analyzeSVG(filePath, fileName);
+      } else if (mimeType.startsWith('image/')) {
+        return await this.analyzeImage(filePath, fileName);
+      } else {
+        return this.createFallbackResult(fileName, 'Unsupported file type');
+      }
     } catch (error) {
-      result.error = error instanceof Error ? error.message : 'Unknown analysis error';
-      result.requiresManualInput = true;
-      return result;
+      console.error('Multi-method analysis error:', error);
+      return this.createFallbackResult(fileName, error.message);
     }
   }
 
-  private async analyzePDFFile(filePath: string, fileName: string): Promise<any> {
+  private async analyzePDF(filePath: string, fileName: string): Promise<AnalysisResult> {
     try {
-      return await enhancedPDFAnalyzer.analyzePDF(filePath, fileName);
-    } catch (error) {
-      console.error('Enhanced PDF analysis failed:', error);
-      return { success: false, error: error instanceof Error ? error.message : 'PDF analysis failed' };
-    }
-  }
+      const buffer = fs.readFileSync(filePath);
+      const pdfString = buffer.toString('binary');
 
-  private enhanceResult(pdfResult: any, fileName: string, filePath: string): AnalysisResult {
-    const thumbnailPath = this.generateThumbnailPath(fileName);
-    
-    return {
-      success: true,
-      fileName,
-      filePath,
-      dimensions: pdfResult.dimensions,
-      contentAnalysis: pdfResult.contentAnalysis,
-      qualityReport: pdfResult.qualityReport,
-      processingNotes: pdfResult.processingNotes || [],
-      thumbnailPath,
-      requiresManualInput: pdfResult.dimensions.confidence < 0.3,
-      alternativeMethods: [],
-      error: pdfResult.error
-    };
-  }
-
-  private convertPythonResult(pythonResult: any, fileName: string, filePath: string): AnalysisResult {
-    const thumbnailPath = this.generateThumbnailPath(fileName);
-    
-    return {
-      success: true,
-      fileName,
-      filePath,
-      dimensions: {
-        widthMM: pythonResult.realWorldDimensions?.widthMM || pythonResult.widthMM || 50,
-        heightMM: pythonResult.realWorldDimensions?.heightMM || pythonResult.heightMM || 30,
-        confidence: pythonResult.aiConfidence || 0.7,
-        method: 'python-analysis',
-        description: pythonResult.description || 'Python-based analysis'
-      },
-      contentAnalysis: {
-        hasVectorContent: pythonResult.contentType !== 'raster',
-        hasRasterContent: pythonResult.contentType === 'raster',
-        hasText: pythonResult.hasText || false,
-        isEmpty: false
-      },
-      qualityReport: {
-        isVectorBased: pythonResult.contentType !== 'raster',
-        hasProperBoxes: false,
-        needsOptimization: pythonResult.recommendedRotation || false,
-        warnings: pythonResult.notes || [],
-        recommendations: pythonResult.recommendedRotation ? ['Consider rotation for better layout'] : []
-      },
-      processingNotes: pythonResult.notes || [],
-      thumbnailPath,
-      requiresManualInput: (pythonResult.aiConfidence || 0.7) < 0.5,
-      alternativeMethods: []
-    };
-  }
-
-  private convertFileProcessingResult(fileResult: any, fileName: string, filePath: string): AnalysisResult {
-    const thumbnailPath = this.generateThumbnailPath(fileName);
-    const dimensions = this.parseDimensions(fileResult.realDimensionsMM);
-    
-    return {
-      success: true,
-      fileName,
-      filePath,
-      dimensions: {
-        widthMM: dimensions.width,
-        heightMM: dimensions.height,
-        confidence: 0.6,
-        method: 'file-processing',
-        description: 'File metadata analysis'
-      },
-      contentAnalysis: {
-        hasVectorContent: !fileResult.hasTransparency,
-        hasRasterContent: fileResult.hasTransparency || false,
-        hasText: false,
-        isEmpty: false
-      },
-      qualityReport: {
-        isVectorBased: !fileResult.hasTransparency,
-        hasProperBoxes: false,
-        needsOptimization: fileResult.needsOptimization || false,
-        warnings: [],
-        recommendations: fileResult.contentPreserved ? [] : ['Content may need preservation']
-      },
-      processingNotes: [fileResult.processingNotes || 'File processing completed'],
-      thumbnailPath,
-      requiresManualInput: false,
-      alternativeMethods: []
-    };
-  }
-
-  private parseDimensions(dimensionString: string): { width: number; height: number } {
-    try {
-      const match = dimensionString.match(/(\d+\.?\d*)\s*x\s*(\d+\.?\d*)/);
-      if (match) {
+      // Extract MediaBox dimensions
+      const mediaBoxMatch = pdfString.match(/\/MediaBox\s*\[\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s*\]/);
+      
+      if (mediaBoxMatch) {
+        const [, x1, y1, x2, y2] = mediaBoxMatch.map(Number);
+        const widthPt = x2 - x1;
+        const heightPt = y2 - y1;
+        
+        const widthMM = Math.round(widthPt * 0.352778);
+        const heightMM = Math.round(heightPt * 0.352778);
+        
         return {
-          width: Math.max(parseFloat(match[1]), 5),
-          height: Math.max(parseFloat(match[2]), 5)
+          success: true,
+          dimensions: {
+            widthMM,
+            heightMM,
+            category: this.categorizeDesign(widthMM, heightMM, fileName),
+            confidence: 0.9,
+            description: `PDF analyzed via MediaBox: ${widthMM}×${heightMM}mm`,
+            shouldRotate: this.shouldRotate(widthMM, heightMM)
+          },
+          detectedDesigns: 1,
+          processingNotes: [`PDF MediaBox dimensions: ${widthMM}×${heightMM}mm`]
         };
       }
+
+      return this.createFallbackResult(fileName, 'Could not extract PDF dimensions');
     } catch (error) {
-      console.error('Dimension parsing error:', error);
+      return this.createFallbackResult(fileName, `PDF analysis failed: ${error.message}`);
     }
-    
-    return { width: 50, height: 30 };
   }
 
-  private generateThumbnailPath(fileName: string): string {
-    const nameWithoutExt = path.parse(fileName).name;
-    return path.join(this.thumbnailDir, `${nameWithoutExt}_thumb.png`);
-  }
-
-  async applyManualDimensions(
-    analysisResult: AnalysisResult, 
-    manualInput: ManualDimensionInput
-  ): Promise<AnalysisResult> {
-    console.log(`📏 Applying manual dimensions: ${manualInput.widthMM}x${manualInput.heightMM}mm`);
-    
-    return {
-      ...analysisResult,
-      success: true,
-      dimensions: {
-        widthMM: manualInput.widthMM,
-        heightMM: manualInput.heightMM,
-        confidence: 1.0,
-        method: 'manual',
-        description: `Manual input: ${manualInput.widthMM}x${manualInput.heightMM}mm`
-      },
-      processingNotes: [
-        ...analysisResult.processingNotes,
-        'Manual dimensions applied',
-        manualInput.userNote || 'User-provided dimensions'
-      ],
-      requiresManualInput: false,
-      qualityReport: {
-        ...analysisResult.qualityReport,
-        warnings: analysisResult.qualityReport.warnings.filter(w => 
-          !w.includes('dimension') && !w.includes('detection')
-        ),
-        recommendations: [
-          ...analysisResult.qualityReport.recommendations.filter(r => 
-            !r.includes('manual') && !r.includes('input')
-          ),
-          'Verify manual dimensions are correct for printing'
-        ]
-      }
-    };
-  }
-
-  async generateThumbnail(filePath: string, fileName: string): Promise<string | null> {
+  private async analyzeSVG(filePath: string, fileName: string): Promise<AnalysisResult> {
     try {
-      // Thumbnail oluşturma hatalarını yoksay - zorunlu değil
-      console.log('Attempting thumbnail generation for:', fileName);
-      const result = await fileProcessingService.generateThumbnail(filePath, fileName);
-      if (result) {
-        console.log('Thumbnail created successfully:', result);
-        return result;
+      const svgContent = fs.readFileSync(filePath, 'utf8');
+      
+      const widthMatch = svgContent.match(/width\s*=\s*["']?([^"'\s>]+)/);
+      const heightMatch = svgContent.match(/height\s*=\s*["']?([^"'\s>]+)/);
+      
+      if (widthMatch && heightMatch) {
+        const width = this.parseUnit(widthMatch[1]);
+        const height = this.parseUnit(heightMatch[1]);
+        
+        return {
+          success: true,
+          dimensions: {
+            widthMM: Math.round(width),
+            heightMM: Math.round(height),
+            category: this.categorizeDesign(width, height, fileName),
+            confidence: 0.8,
+            description: `SVG dimensions: ${width}×${height}mm`,
+            shouldRotate: this.shouldRotate(width, height)
+          },
+          detectedDesigns: 1,
+          processingNotes: [`SVG dimensions extracted: ${width}×${height}mm`]
+        };
       }
-      return null;
+
+      return this.createFallbackResult(fileName, 'Could not extract SVG dimensions');
     } catch (error) {
-      console.warn('Thumbnail generation skipped (not critical):', error.message);
-      return null;
+      return this.createFallbackResult(fileName, `SVG analysis failed: ${error.message}`);
     }
   }
 
-  async validateAnalysisResult(result: AnalysisResult): Promise<{
-    isValid: boolean;
-    issues: string[];
-    suggestions: string[];
-  }> {
-    const issues: string[] = [];
-    const suggestions: string[] = [];
+  private async analyzeImage(filePath: string, fileName: string): Promise<AnalysisResult> {
+    try {
+      // Basic image analysis - would need Sharp for detailed metadata
+      const stats = fs.statSync(filePath);
+      
+      // Estimate dimensions based on file name patterns
+      let widthMM = 100, heightMM = 100;
+      
+      if (fileName.includes('kartvizit') || fileName.includes('business')) {
+        widthMM = 85; heightMM = 55;
+      } else if (fileName.includes('logo')) {
+        widthMM = 120; heightMM = 80;
+      } else if (fileName.includes('etiket') || fileName.includes('label')) {
+        widthMM = 60; heightMM = 40;
+      }
 
-    // Boyut kontrolleri
-    if (result.dimensions.widthMM < 5 || result.dimensions.heightMM < 5) {
-      issues.push('Dimensions too small for printing');
-      suggestions.push('Minimum 5mm required for each dimension');
+      return {
+        success: true,
+        dimensions: {
+          widthMM,
+          heightMM,
+          category: this.categorizeDesign(widthMM, heightMM, fileName),
+          confidence: 0.6,
+          description: `Image file estimated: ${widthMM}×${heightMM}mm`,
+          shouldRotate: this.shouldRotate(widthMM, heightMM)
+        },
+        detectedDesigns: 1,
+        processingNotes: [`Image file size: ${(stats.size / 1024).toFixed(1)}KB`]
+      };
+    } catch (error) {
+      return this.createFallbackResult(fileName, `Image analysis failed: ${error.message}`);
     }
+  }
 
-    if (result.dimensions.widthMM > 400 || result.dimensions.heightMM > 600) {
-      issues.push('Dimensions exceed standard sheet size');
-      suggestions.push('Consider scaling or using larger sheet format');
-    }
+  private parseUnit(value: string): number {
+    const num = parseFloat(value);
+    if (value.includes('cm')) return num * 10;
+    if (value.includes('inch') || value.includes('in')) return num * 25.4;
+    if (value.includes('px')) return num * 0.264583; // Assuming 96 DPI
+    return num; // Assume mm
+  }
 
-    // Güven seviyesi kontrolleri
-    if (result.dimensions.confidence < 0.5) {
-      issues.push('Low confidence in dimension detection');
-      suggestions.push('Manual verification recommended');
-    }
+  private categorizeDesign(width: number, height: number, fileName: string): string {
+    const name = fileName.toLowerCase();
+    
+    if (name.includes('kartvizit') || name.includes('business')) return 'business_card';
+    if (name.includes('logo')) return 'logo';
+    if (name.includes('etiket') || name.includes('label')) return 'label';
+    if (name.includes('broşür') || name.includes('brochure')) return 'brochure';
+    if (name.includes('poster')) return 'poster';
+    
+    // Size-based categorization
+    const area = width * height;
+    if (area < 3000) return 'small_label';
+    if (area < 10000) return 'medium_print';
+    return 'large_format';
+  }
 
-    // İçerik kontrolleri
-    if (result.contentAnalysis.isEmpty) {
-      issues.push('No content detected in file');
-      suggestions.push('Verify file contains actual design elements');
-    }
+  private shouldRotate(width: number, height: number): boolean {
+    // Suggest rotation if height is significantly larger than width
+    return height > width * 1.5;
+  }
 
-    if (!result.contentAnalysis.hasVectorContent && result.contentAnalysis.hasRasterContent) {
-      suggestions.push('Vector-based designs recommended for better print quality');
+  private createFallbackResult(fileName: string, errorMessage: string): AnalysisResult {
+    const name = fileName.toLowerCase();
+    let widthMM = 80, heightMM = 60, category = 'general';
+    
+    if (name.includes('kartvizit') || name.includes('business')) {
+      widthMM = 85; heightMM = 55; category = 'business_card';
+    } else if (name.includes('logo')) {
+      widthMM = 100; heightMM = 80; category = 'logo';
+    } else if (name.includes('etiket') || name.includes('label')) {
+      widthMM = 60; heightMM = 40; category = 'label';
     }
 
     return {
-      isValid: issues.length === 0,
-      issues,
-      suggestions
+      success: false,
+      dimensions: {
+        widthMM,
+        heightMM,
+        category,
+        confidence: 0.3,
+        description: `Fallback analysis: ${widthMM}×${heightMM}mm ${category}`,
+        shouldRotate: false
+      },
+      detectedDesigns: 1,
+      processingNotes: [
+        'Analysis failed, using fallback values',
+        `Error: ${errorMessage}`,
+        `Estimated dimensions: ${widthMM}×${heightMM}mm`
+      ],
+      error: errorMessage
     };
-  }
-
-  getCacheKey(filePath: string, mimeType: string): string {
-    const stats = fs.statSync(filePath);
-    return `${filePath}_${stats.mtime.getTime()}_${stats.size}_${mimeType}`;
   }
 }
 
