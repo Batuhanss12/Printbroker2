@@ -981,6 +981,7 @@ export class DatabaseStorage implements IStorage {
       const allDesigns = await this.getAllStoredDesigns();
       const userDesigns = allDesigns.filter(design => design.userId === userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
+```text
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
 
@@ -1300,20 +1301,20 @@ export class DatabaseStorage implements IStorage {
 
   // Missing methods needed by routes
   async getRecentQuotes(limit: number = 10): Promise<any[]> {
-    const quotes = await db
+    const recentQuotes = await db
       .select()
       .from(quotes)
       .orderBy(desc(quotes.createdAt))
       .limit(limit);
-    return quotes;
+    return recentQuotes;
   }
 
   async getAllFiles(userId?: string): Promise<any[]> {
-    let query = db.select().from(designFiles);
+    let query = db.select().from(files);
     if (userId) {
-      query = query.where(eq(designFiles.uploadedBy, userId));
+      query = query.where(eq(files.uploadedBy, userId));
     }
-    return await query.orderBy(desc(designFiles.createdAt));
+    return await query.orderBy(desc(files.createdAt));
   }
 
   async createAutomaticQuote(data: any): Promise<any> {
@@ -1336,15 +1337,15 @@ export class DatabaseStorage implements IStorage {
   async getDesignById(id: string): Promise<any> {
     const [design] = await db
       .select()
-      .from(designFiles)
-      .where(eq(designFiles.id, id));
+      .from(files)
+      .where(eq(files.id, id));
     return design;
   }
 
   async deleteDesign(id: string): Promise<void> {
     await db
-      .delete(designFiles)
-      .where(eq(designFiles.id, id));
+      .delete(files)
+      .where(eq(files.id, id));
   }
 
   async bookmarkDesign(designId: string, userId: string): Promise<void> {
@@ -1362,21 +1363,21 @@ export class DatabaseStorage implements IStorage {
   async getTotalUploadsCount(): Promise<number> {
     const [result] = await db
       .select({ count: sql<number>`count(*)` })
-      .from(designFiles);
+      .from(files);
     return result?.count || 0;
   }
 
   async getProcessedJobsCount(): Promise<number> {
     const [result] = await db
       .select({ count: sql<number>`count(*)` })
-      .from(designFiles)
-      .where(eq(designFiles.status, 'ready'));
+      .from(files)
+      .where(eq(files.status, 'ready'));
     return result?.count || 0;
   }
 
   async storeFile(fileData: any): Promise<any> {
     const [file] = await db
-      .insert(designFiles)
+      .insert(files)
       .values({
         ...fileData,
         id: fileData.id || (await import('crypto')).randomUUID(),
