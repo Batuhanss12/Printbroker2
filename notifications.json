@@ -1,14 +1,14 @@
 [
   {
-    "id": "9a5c22bb-f0c6-43b1-84ba-d391440e80f2",
+    "id": "1bb5178b-3045-4eb7-a7db-39cbe0348938",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 19,738 adet - ₺20446",
+    "message": "undefined - undefined adet - ₺undefined",
     "data": {
-      "quoteId": "d472fe12-8b10-42b5-bd83-3318db0ac455"
+      "quoteId": "5007aab8-00c5-4c96-9d3a-4ea314fd7a15"
     },
     "isRead": false,
-    "createdAt": "2025-06-16T19:24:51.678Z"
+    "createdAt": "2025-06-16T19:25:37.396Z"
   }
 ]
