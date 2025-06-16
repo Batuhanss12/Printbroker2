@@ -1,14 +1,14 @@
 [
   {
-    "id": "1bb5178b-3045-4eb7-a7db-39cbe0348938",
+    "id": "9c7b928a-132b-4e2e-8c23-65022cb44295",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
+    "message": "Güvenlik Etiket - 42,819 adet - ₺23207",
     "data": {
-      "quoteId": "5007aab8-00c5-4c96-9d3a-4ea314fd7a15"
+      "quoteId": "067dcd91-0f4d-4c14-a18e-85784f85f6f3"
     },
     "isRead": false,
-    "createdAt": "2025-06-16T19:25:37.396Z"
+    "createdAt": "2025-06-16T19:58:59.997Z"
   }
 ]
