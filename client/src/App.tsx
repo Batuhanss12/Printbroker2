@@ -11,10 +11,11 @@ import LandingNew from "./pages/LandingNew";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import CustomerDashboard from "@/pages/CustomerDashboard";
+import QuoteFormNew from "@/pages/QuoteFormNew";
+import QuoteDetail from "@/pages/QuoteDetail";
 import PrinterDashboard from "@/pages/PrinterDashboard";
 import Firmalar from "@/pages/Firmalar";
 import AdminDashboard from "@/pages/AdminDashboard";
-import QuoteFormNew from "@/pages/QuoteFormNew";
 import Payment from "./pages/Payment";
 import CustomerRegister from "./pages/CustomerRegister";
 import PrinterRegister from "./pages/PrinterRegister";
@@ -102,6 +103,8 @@ function AppRouter() {
           <Route path="/customer-dashboard" component={CustomerDashboard} />
           <Route path="/printer-dashboard" component={PrinterDashboard} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
+          {/* Added route for QuoteDetail */}
+          <Route path="/quote/:id" component={QuoteDetail} />
 
           <Route path="/quote/:type" component={() => {
             const userRole = (user as any)?.role;
@@ -138,13 +141,13 @@ function AppRouter() {
 // Enhanced global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', event.reason);
-  
+
   // Log additional details for debugging
   if (event.reason instanceof Error) {
     console.error('Error stack:', event.reason.stack);
     console.error('Error message:', event.reason.message);
   }
-  
+
   // Prevent the default browser behavior
   event.preventDefault();
 });
