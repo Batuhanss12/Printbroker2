@@ -710,7 +710,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(chatMessages.roomId, roomId),
-          sql`sender_id != ${userId}`,
+          sql`sender_id != '${userId}'`,
           eq(chatMessages.isRead, false)
         )
       );
@@ -736,8 +736,8 @@ export class DatabaseStorage implements IStorage {
       .from(chatMessages)
       .where(
         and(
-          sql`${chatMessages.roomId} = ANY(${roomIds})`,
-          sql`sender_id != ${userId}`,
+          sql`room_id = ANY(ARRAY[${roomIds.map(id => `'${id}'`).join(",")}])`,
+          sql`sender_id != '${userId}'`,
           eq(chatMessages.isRead, false)
         )
       );
@@ -1085,7 +1085,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(chatMessages.roomId, roomId),
-          sql`sender_id != ${userId}`,
+          sql`sender_id != '${userId}'`,
           eq(chatMessages.isRead, false)
         )
       );
@@ -1111,8 +1111,8 @@ export class DatabaseStorage implements IStorage {
       .from(chatMessages)
       .where(
         and(
-          sql`${chatMessages.roomId} = ANY(${roomIds})`,
-          sql`sender_id != ${userId}`,
+          sql`room_id = ANY(ARRAY[${roomIds.map(id => `'${id}'`).join(",")}])`,
+          sql`sender_id != '${userId}'`,
           eq(chatMessages.isRead, false)
         )
       );
