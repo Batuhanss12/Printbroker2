@@ -12,34 +12,54 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import {
+  Printer,
   Users,
   FileText,
-  DollarSign,
-  CheckCircle,
-  Settings,
-  BarChart3,
-  Printer,
-  Star,
-  Bell,
-  Activity,
   TrendingUp,
-  Target,
-  Award,
-  User,
-  Edit,
-  Upload,
   Clock,
+  DollarSign,
   Package,
-  Building2,
-  MessageCircle,
-  ShoppingCart,
-  Percent,
-  AlertCircle,
+  Star,
   Eye,
+  ChevronRight,
+  MessageSquare,
+  Bell,
+  User,
+  BarChart3,
+  Calendar,
   Download,
-  Trash2,
-  Send,
-  Filter
+  Edit,
+  Filter,
+  Search,
+  RefreshCw,
+  Plus,
+  Phone,
+  Mail,
+  MapPin,
+  Building2,
+  Globe,
+  Instagram,
+  Facebook,
+  Twitter,
+  Linkedin,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Info,
+  Upload,
+  AlertCircle,
+  ArrowUpRight,
+  ArrowRight,
+  ExternalLink,
+  Award,
+  Shield,
+  Target,
+  Zap,
+  Camera,
+  Badge as BadgeIcon,
+  Layers,
+  Settings,
+  ChevronDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Chat from "@/components/Chat";
@@ -793,7 +813,7 @@ export default function PrinterDashboard() {
                     </CardDescription>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-600">{quotes?.length || 0}</div>
+                    <div className="text-2xl font-bold text-blue-600">{quotes?.length || 0}                  </div>
                     <div className="text-xs text-gray-500">Toplam Teklif</div>
                   </div>
                 </div>
