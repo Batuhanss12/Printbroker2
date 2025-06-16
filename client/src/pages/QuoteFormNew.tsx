@@ -237,20 +237,23 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
 
       // Process budget safely - send null if empty or invalid
       let estimatedBudget = null;
-      if (data.budget && data.budget.toString().trim() !== '') {
+      if (data.budget && data.budget.toString().trim() !== '' && data.budget.toString().trim() !== 'undefined') {
         const budgetNum = parseFloat(data.budget.toString().trim());
         if (!isNaN(budgetNum) && budgetNum > 0) {
           estimatedBudget = budgetNum;
         }
       }
 
+      // Ensure quantity is always a valid number
+      const safeQuantity = isNaN(quantity) ? 1000 : Math.max(1, quantity);
+
       const submissionData = {
         title: data.title.trim(),
         type: data.type || 'general_printing',
-        quantity: quantity,
+        quantity: safeQuantity,
         estimatedBudget: estimatedBudget,
         specifications: {
-          quantity: quantity,
+          quantity: safeQuantity,
           material: data.specifications?.material?.trim() || 'Standart',
           size: data.specifications?.size?.trim() || 'A4',
           color: data.specifications?.color?.trim() || 'CMYK',
