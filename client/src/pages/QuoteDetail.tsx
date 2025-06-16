@@ -230,18 +230,49 @@ export default function QuoteDetail() {
                 )}
 
                 {quote.specifications && (
-                  <div>
-                    <p className="text-sm font-medium mb-2">Özellikler</p>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      {Object.entries(quote.specifications).map(([key, value]) => (
-                        <div key={key}>
-                          <span className="font-medium capitalize">{key}:</span>
-                          <span className="ml-2 text-gray-600">{String(value)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {Object.entries(quote.specifications).map(([key, value]) => {
+                          if (!value || key === 'uploadedFiles') return null;
+
+                          // Türkçe alan adları eşleştirmesi
+                          const fieldNames: Record<string, string> = {
+                            'size': 'Boyut',
+                            'cutting': 'Kesim',
+                            'material': 'Materyal',
+                            'quantity': 'Miktar',
+                            'packaging': 'Paketleme',
+                            'paperType': 'Kağıt Türü',
+                            'description': 'Açıklama',
+                            'cellophaneType': 'Selofan Türü',
+                            'width': 'Genişlik',
+                            'height': 'Yükseklik',
+                            'color': 'Renk',
+                            'finish': 'Bitirme',
+                            'coating': 'Kaplama',
+                            'lamination': 'Laminasyon',
+                            'binding': 'Ciltleme',
+                            'pages': 'Sayfa Sayısı',
+                            'copies': 'Kopya Sayısı',
+                            'paperWeight': 'Kağıt Gramajı',
+                            'printType': 'Baskı Türü',
+                            'colorType': 'Renk Türü',
+                            'urgency': 'Aciliyet',
+                            'deadline': 'Termin',
+                            'specialInstructions': 'Özel Talimatlar',
+                            'notes': 'Notlar'
+                          };
+
+                          const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+
+                          return (
+                            <div key={key}>
+                              <span className="font-medium capitalize">{displayName}:</span>
+                              <span className="ml-2 text-gray-600">{String(value)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
               </CardContent>
             </Card>
 
