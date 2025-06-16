@@ -230,18 +230,94 @@ export default function QuoteDetail() {
                 )}
 
                 {quote.specifications && (
-                  <div>
-                    <p className="text-sm font-medium mb-2">Özellikler</p>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      {Object.entries(quote.specifications).map(([key, value]) => (
-                        <div key={key}>
-                          <span className="font-medium capitalize">{key}:</span>
-                          <span className="ml-2 text-gray-600">{String(value)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {Object.entries(quote.specifications).map(([key, value]) => {
+                          if (!value || key === 'uploadedFiles' || value === 'Belirtilmedi') return null;
+
+                          // Türkçe alan adları eşleştirmesi
+                          const fieldNames: Record<string, string> = {
+                            'size': 'Boyut',
+                            'cutting': 'Kesim',
+                            'material': 'Materyal',
+                            'quantity': 'Miktar',
+                            'packaging': 'Paketleme',
+                            'paperType': 'Kağıt Türü',
+                            'description': 'Açıklama',
+                            'cellophaneType': 'Selofan Türü',
+                            'width': 'Genişlik',
+                            'height': 'Yükseklik',
+                            'diameter': 'Çap',
+                            'length': 'Uzunluk',
+                            'color': 'Renk',
+                            'colorType': 'Renk Türü',
+                            'finish': 'Bitirme',
+                            'coating': 'Kaplama',
+                            'lamination': 'Laminasyon',
+                            'binding': 'Ciltleme',
+                            'pages': 'Sayfa Sayısı',
+                            'copies': 'Kopya Sayısı',
+                            'paperWeight': 'Kağıt Gramajı',
+                            'printType': 'Baskı Türü',
+                            'urgency': 'Aciliyet',
+                            'deadline': 'Termin',
+                            'specialInstructions': 'Özel Talimatlar',
+                            'notes': 'Notlar',
+                            'gilding': 'Yaldız',
+                            'embossing': 'Kabartma',
+                            'varnish': 'Vernik',
+                            'folding': 'Katlama',
+                            'perforation': 'Perforaj',
+                            'numbering': 'Numaralama'
+                          };
+
+                          // Değer dönüşümü fonksiyonu
+                          const getDisplayValue = (val: any): string => {
+                            if (typeof val === 'string') {
+                              // Kağıt türü değerlerini Türkçe'ye çevir
+                              switch (val) {
+                                case 'sticker-transparent': return 'Şeffaf Etiket';
+                                case 'sticker-opaque': return 'Opak Etiket';
+                                case 'sticker-paper': return 'Kağıt Etiket';
+                                case 'vinyl': return 'Vinil';
+                                case 'polyester': return 'Polyester';
+                                case 'thermal': return 'Termal';
+                                case 'direct-thermal': return 'Direkt Termal';
+                                case 'transfer': return 'Transfer';
+                                
+                                // Kesim türleri
+                                case 'straight': return 'Düz Kesim';
+                                case 'rounded': return 'Oval Kesim';
+                                case 'custom': return 'Özel Kesim';
+                                
+                                // Paketleme türleri
+                                case 'individual': return 'Tekli';
+                                case 'bulk': return 'Toplu';
+                                case 'roll': return 'Rulo';
+                                case 'sheet': return 'Tabaka';
+                                
+                                // Renk türleri
+                                case 'full-color': return 'Full Renkli';
+                                case 'bw': return 'Siyah Beyaz';
+                                case 'spot-color': return 'Spot Renk';
+                                
+                                default: return String(val);
+                              }
+                            }
+                            return String(val);
+                          };
+
+                          const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          const displayValue = getDisplayValue(value);
+
+                          return (
+                            <div key={key}>
+                              <span className="font-medium capitalize">{displayName}:</span>
+                              <span className="ml-2 text-gray-600">{displayValue}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
               </CardContent>
             </Card>
 

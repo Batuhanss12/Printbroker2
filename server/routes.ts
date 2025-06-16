@@ -912,19 +912,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
+      const limit = parseInt(req.query.limit) || 12;
+
+      console.log(`🎨 Fetching design history for user ${userId}, page ${page}, limit ${limit}`);
 
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Get actual design history from storage
+      // Get actual design history from storage with enhanced logging
       const designHistory = await storage.getDesignHistory(userId, { page, limit });
-      res.json(designHistory);
+      
+      console.log(`📋 Design history response:`, {
+        userId,
+        totalDesigns: designHistory.total || designHistory.designs?.length || 0,
+        currentPage: designHistory.page || page,
+        totalPages: designHistory.totalPages || 1,
+        hasDesigns: Array.isArray(designHistory.designs) && designHistory.designs.length > 0
+      });
+
+      // Ensure proper response structure
+      const response = {
+        designs: designHistory.designs || designHistory || [],
+        total: designHistory.total || (Array.isArray(designHistory.designs) ? designHistory.designs.length : 0),
+        page: designHistory.page || page,
+        totalPages: designHistory.totalPages || Math.ceil((designHistory.total || 0) / limit),
+        hasNext: designHistory.hasNext || false,
+        hasPrev: designHistory.hasPrev || false
+      };
+
+      res.json(response);
     } catch (error) {
-      console.error("Design history error:", error);
-      res.status(500).json({ message: "Failed to fetch design history" });
+      console.error("❌ Design history error:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch design history",
+        designs: [],
+        total: 0,
+        page: 1,
+        totalPages: 1
+      });
     }
   });
 
