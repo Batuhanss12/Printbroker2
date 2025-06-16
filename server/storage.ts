@@ -1297,7 +1297,95 @@ export class DatabaseStorage implements IStorage {
       return null;
     }
   }
+
+  // Missing methods needed by routes
+  async getRecentQuotes(limit: number = 10): Promise<any[]> {
+    const quotes = await db
+      .select()
+      .from(quotes)
+      .orderBy(desc(quotes.createdAt))
+      .limit(limit);
+    return quotes;
+  }
+
+  async getAllFiles(userId?: string): Promise<any[]> {
+    let query = db.select().from(designFiles);
+    if (userId) {
+      query = query.where(eq(designFiles.uploadedBy, userId));
+    }
+    return await query.orderBy(desc(designFiles.createdAt));
+  }
+
+  async createAutomaticQuote(data: any): Promise<any> {
+    const [quote] = await db
+      .insert(quotes)
+      .values({
+        ...data,
+        id: (await import('crypto')).randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return quote;
+  }
+
+  async getDesignTemplates(): Promise<any[]> {
+    return [];
+  }
+
+  async getDesignById(id: string): Promise<any> {
+    const [design] = await db
+      .select()
+      .from(designFiles)
+      .where(eq(designFiles.id, id));
+    return design;
+  }
+
+  async deleteDesign(id: string): Promise<void> {
+    await db
+      .delete(designFiles)
+      .where(eq(designFiles.id, id));
+  }
+
+  async bookmarkDesign(designId: string, userId: string): Promise<void> {
+    console.log(`Bookmarking design ${designId} for user ${userId}`);
+  }
+
+  async getActiveUserCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.subscriptionStatus, 'active'));
+    return result?.count || 0;
+  }
+
+  async getTotalUploadsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(designFiles);
+    return result?.count || 0;
+  }
+
+  async getProcessedJobsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(designFiles)
+      .where(eq(designFiles.status, 'ready'));
+    return result?.count || 0;
+  }
+
+  async storeFile(fileData: any): Promise<any> {
+    const [file] = await db
+      .insert(designFiles)
+      .values({
+        ...fileData,
+        id: fileData.id || (await import('crypto')).randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return file;
+  }
 }
 
-// Export the storage instance
 export const storage = new DatabaseStorage();
