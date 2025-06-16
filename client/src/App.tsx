@@ -103,7 +103,8 @@ function AppRouter() {
           <Route path="/customer-dashboard" component={CustomerDashboard} />
           <Route path="/printer-dashboard" component={PrinterDashboard} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
-          {/* Added route for QuoteDetail */}
+          
+          {/* Quote routes */}
           <Route path="/quote/:id" component={QuoteDetail} />
 
           <Route path="/quote/:type" component={() => {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,7 +26,11 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 
 export default function QuoteDetail() {
-  const [match, params] = useRoute("/quote-detail/:id");
+  const [match, params] = useRoute("/quote/:id");
+  const quoteId = params?.id;
+
+  console.log('QuoteDetail params:', params);
+  console.log('Quote ID:', quoteId);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [quote, setQuote] = useState<any>(null);
@@ -45,15 +48,15 @@ export default function QuoteDetail() {
   const fetchQuoteDetails = async () => {
     try {
       setLoading(true);
-      
+
       // Ana teklifi getir
       const quoteResponse = await apiRequest('GET', `/api/quotes/${params.id}`);
       setQuote(quoteResponse);
-      
+
       // Matbaa tekliflerini getir
       const printerQuotesResponse = await apiRequest('GET', `/api/quotes/${params.id}/printer-quotes`);
       setPrinterQuotes(printerQuotesResponse || []);
-      
+
     } catch (error) {
       console.error("Error fetching quote details:", error);
       toast({
@@ -93,12 +96,12 @@ export default function QuoteDetail() {
       await apiRequest('POST', `/api/quotes/${params.id}/accept`, {
         printerQuoteId
       });
-      
+
       toast({
         title: "Başarılı",
         description: "Teklif kabul edildi",
       });
-      
+
       fetchQuoteDetails();
     } catch (error) {
       console.error("Error accepting quote:", error);
@@ -155,7 +158,7 @@ export default function QuoteDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -190,9 +193,9 @@ export default function QuoteDetail() {
                     {getStatusText(quote.status)}
                   </Badge>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
@@ -203,7 +206,7 @@ export default function QuoteDetail() {
                       </p>
                     </div>
                   </div>
-                  
+
                   {quote.deadline && (
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-gray-500" />
@@ -216,16 +219,16 @@ export default function QuoteDetail() {
                     </div>
                   )}
                 </div>
-                
+
                 <Separator />
-                
+
                 {quote.description && (
                   <div>
                     <p className="text-sm font-medium mb-2">Açıklama</p>
                     <p className="text-sm text-gray-600">{quote.description}</p>
                   </div>
                 )}
-                
+
                 {quote.specifications && (
                   <div>
                     <p className="text-sm font-medium mb-2">Özellikler</p>
@@ -276,11 +279,11 @@ export default function QuoteDetail() {
                               )}
                             </div>
                           </div>
-                          
+
                           {printerQuote.notes && (
                             <p className="text-sm text-gray-700 mb-4">{printerQuote.notes}</p>
                           )}
-                          
+
                           <div className="flex gap-2">
                             <Button 
                               size="sm"
@@ -316,7 +319,7 @@ export default function QuoteDetail() {
                     <p className="text-sm text-gray-600">{quote.type}</p>
                   </div>
                 </div>
-                
+
                 {quote.budget && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-gray-500" />
@@ -326,9 +329,9 @@ export default function QuoteDetail() {
                     </div>
                   </div>
                 )}
-                
+
                 <Separator />
-                
+
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-2">
                     Toplam {printerQuotes.length} teklif alındı
