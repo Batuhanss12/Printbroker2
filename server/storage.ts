@@ -535,9 +535,9 @@ export class DatabaseStorage implements IStorage {
     createdAt: Date;
   }): Promise<any> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const { randomUUID } = require('crypto');
+      const fs = await import('fs');
+      const path = await import('path');
+      const { randomUUID } = await import('crypto');
       
       const newNotification = {
         id: randomUUID(),
@@ -558,6 +558,7 @@ export class DatabaseStorage implements IStorage {
       return newNotification;
     } catch (error) {
       console.error('❌ Error creating notification:', error);
+      const { randomUUID } = await import('crypto');
       return { id: randomUUID(), ...notification };
     }
   }

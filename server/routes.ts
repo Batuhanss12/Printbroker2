@@ -1140,9 +1140,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         labeling: specifications?.labeling
       };
 
-      // Sanitize numeric fields - convert empty strings to null
-      const sanitizedBudget = budget && budget.trim() !== '' ? parseFloat(budget) : null;
-      const sanitizedDeadline = deadline && deadline.trim() !== '' ? new Date(deadline) : null;
+      // Sanitize numeric fields - convert empty strings to null and ensure budget is string for database
+      const sanitizedBudget = budget && budget.toString().trim() !== '' ? budget.toString() : null;
+      const sanitizedDeadline = deadline && deadline.toString().trim() !== '' ? new Date(deadline) : null;
 
       // Handle design image if present
       let designFileUrls = files || [];
@@ -1188,7 +1188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         specifications: mergedSpecifications,
         description: description || '',
         deadline: sanitizedDeadline,
-        budget: sanitizedBudget,
+        budget: sanitizedBudget?.toString() || null,
         status: 'pending' as const,
         fileUrls: designFileUrls,
         selectedQuoteId: null,
