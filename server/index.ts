@@ -92,24 +92,35 @@ async function initializePythonServices() {
 }
 
 (async () => {
-  // Python servislerini başlat
-  await initializePythonServices();
-  const server = await registerRoutes(app);
+  try {
+    console.log('🚀 Starting Matbixx system...');
+    
+    // Python servislerini başlat
+    await initializePythonServices();
+    console.log('✅ Python services initialized');
+    
+    const server = await registerRoutes(app);
+    console.log('✅ Routes registered successfully');
 
-  // Global unhandled promise rejection handler
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('🔥 Unhandled Rejection at:', promise, 'reason:', reason);
-    // Log stack trace if available
-    if (reason instanceof Error) {
-      console.error('Stack:', reason.stack);
-    }
-  });
+    // Global unhandled promise rejection handler
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('🔥 Unhandled Rejection at:', promise, 'reason:', reason);
+      // Log stack trace if available
+      if (reason instanceof Error) {
+        console.error('Stack:', reason.stack);
+      }
+    });
 
-  // Global uncaught exception handler
-  process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
+    // Global uncaught exception handler
+    process.on('uncaughtException', (error) => {
+      console.error('💥 Uncaught Exception:', error);
+      console.error('Stack:', error.stack);
+      process.exit(1);
+    });
+  } catch (startupError) {
+    console.error('❌ System startup failed:', startupError);
     process.exit(1);
-  });
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

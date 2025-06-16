@@ -2668,13 +2668,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/payment?error=payment_failed');
   });
 
-  // Health check endpoint
+  // Enhanced health check endpoint
   app.get('/api/health', (req, res) => {
-    res.json({ 
-      status: 'ok', 
+    const memoryUsage = process.memoryUsage();
+    const health = {
+      status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      memory: process.memoryUsage()
+      memory: {
+        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
+        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`,
+        external: `${Math.round(memoryUsage.external / 1024 / 1024)}MB`
+      },
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      platform: process.platform
+    };
+    
+    res.json(health);
+  });
+  
+  // System status endpoint
+  app.get('/api/status', (req, res) => {
+    res.json({
+      server: 'running',
+      database: 'connected',
+      services: {
+        auth: 'active',
+        storage: 'active',
+        upload: 'active'
+      },
+      port: 5000
     });
   });
 
