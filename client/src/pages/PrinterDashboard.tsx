@@ -1,3 +1,4 @@
+typescript
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1316,123 +1317,31 @@ export default function PrinterDashboard() {
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
                                     // Değer karşılıkları için mapping
-                                    const valueMapping = {
-                                      // Etiket Tipi
-                                      'thermal-direct': 'Termal Direkt',
-                                      'thermal-transfer': 'Termal Transfer',
-                                      'laser': 'Lazer',
-                                      'inkjet': 'Mürekkep Püskürtmeli',
+                                    
 
-                                      // Malzeme
-                                      'paper-white': 'Beyaz Kağıt',
-                                      'paper-yellow': 'Sarı Kağıt',
-                                      'pp-white': 'Beyaz PP',
-                                      'pp-transparent': 'Şeffaf PP',
-                                      'pe-white': 'Beyaz PE',
-                                      'pe-transparent': 'Şeffaf PE',
-                                      'vinyl': 'Vinil',
-                                      'polyester': 'Polyester',
+                                    const getDisplayValue = (val: any): string => {
+                                      const strVal = String(val).toLowerCase();
 
-                                      // Yapışkan Tipi
-                                      'permanent': 'Kalıcı',
-                                      'removable': 'Çıkarılabilir',
-                                      'freezer': 'Dondurucu',
-                                      'high-temp': 'Yüksek Sıcaklık',
-
-                                      // Makara Çapı
-                                      '25': '25mm',
-                                      '40': '40mm',
-                                      '76': '76mm',
-
-                                      // Sarım Yönü
-                                      'in': 'İçe Doğru',
-                                      'out': 'Dışa Doğru',
-
-                                      // Baskı Tipi
-                                      'business-card': 'Kartvizit',
-                                      'brochure': 'Broşür',
-                                      'flyer': 'Flyer',
-                                      'poster': 'Poster',
-                                      'banner': 'Afiş',
-                                      'catalog': 'Katalog',
-                                      'magazine': 'Dergi',
-                                      'book': 'Kitap',
-                                      'leaflet': 'El İlanı',
-                                      'folder': 'Dosya',
-                                      'envelope': 'Zarf',
-                                      'sticker': 'Stiker',
-                                      'calendar': 'Takvim',
-                                      'notebook': 'Not Defteri',
-                                      'packaging': 'Ambalaj',
-
-                                      // Baskı Boyutu
-                                      'a6': 'A6',
-                                      'a5': 'A5',
-                                      'a4': 'A4',
-                                      'a3': 'A3',
-                                      'custom': 'Özel Boyut',
-
-                                      // Baskı Rengi
-                                      'bw': 'Siyah Beyaz',
-                                      'color': 'Renkli',
-                                      'spot': 'Spot Renk',
-                                      'pantone': 'Pantone',
-
-                                      // Kağıt Tipi
-                                      'offset': 'Offset',
-                                      'coated': 'Kuşe',
-                                      'uncoated': 'Mat',
-                                      'recycled': 'Geri Dönüşüm',
-                                      'kraft': 'Kraft',
-                                      'cardboard': 'Karton',
-
-                                      // Ciltleme
-                                      'staple': 'Zımba',
-                                      'spiral': 'Spiral',
-                                      'perfect': 'Tutkal Cilt',
-                                      'saddle': 'Tel Dikiş',
-
-                                      // Folyo Tipi
-                                      'gold': 'Altın',
-                                      'silver': 'Gümüş',
-                                      'red': 'Kırmızı',
-                                      'blue': 'Mavi',
-                                      'black': 'Siyah',
-
-                                      // Laminasyon
-                                      'gloss': 'Parlak',
-                                      'matte': 'Mat',
-                                      'soft-touch': 'Soft Touch',
-
-                                      // Kesim Tipi
-                                      'straight': 'Düz Kesim',
-                                      'rounded': 'Yuvarlatılmış',
-                                      'die-cut': 'Şekil Kesim',
-
-                                      // Finishing
-                                      'uv': 'UV Cila',
-                                      'emboss': 'Kabartma',
-                                      'deboss': 'Çukurlaştırma',
-                                      'foil': 'Folyo',
-
-                                      // Tabaka Tipi
-                                      'sheet-label': 'Tabaka Etiket',
-                                      'sticker-sheet': 'Stiker Tabakası',
-
-                                      // Baskı Teknolojisi
-                                      'offset-printing': 'Ofset Baskı',
-                                      'digital': 'Dijital Baskı',
-                                      'screen': 'Serigrafi',
-                                      'letterpress': 'Tipografi',
-
-                                      // Genel
-                                      'yes': 'Evet',
-                                      'no': 'Hayır',
-                                      'true': 'Evet',
-                                      'false': 'Hayır'
+                                      switch (strVal) {
+                                        case 'straight': return 'Düz Kesim';
+                                        case 'thermal-direct': return 'Termal Direkt';
+                                        case 'thermal-transfer': return 'Termal Transfer';
+                                        case 'permanent': return 'Kalıcı';
+                                        case 'removable': return 'Çıkarılabilir';
+                                        case 'yes': case 'true': return 'Evet';
+                                        case 'no': case 'false': return 'Hayır';
+                                        case 'business-card': return 'Kartvizit';
+                                        case 'brochure': return 'Broşür';
+                                        case 'poster': return 'Poster';
+                                        case 'a4': return 'A4';
+                                        case 'a3': return 'A3';
+                                        case 'color': return 'Renkli';
+                                        case 'bw': return 'Siyah Beyaz';
+                                        default: return String(val);
+                                      }
                                     };
 
-                                    const displayValue = valueMapping[String(value).toLowerCase() as keyof typeof valueMapping] || String(value);
+                                    const displayValue = getDisplayValue(value);
 
                                     return (
                                       <div key={key} className="bg-white p-3 rounded border">
