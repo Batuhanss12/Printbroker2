@@ -134,6 +134,13 @@ function AppRouter() {
   );
 }
 
+// Global error handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Prevent the default browser behavior
+  event.preventDefault();
+});
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>

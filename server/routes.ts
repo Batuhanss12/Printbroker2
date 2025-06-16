@@ -2668,6 +2668,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/payment?error=payment_failed');
   });
 
+  // Health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage()
+    });
+  });
+
   // Image proxy for downloads (CORS bypass)
   app.get('/api/proxy-image', async (req, res) => {
     try {
