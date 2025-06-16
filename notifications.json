@@ -1,14 +1,14 @@
 [
   {
-    "id": "32bb42df-6f88-460f-936e-6334c53135bb",
+    "id": "c30febe9-b6f1-4d37-9f41-70746507359f",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 20,120 adet - ₺28000",
+    "message": "Endüstriyel Etiket - 63,440 adet - ₺7170",
     "data": {
-      "quoteId": "f9ec0134-4f9f-4768-b3ae-90d6efab75d9"
+      "quoteId": "be85df20-af4b-4c11-87c6-672212eddb56"
     },
     "isRead": false,
-    "createdAt": "2025-06-15T21:29:18.719Z"
+    "createdAt": "2025-06-16T08:13:45.200Z"
   }
 ]
