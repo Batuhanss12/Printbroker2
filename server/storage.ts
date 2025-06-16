@@ -537,6 +537,15 @@ export class DatabaseStorage implements IStorage {
     return notification;
   }
 
+  async getNotifications(userId: string): Promise<any[]> {
+    // Return empty array for now - can be implemented with proper notification table later
+    return [];
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
+    // Placeholder implementation
+  }
+
   // Design operations
   async saveDesignGeneration(data: {
     userId: string;
@@ -582,6 +591,99 @@ export class DatabaseStorage implements IStorage {
       query = query.where(eq(files.uploadedBy, userId));
     }
     return await query.orderBy(desc(files.createdAt));
+  }
+
+  async createAutomaticQuote(data: any): Promise<any> {
+    const [quote] = await db
+      .insert(quotes)
+      .values({
+        ...data,
+        id: data.id || (await import('crypto')).randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return quote;
+  }
+
+  async getAllQuotes(): Promise<any[]> {
+    return await db
+      .select()
+      .from(quotes)
+      .orderBy(desc(quotes.createdAt));
+  }
+
+  async getAllOrders(): Promise<any[]> {
+    return await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await db
+      .delete(users)
+      .where(eq(users.id, userId));
+  }
+
+  async deleteFile(id: string): Promise<void> {
+    await db
+      .delete(files)
+      .where(eq(files.id, id));
+  }
+
+  async getDesignById(id: string): Promise<any> {
+    const [design] = await db
+      .select()
+      .from(files)
+      .where(eq(files.id, id));
+    return design;
+  }
+
+  async deleteDesign(id: string): Promise<void> {
+    await db
+      .delete(files)
+      .where(eq(files.id, id));
+  }
+
+  async bookmarkDesign(designId: string, userId: string): Promise<void> {
+    console.log(`Bookmarking design ${designId} for user ${userId}`);
+  }
+
+  async getActiveUserCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.subscriptionStatus, 'active'));
+    return result?.count || 0;
+  }
+
+  async getTotalUploadsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(files);
+    return result?.count || 0;
+  }
+
+  async getProcessedJobsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(files)
+      .where(eq(files.status, 'ready'));
+    return result?.count || 0;
+  }
+
+  async storeFile(fileData: any): Promise<any> {
+    const [file] = await db
+      .insert(files)
+      .values({
+        ...fileData,
+        id: fileData.id || (await import('crypto')).randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return file;
   }
 }
 

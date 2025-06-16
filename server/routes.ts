@@ -1144,6 +1144,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sanitizedBudget = budget && budget.trim() !== '' ? parseFloat(budget) : null;
       const sanitizedDeadline = deadline && deadline.trim() !== '' ? new Date(deadline) : null;
 
+      // Handle design image if present
+      let designFileUrls = files || [];
+      
+      if (specifications?.designUrl) {
+        try {
+          // Download and store the design image
+          const designImageResponse = await fetch(specifications.designUrl);
+          if (designImageResponse.ok) {
+            const imageBuffer = await designImageResponse.arrayBuffer();
+            const filename = `design_${randomUUID()}.png`;
+            const filepath = path.join(process.cwd(), 'uploads', filename);
+            
+            // Save image to uploads directory
+            require('fs').writeFileSync(filepath, Buffer.from(imageBuffer));
+            
+            // Create file record in database
+            const designFile = await storage.createFile({
+              filename: filename,
+              originalName: `Tasarım - ${specifications.designPrompt || 'AI Tasarım'}`,
+              mimeType: 'image/png',
+              size: imageBuffer.byteLength,
+              uploadedBy: userId,
+              fileType: 'design',
+              status: 'ready',
+              processingNotes: 'AI tasarım motoru ile oluşturulan görsel'
+            });
+            
+            designFileUrls.push(`/uploads/${filename}`);
+            console.log('🎨 Design image saved:', filename);
+          }
+        } catch (error) {
+          console.error('Error saving design image:', error);
+        }
+      }
+
       // Create comprehensive quote data structure
       const quoteData = {
         id: randomUUID(),
@@ -1155,7 +1190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         deadline: sanitizedDeadline,
         budget: sanitizedBudget,
         status: 'pending' as const,
-        fileUrls: files || [],
+        fileUrls: designFileUrls,
         selectedQuoteId: null,
         createdAt: new Date(),
         updatedAt: new Date()
