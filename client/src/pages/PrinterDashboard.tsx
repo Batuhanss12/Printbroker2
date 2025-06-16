@@ -56,6 +56,7 @@ import {
   ExternalLink,
   Award,
   Shield,
+  Send,
   Target,
   Zap,
   Camera,
