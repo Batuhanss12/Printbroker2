@@ -247,6 +247,7 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
       const submissionData = {
         title: data.title.trim(),
         type: data.type || 'general_printing',
+        quantity: quantity,
         estimatedBudget: estimatedBudget,
         specifications: {
           quantity: quantity,
