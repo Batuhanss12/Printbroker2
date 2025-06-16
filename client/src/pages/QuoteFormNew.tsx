@@ -187,11 +187,8 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
       return;
     }
 
-    // Only proceed if we're on the submit tab and have intentional submission
-    if (currentTab !== "submit") {
-      console.log("🚫 Form submission blocked - not on submit tab");
-      return;
-    }
+    // Allow submission from any tab for explicit submissions
+    console.log("✅ Proceeding with explicit form submission from tab:", currentTab);
 
     // Additional check to ensure this is an intentional submission
     if (!data.title || !data.contactInfo?.companyName || !data.contactInfo?.email) {
@@ -1092,13 +1089,13 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                         
                         // Manual validation and submission
                         const isValid = await form.trigger();
-                        if (isValid && currentTab === "submit") {
+                        if (isValid) {
                           await onSubmit(formValues, true); // Pass true for explicit submission
                         } else {
-                          console.log("🚫 Form validation failed or not on submit tab");
+                          console.log("🚫 Form validation failed");
                           toast({
                             title: "Form Hatası",
-                            description: "Lütfen tüm gerekli alanları doldurun ve son adımda olduğunuzdan emin olun",
+                            description: "Lütfen tüm gerekli alanları doldurun",
                             variant: "destructive",
                           });
                         }
