@@ -23,6 +23,7 @@ import {
   Eye,
   ChevronRight,
   MessageSquare,
+  MessageCircle,
   Bell,
   User,
   BarChart3,
