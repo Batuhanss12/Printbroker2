@@ -9,6 +9,7 @@ import {
   Disc,
   Printer
 } from "lucide-react";
+import { Link } from "wouter";
 
 interface Quote {
   id: string;
@@ -209,7 +210,7 @@ export default function QuoteCard({
               )}
 
               {quote.status === 'received_quotes' && (
-                <Button
+                <Button 
                   size="sm"
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
                   onClick={handleViewQuotes}
