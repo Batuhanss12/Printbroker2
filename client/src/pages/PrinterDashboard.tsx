@@ -1301,7 +1301,16 @@ export default function PrinterDashboard() {
                                       'varnish': 'Vernik',
                                       'printSides': 'Baskı Tarafı',
                                       'printType': 'Baskı Türü',
-                                      'notes': 'Özel Notlar'
+                                      'notes': 'Özel Notlar',
+                                      'labelType': 'Etiket Türü',
+                                      'adhesive': 'Yapışkan',
+                                      'shape': 'Şekil',
+                                      'perforation': 'Perforasyon',
+                                      'printQuality': 'Baskı Kalitesi',
+                                      'colorProfile': 'Renk Profili',
+                                      'description': 'Açıklama',
+                                      'packaging': 'Paketleme',
+                                      'cellophaneType': 'Selofan Türü'
                                     };
 
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());

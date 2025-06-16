@@ -1867,14 +1867,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Serve uploaded files
-  app.get('/api/files/:filename', isAuthenticated, (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(uploadDir, filename);
+  app.get('/api/files/:filename', isAuthenticated, async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      
+      // First, try to get file info from database
+      const file = await storage.getFileByFilename ? await storage.getFileByFilename(filename) : null;
+      
+      let filePath;
+      let originalName = filename;
+      
+      if (file) {
+        // If file exists in database, use its original name for download
+        originalName = file.originalName || filename;
+        filePath = file.filePath || path.join(uploadDir, filename);
+      } else {
+        // Fallback to direct file access
+        filePath = path.join(uploadDir, filename);
+      }
 
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).json({ message: "File not found" });
+      // Check if file exists
+      if (fs.existsSync(filePath)) {
+        // Set proper headers for download
+        const mimeType = file?.mimeType || 'application/octet-stream';
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+        res.sendFile(path.resolve(filePath));
+      } else {
+        console.log(`File not found: ${filePath}`);
+        res.status(404).json({ message: "File not found" });
+      }
+    } catch (error) {
+      console.error('File serve error:', error);
+      res.status(500).json({ message: "Error serving file" });
     }
   });
 
