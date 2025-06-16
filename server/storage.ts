@@ -115,6 +115,17 @@ export interface IStorage {
   updateContractStatus(id: string, status: string): Promise<void>;
   signContract(id: string, userId: string, signature: string): Promise<void>;
 
+  // Notification operations
+  createNotification(notification: {
+    userId: string;
+    type: string;
+    title: string;
+    message: string;
+    data: any;
+    isRead: boolean;
+    createdAt: Date;
+  }): Promise<any>;
+
   createUser(userData: any): Promise<User>;
   updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null>;
 }
