@@ -22,7 +22,11 @@ export function log(message: string, source = "express") {
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
-    hmr: { server },
+    hmr: { 
+      server,
+      port: 3001,
+      host: "localhost" // or "0.0.0.0" if you need to access it from other devices
+    },
     allowedHosts: true,
   };
 

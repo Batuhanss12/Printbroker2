@@ -29,9 +29,19 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    host: "0.0.0.0",
+    port: 3000,
+    hmr: {
+      port: 3001,
+      host: "0.0.0.0"
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
     },
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: 4173,
   },
 });
