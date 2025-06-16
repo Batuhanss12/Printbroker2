@@ -14,7 +14,7 @@ import CustomerDashboard from "@/pages/CustomerDashboard";
 import PrinterDashboard from "@/pages/PrinterDashboard";
 import Firmalar from "@/pages/Firmalar";
 import AdminDashboard from "@/pages/AdminDashboard";
-import QuoteForm from "@/pages/QuoteForm";
+import QuoteFormNew from "@/pages/QuoteFormNew";
 import Payment from "./pages/Payment";
 import CustomerRegister from "./pages/CustomerRegister";
 import PrinterRegister from "./pages/PrinterRegister";
@@ -109,7 +109,7 @@ function AppRouter() {
               window.location.href = '/';
               return null;
             }
-            return <QuoteForm />;
+            return <QuoteFormNew />;
           }} />
 
           <Route path="/payment" component={Payment} />
