@@ -234,6 +234,20 @@ export class ProfessionalDesignAnalyzer {
       suggestion: 'Consider using standard paper sizes (A4: 210×297mm, A3: 297×420mm) for cost efficiency'
     };
   }
+
+  // Add missing method for compatibility
+  async analyzeDesignFile(filePath: string, fileName: string, mimeType: string): Promise<any> {
+    const analysis = await this.analyzeForProfessionalPrinting(filePath, fileName, mimeType);
+    return {
+      id: (await import('crypto')).randomUUID(),
+      name: fileName,
+      width: analysis.dimensions.widthMM,
+      height: analysis.dimensions.heightMM,
+      category: analysis.category,
+      confidence: analysis.dimensions.confidence,
+      processingNotes: analysis.processingNotes
+    };
+  }
 }
 
 export const professionalDesignAnalyzer = new ProfessionalDesignAnalyzer();
