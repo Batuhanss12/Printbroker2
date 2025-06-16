@@ -981,6 +981,7 @@ export class DatabaseStorage implements IStorage {
       const allDesigns = await this.getAllStoredDesigns();
       const userDesigns = allDesigns.filter(design => design.userId === userId);
       const sortedDesigns = userDesigns.sort((a, b) => 
+```text
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ); // Newest first
 
@@ -1300,12 +1301,12 @@ export class DatabaseStorage implements IStorage {
 
   // Missing methods needed by routes
   async getRecentQuotes(limit: number = 10): Promise<any[]> {
-    const quotes = await db
+    const recentQuotes = await db
       .select()
       .from(quotes)
       .orderBy(desc(quotes.createdAt))
       .limit(limit);
-    return quotes;
+    return recentQuotes;
   }
 
   async getAllFiles(userId?: string): Promise<any[]> {
