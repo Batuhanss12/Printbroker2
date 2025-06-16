@@ -174,9 +174,10 @@ async function notifyPrintersForNewQuote(quote: any) {
       console.log(`   📦 Adet: ${quote.quantity?.toLocaleString()} adet`);
       console.log(`   📍 Konum: ${quote.location}`);
       
-      // Store notification for real-time updates
+      // Store notification for real-time updates and broadcast via WebSocket
       for (const printer of suitablePrinters) {
         try {
+          // Store notification in database
           await storage.createNotification({
             userId: printer.id,
             type: 'new_quote',
@@ -185,6 +186,23 @@ async function notifyPrintersForNewQuote(quote: any) {
             data: { quoteId: quote.id },
             isRead: false,
             createdAt: new Date()
+          });
+
+          // Broadcast real-time notification via WebSocket
+          broadcastToRoom(printer.id, {
+            type: 'new_quote_notification',
+            title: 'Yeni Teklif Talebi',
+            message: `${quote.category} - ${quote.quantity?.toLocaleString()} adet - ₺${quote.totalPrice}`,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              category: quote.category,
+              quantity: quote.quantity,
+              totalPrice: quote.totalPrice,
+              location: quote.location,
+              deadline: quote.deadline
+            },
+            timestamp: new Date().toISOString()
           });
         } catch (notifError) {
           console.error(`Failed to create notification for printer ${printer.id}:`, notifError);
@@ -2164,6 +2182,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update quote status to received_quotes
       await storage.updateQuoteStatus(quoteId, "received_quotes");
+
+      // Get quote details for notification
+      const quote = await storage.getQuote(quoteId);
+      if (quote && quote.customerId) {
+        try {
+          // Store notification for customer
+          await storage.createNotification({
+            userId: quote.customerId,
+            type: 'quote_response',
+            title: 'Teklif Yanıtı Alındı',
+            message: `${user.companyName || 'Matbaa'} firmasından teklif geldi: ₺${price} - ${estimatedDays} gün`,
+            data: { quoteId: quote.id, printerQuoteId: printerQuote.id },
+            isRead: false,
+            createdAt: new Date()
+          });
+
+          // Broadcast real-time notification to customer
+          broadcastToRoom(quote.customerId, {
+            type: 'quote_response_notification',
+            title: 'Teklif Yanıtı Alındı',
+            message: `${user.companyName || 'Matbaa'} firmasından teklif geldi: ₺${price} - ${estimatedDays} gün`,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              printerQuote: {
+                id: printerQuote.id,
+                price: price,
+                estimatedDays: estimatedDays,
+                notes: notes,
+                printerName: user.companyName || user.firstName
+              }
+            },
+            timestamp: new Date().toISOString()
+          });
+        } catch (notifError) {
+          console.error(`Failed to notify customer ${quote.customerId}:`, notifError);
+        }
+      }
 
       res.json({
         success: true,

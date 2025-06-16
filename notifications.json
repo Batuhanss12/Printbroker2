@@ -1,14 +1,14 @@
 [
   {
-    "id": "ee79930e-9c98-4b43-9877-d39958a2f3a4",
+    "id": "d1a435cc-5541-4958-8d51-ef75af4bd099",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 38,966 adet - ₺25379",
+    "message": "Katalog & Broşür - 28,408 adet - ₺13888",
     "data": {
-      "quoteId": "c1dc1aa8-c348-4184-b224-222181461f77"
+      "quoteId": "c64334d1-5da4-44b7-b7da-9044f61462ac"
     },
     "isRead": false,
-    "createdAt": "2025-06-16T20:12:24.199Z"
+    "createdAt": "2025-06-16T20:15:26.493Z"
   }
 ]
