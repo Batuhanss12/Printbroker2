@@ -534,7 +534,32 @@ export class DatabaseStorage implements IStorage {
     isRead: boolean;
     createdAt: Date;
   }): Promise<any> {
-    return notification;
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const { randomUUID } = require('crypto');
+      
+      const newNotification = {
+        id: randomUUID(),
+        ...notification
+      };
+      
+      const filePath = path.join(process.cwd(), 'notifications.json');
+      let notifications = [];
+      
+      if (fs.existsSync(filePath)) {
+        notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
+      
+      notifications.push(newNotification);
+      fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+      
+      console.log('✅ Notification created:', newNotification.id);
+      return newNotification;
+    } catch (error) {
+      console.error('❌ Error creating notification:', error);
+      return { id: randomUUID(), ...notification };
+    }
   }
 
   async getNotifications(userId: string): Promise<any[]> {
@@ -684,6 +709,42 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return file;
+  }
+
+  async getNotifications(userId: string): Promise<any[]> {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'notifications.json');
+      if (fs.existsSync(filePath)) {
+        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return notifications
+          .filter((notification: any) => notification.userId === userId)
+          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 50);
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'notifications.json');
+      if (fs.existsSync(filePath)) {
+        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const notification = notifications.find((n: any) => n.id === notificationId && n.userId === userId);
+        if (notification) {
+          notification.isRead = true;
+          fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+        }
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   }
 }
 
