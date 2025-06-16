@@ -131,6 +131,11 @@ export default function QuoteCard({
   const quoteCount = getQuoteCount();
   const specSummary = getSpecificationSummary();
 
+  const handleViewQuotes = () => {
+    console.log("Viewing quotes for:", quote.id);
+    window.location.href = `/quote-detail/${quote.id}`;
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -207,6 +212,7 @@ export default function QuoteCard({
                 <Button
                   size="sm"
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
+                  onClick={handleViewQuotes}
                 >
                   Teklifleri Gör
                 </Button>
