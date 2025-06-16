@@ -210,16 +210,13 @@ export default function QuoteCard({
               )}
 
               {quote.status === 'received_quotes' && (
-                
-                <Link href={`/quote/${quote.id}`}>
-                  <Button 
-                    size="sm"
-                    className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
-                  >
-                    Teklifleri Gör
-                  </Button>
-                </Link>
-                
+                <Button 
+                  size="sm"
+                  className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
+                  onClick={handleViewQuotes}
+                >
+                  Teklifleri Gör
+                </Button>
               )}
             </div>
           )}

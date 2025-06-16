@@ -106,6 +106,7 @@ function AppRouter() {
           
           {/* Quote routes */}
           <Route path="/quote/:id" component={QuoteDetail} />
+          <Route path="/quote-detail/:id" component={QuoteDetail} />
 
           <Route path="/quote/:type" component={() => {
             const userRole = (user as any)?.role;
