@@ -200,6 +200,26 @@ export class MultiMethodAnalyzer {
       error: errorMessage
     };
   }
+
+  // Additional missing methods for compatibility
+  async generateThumbnail(filePath: string): Promise<string | null> {
+    // Placeholder implementation - would generate thumbnails in production
+    return null;
+  }
+
+  async validateAnalysisResult(analysis: any): Promise<boolean> {
+    return analysis && analysis.width > 0 && analysis.height > 0;
+  }
+
+  async applyManualDimensions(analysis: any, width: number, height: number): Promise<any> {
+    return {
+      ...analysis,
+      width,
+      height,
+      confidence: 1.0,
+      processingNotes: [...(analysis.processingNotes || []), 'Manual dimensions applied']
+    };
+  }
 }
 
 export const multiMethodAnalyzer = new MultiMethodAnalyzer();
