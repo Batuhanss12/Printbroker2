@@ -580,7 +580,37 @@ export class DatabaseStorage implements IStorage {
     result: any;
     createdAt: Date;
   }): Promise<any> {
-    return data;
+    try {
+      const id = crypto.randomUUID();
+      const query = `
+        INSERT INTO design_generations (
+          id, "userId", prompt, options, result, "createdAt", "updatedAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *
+      `;
+      
+      const values = [
+        id,
+        data.userId,
+        data.prompt,
+        JSON.stringify(data.options),
+        JSON.stringify(data.result),
+        data.createdAt,
+        new Date()
+      ];
+
+      const result = await this.db.query(query, values);
+      console.log(`✅ Design generation saved to database: ${id}`);
+      
+      return {
+        id,
+        ...data,
+        result: data.result
+      };
+    } catch (error) {
+      console.error('❌ Error saving design generation:', error);
+      throw error;
+    }
   }
 
   async getDesignHistory(userId: string, options: { page?: number; limit?: number } = {}) {
