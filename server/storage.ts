@@ -8,6 +8,7 @@ import {
   chatRooms,
   chatMessages,
   contracts,
+  notifications,
   type User,
   type UpsertUser,
   type InsertQuote,
@@ -138,8 +139,24 @@ export interface IStorage {
     isRead: boolean;
     createdAt: Date;
   }): Promise<any>;
+  
+  getNotifications(userId: string): Promise<any[]>;
+  markNotificationAsRead(notificationId: string, userId: string): Promise<void>;
+  deleteNotification(notificationId: string, userId: string): Promise<void>;
 
   updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null>;
+  
+  // Order status operations
+  createOrderStatus(status: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<any>;
+  
+  getOrderStatusesByQuote(quoteId: string): Promise<any[]>;
 }
 
 // Database storage implementation
@@ -560,24 +577,17 @@ export class DatabaseStorage implements IStorage {
     createdAt: Date;
   }): Promise<any> {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
-      const { randomUUID } = await import('crypto');
-      
-      const newNotification = {
-        id: randomUUID(),
-        ...notification
-      };
-      
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      let notifications = [];
-      
-      if (fs.existsSync(filePath)) {
-        notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      }
-      
-      notifications.push(newNotification);
-      fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+      const [newNotification] = await db.insert(notifications).values({
+        recipientId: notification.userId,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        data: notification.data,
+        isRead: notification.isRead,
+        priority: notification.data?.priority || 'medium',
+        category: notification.data?.category || 'general',
+        actionRequired: notification.data?.actionRequired || false
+      }).returning();
       
       console.log('✅ Notification created:', newNotification.id);
       return newNotification;
