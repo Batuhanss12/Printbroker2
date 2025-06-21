@@ -71,6 +71,7 @@ import StatsCard from "@/components/StatsCard";
 import Navigation from "@/components/Navigation";
 import FirmVerificationPanel from "@/components/FirmVerificationPanel";
 import { InkDropletsLoader } from "@/components/Loaders";
+import { OrderManagement } from "@/components/OrderManagement";
 
 // QuoteFilesViewer Component
 function QuoteFilesViewer({ quoteId }: { quoteId: string }) {
@@ -880,54 +881,7 @@ export default function PrinterDashboard() {
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-                  <ShoppingCart className="h-5 w-5 text-blue-600" />
-                  Sipariş Yönetimi
-                </CardTitle>
-                <CardDescription className="text-sm md:text-base">
-                  Onaylanmış siparişleri takip edin ve yönetin
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 md:p-6">
-                {ordersLoading ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  </div>
-                ) : orders && orders.length > 0 ? (
-                  <div className="space-y-3 md:space-y-4">
-                    {orders.map((order: any) => (
-                      <div key={order.id} className="border border-gray-200 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-200 bg-gradient-to-r from-white to-gray-50">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-3">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 text-sm md:text-base">Sipariş #{order.id.slice(-8)}</h4>
-                            <p className="text-xs md:text-sm text-gray-600 mt-1">Tutar: ₺{order.totalAmount?.toLocaleString()}</p>
-                          </div>
-                          <Badge 
-                            variant={order.status === 'completed' ? 'default' : 'secondary'}
-                            className="self-start md:self-center text-xs"
-                          >
-                            {order.status === 'completed' ? 'Tamamlandı' : 
-                             order.status === 'in_progress' ? 'Üretimde' : 
-                             order.status === 'pending' ? 'Bekliyor' : order.status}
-                          </Badge>
-                        </div>
-                        <div className="text-xs md:text-sm text-gray-600">
-                          Tarih: {new Date(order.createdAt).toLocaleDateString('tr-TR')}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <ShoppingCart className="h-12 w-12 md:h-16 md:w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-base md:text-lg font-medium text-gray-900 mb-2">Henüz sipariş yok</h3>
-                    <p className="text-sm md:text-base text-gray-600">Onaylanmış siparişler burada görünecek</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <OrderManagement />
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">
