@@ -189,21 +189,16 @@ async function notifyPrintersForNewQuote(quote: any) {
             createdAt: new Date()
           });
 
-          // Broadcast real-time notification via WebSocket
-          notificationService.broadcastToUser(printer.id, {
-            type: 'new_quote_notification',
-            title: 'Yeni Teklif Talebi',
-            message: `${quote.category} - ${quote.quantity?.toLocaleString()} adet - ₺${quote.totalPrice}`,
-            quote: {
-              id: quote.id,
-              title: quote.title,
-              category: quote.category,
-              quantity: quote.quantity,
-              totalPrice: quote.totalPrice,
-              location: quote.location,
-              deadline: quote.deadline
-            },
-            timestamp: new Date().toISOString()
+          // Broadcast enhanced real-time notification via WebSocket
+          notificationService.sendQuoteNotification(printer.id, {
+            id: quote.id,
+            title: quote.title,
+            category: quote.category,
+            quantity: quote.quantity,
+            totalPrice: quote.totalPrice,
+            location: quote.location,
+            deadline: quote.deadline,
+            customerName: `${quote.firstName} ${quote.lastName}`
           });
         } catch (notifError) {
           console.error(`Failed to create notification for printer ${printer.id}:`, notifError);
