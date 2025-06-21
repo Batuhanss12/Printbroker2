@@ -370,5 +370,125 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T07:21:40.810Z"
+  },
+  {
+    "id": "87cf44f2-74d3-402a-9101-8fdd4c0c9ec4",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.695Z"
+  },
+  {
+    "id": "6d6ff543-7c2a-440e-a2ca-342ea7fecf40",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.700Z"
+  },
+  {
+    "id": "f7c42b4f-03d9-4d2e-b98b-44ddce15d75c",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.708Z"
+  },
+  {
+    "id": "420e9964-f75f-4007-a363-5be71f3691b6",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.729Z"
+  },
+  {
+    "id": "d5865834-7dd4-47df-a663-7782ece29a0b",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.737Z"
+  },
+  {
+    "id": "e496a272-9878-42d8-acdb-d3e1261eabe2",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.744Z"
+  },
+  {
+    "id": "db392484-d375-442e-91d7-72bc137f870c",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.752Z"
+  },
+  {
+    "id": "600dedcf-847f-4d7d-9921-08b0d5c9dfd6",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.756Z"
+  },
+  {
+    "id": "426169b0-bf56-4ed3-a61b-6f4cf1f9de9a",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.760Z"
+  },
+  {
+    "id": "b133e933-f3a4-49fc-838a-64414cd08937",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Katalog & Broşür - 28,405 adet - ₺16787",
+    "data": {
+      "quoteId": "ce25c53a-cded-40b8-a7df-4d1ad3c3e9ec"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:24:57.775Z"
   }
 ]

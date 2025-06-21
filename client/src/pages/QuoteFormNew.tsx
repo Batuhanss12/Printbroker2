@@ -383,7 +383,14 @@ export default function QuoteFormNew() {
         credentials: 'include'
       });
       if (!response.ok) {
-        throw new Error('Form yüklenemedi');
+        // Fallback to legacy endpoint if new endpoint fails
+        const fallbackResponse = await fetch(`/api/quotes/${type}`, {
+          credentials: 'include'
+        });
+        if (!fallbackResponse.ok) {
+          throw new Error('Form yüklenemedi');
+        }
+        return fallbackResponse.json();
       }
       return response.json();
     },
