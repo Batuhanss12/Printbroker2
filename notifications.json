@@ -10,5 +10,125 @@
     },
     "isRead": false,
     "createdAt": "2025-06-16T20:15:26.493Z"
+  },
+  {
+    "id": "9f7f146a-c721-480a-8b53-10ccac1fa21d",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.619Z"
+  },
+  {
+    "id": "e576bc0e-72ae-47a9-9806-0f209dadec04",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.626Z"
+  },
+  {
+    "id": "7d70eeb4-328a-41ac-8394-09426be1e19a",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.634Z"
+  },
+  {
+    "id": "e814d410-ee4d-4949-aa58-3ac0b7a09d20",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.639Z"
+  },
+  {
+    "id": "23398a91-071a-47a9-ad0d-b3ba04c6a3a3",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.645Z"
+  },
+  {
+    "id": "541fd046-d3b5-43f2-9e97-159c453393b8",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.649Z"
+  },
+  {
+    "id": "223d9222-6f1f-4154-bf80-fb715e029b40",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.655Z"
+  },
+  {
+    "id": "ce6e2baf-f15d-4c25-ba05-ec563cfabbc7",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.661Z"
+  },
+  {
+    "id": "7f665d03-b7d9-420f-84c6-4034f9e14653",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.667Z"
+  },
+  {
+    "id": "2db97661-1d5f-4ccb-8e83-3e48ab2fea07",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "data": {
+      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:51:16.672Z"
   }
 ]

@@ -1321,23 +1321,172 @@ export default function PrinterDashboard() {
                                     const getDisplayValue = (val: any): string => {
                                       const strVal = String(val).toLowerCase();
 
-                                      switch (strVal) {
-                                        case 'straight': return 'Düz Kesim';
-                                        case 'thermal-direct': return 'Termal Direkt';
-                                        case 'thermal-transfer': return 'Termal Transfer';
-                                        case 'permanent': return 'Kalıcı';
-                                        case 'removable': return 'Çıkarılabilir';
-                                        case 'yes': case 'true': return 'Evet';
-                                        case 'no': case 'false': return 'Hayır';
-                                        case 'business-card': return 'Kartvizit';
-                                        case 'brochure': return 'Broşür';
-                                        case 'poster': return 'Poster';
-                                        case 'a4': return 'A4';
-                                        case 'a3': return 'A3';
-                                        case 'color': return 'Renkli';
-                                        case 'bw': return 'Siyah Beyaz';
-                                        default: return String(val);
-                                      }
+                                      // Sheet Label Materials
+                                      const sheetMaterials = {
+                                        'vinyl-white': 'Vinil Beyaz',
+                                        'vinyl-transparent': 'Vinil Şeffaf',
+                                        'vinyl-silver': 'Vinil Gümüş',
+                                        'vinyl-gold': 'Vinil Altın',
+                                        'paper-white': 'Kağıt Beyaz',
+                                        'paper-cream': 'Kağıt Krem',
+                                        'polyester-clear': 'Polyester Şeffaf',
+                                        'polyester-white': 'Polyester Beyaz',
+                                        'polyester-silver': 'Polyester Gümüş',
+                                        'kraft-brown': 'Kraft Kahverengi',
+                                        'synthetic-pp': 'Sentetik PP',
+                                        'thermal-paper': 'Termal Kağıt'
+                                      };
+
+                                      // Roll Label Materials
+                                      const rollMaterials = {
+                                        'thermal-direct': 'Termal Direkt (58gsm)',
+                                        'thermal-transfer': 'Termal Transfer (65gsm)',
+                                        'synthetic-pp': 'Sentetik PP (50 mikron)',
+                                        'vinyl-pvc': 'Vinil PVC (80 mikron)',
+                                        'polyester-pet': 'Polyester PET (50 mikron)',
+                                        'kraft-paper': 'Kraft Kağıt (70gsm)',
+                                        'security-void': 'Güvenlik Etiketi (VOID)',
+                                        'freezer-grade': 'Dondurulmuş Ürün Etiketi'
+                                      };
+
+                                      // General Printing Materials
+                                      const printingMaterials = {
+                                        'offset-80gsm': 'Offset 80 gsm',
+                                        'offset-90gsm': 'Offset 90 gsm',
+                                        'kuşe-115gsm': 'Kuşe 115 gsm',
+                                        'kuşe-135gsm': 'Kuşe 135 gsm',
+                                        'kuşe-170gsm': 'Kuşe 170 gsm',
+                                        'kuşe-250gsm': 'Kuşe 250 gsm',
+                                        'kuşe-300gsm': 'Kuşe 300 gsm',
+                                        'bristol-250gsm': 'Bristol 250 gsm',
+                                        'bristol-300gsm': 'Bristol 300 gsm',
+                                        'kraft-200gsm': 'Kraft 200 gsm',
+                                        'recycled-80gsm': 'Geri Dönüşüm 80 gsm'
+                                      };
+
+                                      // Adhesive Types
+                                      const adhesiveTypes = {
+                                        'permanent-acrylic': 'Kalıcı Akrilik',
+                                        'removable-acrylic': 'Çıkarılabilir Akrilik',
+                                        'freezer-grade': 'Dondurulmuş Ürün',
+                                        'high-tack': 'Yüksek Yapışkanlı',
+                                        'low-tack': 'Düşük Yapışkanlı',
+                                        'marine-grade': 'Denizcilik Sınıfı',
+                                        'permanent': 'Kalıcı',
+                                        'removable': 'Çıkarılabilir'
+                                      };
+
+                                      // Product Types
+                                      const productTypes = {
+                                        'catalog': 'Katalog / Dergi',
+                                        'brochure': 'Broşür / Tanıtım',
+                                        'business-card': 'Kartvizit',
+                                        'letterhead': 'Antetli Kağıt',
+                                        'flyer': 'Flyer / El İlanı',
+                                        'poster': 'Poster / Afiş',
+                                        'book': 'Kitap / Dergi',
+                                        'manual': 'Manuel / Kılavuz',
+                                        'calendar': 'Takvim',
+                                        'packaging': 'Ambalaj / Kutu',
+                                        'certificate': 'Sertifika / Diploma',
+                                        'presentation': 'Sunum Dosyası'
+                                      };
+
+                                      // Size Standards
+                                      const sizeStandards = {
+                                        'a0': 'A0 (841 x 1189 mm)',
+                                        'a1': 'A1 (594 x 841 mm)',
+                                        'a2': 'A2 (420 x 594 mm)',
+                                        'a3': 'A3 (297 x 420 mm)',
+                                        'a4': 'A4 (210 x 297 mm)',
+                                        'a5': 'A5 (148 x 210 mm)',
+                                        'a6': 'A6 (105 x 148 mm)',
+                                        '85x55': 'Kartvizit (85 x 55 mm)',
+                                        '100x70': 'Kartvizit Jumbo (100 x 70 mm)',
+                                        '20x10': '20x10 mm',
+                                        '30x20': '30x20 mm',
+                                        '40x25': '40x25 mm',
+                                        '50x30': '50x30 mm',
+                                        '58x40': '58x40 mm',
+                                        '70x50': '70x50 mm',
+                                        '100x70': '100x70 mm'
+                                      };
+
+                                      // Print Technologies
+                                      const printTechnologies = {
+                                        'digital-hp-indigo': 'Dijital HP Indigo',
+                                        'digital-xerox': 'Dijital Xerox',
+                                        'offset-sheet': 'Ofset Tabaka',
+                                        'offset-web': 'Ofset Rotativ',
+                                        'uv-offset': 'UV Ofset',
+                                        'screen-printing': 'Serigrafi',
+                                        'large-format': 'Geniş Format',
+                                        'inkjet-digital': 'İnkjet Dijital',
+                                        'flexo-print': 'Flekso Baskı',
+                                        'offset-print': 'Ofset Baskı',
+                                        'screen-print': 'Serigrafi'
+                                      };
+
+                                      // Color Options
+                                      const colorOptions = {
+                                        '1-0': '1+0 (Tek Yüz Siyah)',
+                                        '1-1': '1+1 (Çift Yüz Siyah)',
+                                        '4-0': '4+0 (Tek Yüz Renkli)',
+                                        '4-4': '4+4 (Çift Yüz Renkli)',
+                                        '4-1': '4+1 (Renkli + Siyah)',
+                                        '5-0': '5+0 (4 Renk + Pantone)',
+                                        '5-5': '5+5 (Çift Yüz + Pantone)',
+                                        'spot-color': 'Özel Pantone Renkleri',
+                                        'color': 'Renkli',
+                                        'bw': 'Siyah Beyaz'
+                                      };
+
+                                      // Surface Types
+                                      const surfaceTypes = {
+                                        'matte': 'Mat',
+                                        'glossy': 'Parlak',
+                                        'silk': 'İpek Mat',
+                                        'textured': 'Dokulu',
+                                        'linen': 'Keten Dokulu',
+                                        'hammered': 'Dövme Dokulu'
+                                      };
+
+                                      // Orientations
+                                      const orientations = {
+                                        'portrait': 'Dikey (Portrait)',
+                                        'landscape': 'Yatay (Landscape)',
+                                        'square': 'Kare'
+                                      };
+
+                                      // Winding Directions
+                                      const windingDirections = {
+                                        'outside-wound': 'Dış Sarım (Outside Wound)',
+                                        'inside-wound': 'İç Sarım (Inside Wound)'
+                                      };
+
+                                      // Common values
+                                      const commonValues = {
+                                        'yes': 'Evet',
+                                        'true': 'Evet',
+                                        'no': 'Hayır',
+                                        'false': 'Hayır',
+                                        'custom': 'Özel'
+                                      };
+
+                                      // Check all mappings
+                                      return sheetMaterials[strVal] ||
+                                             rollMaterials[strVal] ||
+                                             printingMaterials[strVal] ||
+                                             adhesiveTypes[strVal] ||
+                                             productTypes[strVal] ||
+                                             sizeStandards[strVal] ||
+                                             printTechnologies[strVal] ||
+                                             colorOptions[strVal] ||
+                                             surfaceTypes[strVal] ||
+                                             orientations[strVal] ||
+                                             windingDirections[strVal] ||
+                                             commonValues[strVal] ||
+                                             String(val);
                                     };
 
                                     const displayValue = getDisplayValue(value);
