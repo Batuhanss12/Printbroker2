@@ -211,12 +211,44 @@ export class DatabaseStorage implements IStorage {
     return quote;
   }
 
-  async getQuotesByCustomer(customerId: string): Promise<Quote[]> {
-    return await db
+  async getQuotesByCustomer(customerId: string): Promise<any[]> {
+    const quotesData = await db
       .select()
       .from(quotes)
       .where(eq(quotes.customerId, customerId))
       .orderBy(desc(quotes.createdAt));
+
+    // For each quote, get associated printer quotes with printer details
+    const quotesWithPrinterQuotes = await Promise.all(
+      quotesData.map(async (quote) => {
+        const printerQuotesData = await db
+          .select({
+            id: printerQuotes.id,
+            printerId: printerQuotes.printerId,
+            price: printerQuotes.price,
+            estimatedDays: printerQuotes.estimatedDays,
+            notes: printerQuotes.notes,
+            status: printerQuotes.status,
+            createdAt: printerQuotes.createdAt,
+            // Printer details
+            printerName: users.firstName,
+            companyName: users.companyName,
+            rating: users.averageRating,
+            totalRatings: users.totalRatings,
+          })
+          .from(printerQuotes)
+          .leftJoin(users, eq(printerQuotes.printerId, users.id))
+          .where(eq(printerQuotes.quoteId, quote.id))
+          .orderBy(printerQuotes.price);
+
+        return {
+          ...quote,
+          printerQuotes: printerQuotesData,
+        };
+      })
+    );
+
+    return quotesWithPrinterQuotes;
   }
 
   async getQuotesForPrinter(): Promise<Quote[]> {
