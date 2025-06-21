@@ -897,17 +897,13 @@ export class DatabaseStorage implements IStorage {
 
   async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      if (fs.existsSync(filePath)) {
-        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        const notification = notifications.find((n: any) => n.id === notificationId && n.userId === userId);
-        if (notification) {
-          notification.isRead = true;
-          fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-        }
-      }
+      await db
+        .update(notifications)
+        .set({ isRead: true, updatedAt: new Date() })
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -915,15 +911,12 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNotification(notificationId: string, userId: string): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      if (fs.existsSync(filePath)) {
-        let notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        notifications = notifications.filter((n: any) => !(n.id === notificationId && n.userId === userId));
-        fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-        console.log('✅ Notification deleted:', notificationId);
-      }
+      await db
+        .delete(notifications)
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
     } catch (error) {
       console.error('Error deleting notification:', error);
     }
