@@ -205,14 +205,19 @@ export function QuoteCard({
                 </Button>
               )}
 
-              {/*quote.status === 'received_quotes' && (
+              {quote.status === 'received_quotes' && onViewQuotes && (
                 <Button
                   size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewQuotes(quote);
+                  }}
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
                 >
+                  <FileText className="h-3 w-3 mr-1" />
                   Teklifleri Gör
                 </Button>
-              )*/}
+              )}
             </div>
           )}
         </div>

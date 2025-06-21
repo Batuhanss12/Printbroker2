@@ -50,6 +50,12 @@ export default function CustomerDashboard() {
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Handler for closing quote manager
+  const handleCloseQuoteManager = () => {
+    setSelectedQuote(null);
+    setIsQuoteManagerOpen(false);
+  };
+
   // Enhanced authentication handling
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -174,11 +180,6 @@ export default function CustomerDashboard() {
   const handleViewQuoteDetails = (quote: any) => {
     setSelectedQuote(quote);
     setIsQuoteManagerOpen(true);
-  };
-
-  const handleCloseQuoteManager = () => {
-    setSelectedQuote(null);
-    setIsQuoteManagerOpen(false);
   };
 
   const pendingQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'pending') : [];
@@ -854,7 +855,14 @@ export default function CustomerDashboard() {
                 ) : Array.isArray(quotes) && quotes.length > 0 ? (
                   <div className="space-y-4">
                     {quotes.map((quote: any) => (
-                      <QuoteCard key={quote.id} quote={quote} />
+                      <QuoteCard 
+                        key={quote.id} 
+                        quote={quote} 
+                        onViewQuotes={(quote) => {
+                          setSelectedQuote(quote);
+                          setIsQuoteManagerOpen(true);
+                        }}
+                      />
                     ))}
                   </div>
                 ) : (
