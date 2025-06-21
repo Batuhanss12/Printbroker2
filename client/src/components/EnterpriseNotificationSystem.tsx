@@ -248,6 +248,27 @@ export function EnterpriseNotificationSystem() {
     }
   };
 
+  // Load notifications from localStorage when user changes
+  useEffect(() => {
+    if (user?.id) {
+      const savedNotifications = localStorage.getItem(`notifications_${user.id}`);
+      const savedUnreadCount = localStorage.getItem(`unreadCount_${user.id}`);
+      
+      if (savedNotifications) {
+        try {
+          const parsed = JSON.parse(savedNotifications);
+          setNotifications(parsed);
+        } catch (error) {
+          console.error('Error parsing saved notifications:', error);
+        }
+      }
+      
+      if (savedUnreadCount) {
+        setUnreadCount(parseInt(savedUnreadCount, 10) || 0);
+      }
+    }
+  }, [user?.id]);
+
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case 'urgent': return <AlertCircle className="h-4 w-4 text-red-500" />;
