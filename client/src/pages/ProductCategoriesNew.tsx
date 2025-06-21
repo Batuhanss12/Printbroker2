@@ -917,15 +917,11 @@ export default function ProductCategoriesNew() {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                  {/* Pricing and Delivery */}
-                  <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <span className="text-xs text-gray-500 font-medium">Fiyat Aralığı</span>
-                      <div className="font-bold text-green-600 text-sm">{category.priceRange}</div>
-                    </div>
+                  {/* Delivery Info */}
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div>
                       <span className="text-xs text-gray-500 font-medium">Min. Sipariş</span>
-                      <div className="font-semibold text-gray-900 text-sm">{category.minOrder}</div>
+                      <div className="font-bold text-gray-900 text-sm">{category.minOrder}</div>
                     </div>
                     <div>
                       <span className="text-xs text-gray-500 font-medium">Teslimat</span>
