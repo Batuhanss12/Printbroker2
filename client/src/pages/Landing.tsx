@@ -477,7 +477,7 @@ const Landing: React.FC = () => {
                           {quote.status}
                         </Badge>
                         <span className="font-bold text-green-600">{quote.amount}</span>
-                        <span className="text-xs text-gray-400">{quote.time}</span>
+                        
                       </div>
                     </div>
                   ))}
