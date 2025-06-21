@@ -58,7 +58,7 @@ export function EnterpriseNotificationSystem() {
 
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`/api/notifications?userId=${user.id}`);
+        const response = await fetch('/api/notifications');
         if (response.ok) {
           const data = await response.json();
           console.log('📬 Fetched notifications for user:', user.id, data);
@@ -71,20 +71,20 @@ export function EnterpriseNotificationSystem() {
             type: notif.type,
             title: notif.title,
             message: notif.message,
-            quote: notif.data?.quote,
-            timestamp: notif.createdAt || notif.timestamp,
-            priority: notif.data?.priority || notif.priority || 'medium',
-            category: notif.data?.category || notif.category || 'general',
+            quote: notif.data?.quote || notif.quote,
+            timestamp: notif.createdAt || notif.timestamp || new Date().toISOString(),
+            priority: notif.priority || 'medium',
+            category: notif.category || 'general',
             isRead: notif.isRead || false,
-            actionRequired: notif.data?.actionRequired || notif.actionRequired || false,
-            metadata: notif.data?.metadata || notif.metadata || {}
+            actionRequired: notif.actionRequired || false,
+            metadata: notif.metadata || notif.data || {}
           }));
           
           console.log('📬 Processed notifications:', serverNotifications.length);
           setNotifications(serverNotifications);
           setUnreadCount(serverNotifications.filter((n: any) => !n.isRead).length);
         } else {
-          console.error('Failed to fetch notifications:', response.status);
+          console.error('Failed to fetch notifications:', response.status, response.statusText);
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -92,6 +92,10 @@ export function EnterpriseNotificationSystem() {
     };
 
     fetchNotifications();
+    
+    // Refresh notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
   }, [isAuthenticated, user]);
 
   // WebSocket connection with auto-reconnect
@@ -444,6 +448,9 @@ export function EnterpriseNotificationSystem() {
                   {connectionStatus === 'disconnected' && (
                     <p className="text-xs mt-2 text-red-500">Bağlantı kesildi</p>
                   )}
+                  <p className="text-xs mt-2 text-gray-400">
+                    Toplam: {notifications.length}, Filtrelenmiş: {filteredNotifications.length}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-1">
