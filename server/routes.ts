@@ -2155,13 +2155,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mock quote specific routes first
+  app.get('/api/quotes/mock', isAuthenticated, async (req: any, res) => {
+    try {
+      const mockQuotes = mockQuoteSystem.getMockQuotes();
+      res.json(mockQuotes);
+    } catch (error) {
+      console.error("Error fetching mock quotes:", error);
+      res.status(500).json({ message: "Failed to fetch mock quotes" });
+    }
+  });
+
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
       
-      // Skip mock routes
-      if (quoteId === 'mock' || quoteId.startsWith('mock_')) {
-        return res.status(404).json({ message: "Use mock quote endpoints" });
+      // Skip mock routes - they have their own endpoint
+      if (quoteId === 'mock') {
+        return res.status(404).json({ message: "Use /api/quotes/mock endpoint" });
       }
       
       const quote = await storage.getQuote(quoteId);
