@@ -23,14 +23,16 @@ interface Quote {
 
 interface QuoteCardProps {
   quote: Quote;
-  showActions?: boolean;
   onViewDetails?: (quote: Quote) => void;
+  onViewQuotes?: (quote: Quote) => void;
+  showActions?: boolean;
 }
 
-export default function QuoteCard({ 
+export function QuoteCard({ 
   quote, 
-  showActions = true, 
-  onViewDetails 
+  onViewDetails, 
+  onViewQuotes,
+  showActions = true 
 }: QuoteCardProps) {
 
   const getStatusConfig = (status: string) => {
@@ -132,7 +134,7 @@ export default function QuoteCard({
   const specSummary = getSpecificationSummary();
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow" onClick={() => quote.status === 'received_quotes' && onViewQuotes ? onViewQuotes(quote) : null} style={{cursor: quote.status === 'received_quotes' && onViewQuotes ? 'pointer' : 'default'}}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
@@ -203,14 +205,14 @@ export default function QuoteCard({
                 </Button>
               )}
 
-              {quote.status === 'received_quotes' && (
+              {/*quote.status === 'received_quotes' && (
                 <Button
                   size="sm"
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
                 >
                   Teklifleri Gör
                 </Button>
-              )}
+              )*/}
             </div>
           )}
         </div>
