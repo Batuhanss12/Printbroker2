@@ -503,5 +503,18 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T08:17:45.238Z"
+  },
+  {
+    "id": "ea688bbc-889e-4316-a273-79af296010e6",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "type": "quote_response",
+    "title": "Teklif Yanıtı Alındı",
+    "message": "Ala Etiket firmasından teklif geldi: ₺15000 - 5 gün",
+    "data": {
+      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f",
+      "printerQuoteId": "1fc4ad68-a3cb-412e-8761-c5fb2ba03b0f"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:22:15.054Z"
   }
 ]

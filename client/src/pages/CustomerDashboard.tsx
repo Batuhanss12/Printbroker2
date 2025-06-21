@@ -10,6 +10,8 @@ import StatsCard from "@/components/StatsCard";
 import Chat from "@/components/Chat";
 import DesignEngine from "@/components/DesignEngine";
 import FileManager from "@/components/FileManager";
+import CustomerQuoteManager from "@/components/CustomerQuoteManager";
+import { EnterpriseNotificationSystem } from "@/components/EnterpriseNotificationSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +43,8 @@ export default function CustomerDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isDesignDialogOpen, setIsDesignDialogOpen] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<any>(null);
+  const [isQuoteManagerOpen, setIsQuoteManagerOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
@@ -165,6 +169,17 @@ export default function CustomerDashboard() {
       </div>
     );
   }
+
+  // Quote management handlers
+  const handleViewQuoteDetails = (quote: any) => {
+    setSelectedQuote(quote);
+    setIsQuoteManagerOpen(true);
+  };
+
+  const handleCloseQuoteManager = () => {
+    setSelectedQuote(null);
+    setIsQuoteManagerOpen(false);
+  };
 
   const pendingQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'pending') : [];
   const receivedQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'received_quotes') : [];
@@ -331,7 +346,11 @@ export default function CustomerDashboard() {
                 ) : Array.isArray(quotes) && quotes.length > 0 ? (
                   <div className="space-y-3">
                     {quotes.slice(0, 5).map((quote: any) => (
-                      <QuoteCard key={quote.id} quote={quote} />
+                      <QuoteCard 
+                        key={quote.id} 
+                        quote={quote} 
+                        onViewDetails={handleViewQuoteDetails}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -881,6 +900,17 @@ export default function CustomerDashboard() {
         </div>
       </Button>
 
+
+      {/* Customer Quote Manager */}
+      {selectedQuote && isQuoteManagerOpen && (
+        <CustomerQuoteManager
+          quote={selectedQuote}
+          onClose={handleCloseQuoteManager}
+        />
+      )}
+
+      {/* Enterprise Notification System */}
+      <EnterpriseNotificationSystem />
 
       {isChatOpen && (
         <Chat
