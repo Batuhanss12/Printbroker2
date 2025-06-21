@@ -651,7 +651,7 @@ export default function LandingNew() {
                             {job.title}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {job.location} • {job.time}
+                            {job.location}
                           </div>
                         </div>
                         <div className="text-right">

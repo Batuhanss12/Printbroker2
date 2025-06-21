@@ -43,9 +43,9 @@ export function QuoteCard({
         color: "bg-yellow-100 text-yellow-800"
       },
       received_quotes: { 
-        label: "Teklifler Alındı", 
+        label: "Teklifler Alındı - Yanıt Bekliyor", 
         variant: "default" as const,
-        color: "bg-blue-100 text-blue-800"
+        color: "bg-orange-100 text-orange-800 animate-pulse"
       },
       approved: { 
         label: "Onaylandı", 
@@ -134,8 +134,16 @@ export function QuoteCard({
   const specSummary = getSpecificationSummary();
 
   return (
-    <Card className="hover:shadow-md transition-shadow" onClick={() => quote.status === 'received_quotes' && onViewQuotes ? onViewQuotes(quote) : null} style={{cursor: quote.status === 'received_quotes' && onViewQuotes ? 'pointer' : 'default'}}>
+    <Card className={`hover:shadow-md transition-shadow ${quote.status === 'received_quotes' ? 'ring-2 ring-orange-200 border-orange-300' : ''}`}>
       <CardContent className="p-4">
+        {/* Action Required Banner */}
+        {quote.status === 'received_quotes' && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 mb-3 flex items-center gap-2">
+            <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-orange-800">Yanıt bekliyor - Teklifleri görüntüleyin</span>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div className={`p-2 bg-gray-100 rounded-lg ${typeConfig.color}`}>
@@ -208,6 +216,7 @@ export function QuoteCard({
               {quote.status === 'received_quotes' && onViewQuotes && (
                 <Button
                   size="sm"
+                  className="bg-orange-600 hover:bg-orange-700 text-white font-medium animate-pulse"
                   onClick={(e) => {
                     e.stopPropagation();
                     onViewQuotes(quote);

@@ -298,28 +298,51 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
                         </div>
                       )}
 
-                      {printerQuote.status === 'pending' && quote.status !== 'approved' && (
-                        <div className="flex gap-2 pt-4 border-t">
-                          <Button
-                            onClick={() => handleApproveQuote(printerQuote.id)}
-                            disabled={approveQuoteMutation.isPending && selectedQuoteId === printerQuote.id}
-                            className="flex-1 bg-green-600 hover:bg-green-700"
-                          >
-                            <Check className="h-4 w-4 mr-2" />
-                            {approveQuoteMutation.isPending && selectedQuoteId === printerQuote.id 
-                              ? 'Onaylanıyor...' 
-                              : 'Onayla'
-                            }
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => handleRejectQuote(printerQuote.id)}
-                            disabled={rejectQuoteMutation.isPending}
-                            className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            Reddet
-                          </Button>
+                      {/* Response Buttons - Always show if quote is actionable */}
+                      {printerQuote.status === 'pending' && (quote.status === 'pending' || quote.status === 'received_quotes') && (
+                        <div className="bg-gray-50 p-4 rounded-lg mt-4">
+                          <h6 className="text-sm font-medium text-gray-800 mb-3">Bu teklife yanıt verin:</h6>
+                          <div className="flex gap-3">
+                            <Button
+                              onClick={() => handleApproveQuote(printerQuote.id)}
+                              disabled={approveQuoteMutation.isPending && selectedQuoteId === printerQuote.id}
+                              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2"
+                              size="lg"
+                            >
+                              <Check className="h-5 w-5 mr-2" />
+                              {approveQuoteMutation.isPending && selectedQuoteId === printerQuote.id 
+                                ? 'Onaylanıyor...' 
+                                : 'Teklifi Onayla'
+                              }
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => handleRejectQuote(printerQuote.id)}
+                              disabled={rejectQuoteMutation.isPending}
+                              className="flex-1 border-red-300 text-red-700 hover:bg-red-50 font-medium py-2"
+                              size="lg"
+                            >
+                              <X className="h-5 w-5 mr-2" />
+                              {rejectQuoteMutation.isPending ? 'Reddediliyor...' : 'Teklifi Reddet'}
+                            </Button>
+                          </div>
+                          <p className="text-xs text-gray-600 mt-2 text-center">
+                            Teklifi onayladığınızda sipariş süreci başlayacaktır.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Show status for non-pending quotes */}
+                      {printerQuote.status !== 'pending' && (
+                        <div className="mt-4 p-3 rounded-lg bg-gray-100">
+                          <div className="flex items-center gap-2">
+                            {printerQuote.status === 'approved' && <Check className="h-4 w-4 text-green-600" />}
+                            {printerQuote.status === 'rejected' && <X className="h-4 w-4 text-red-600" />}
+                            <span className="text-sm font-medium">
+                              {printerQuote.status === 'approved' && 'Bu teklif onaylandı'}
+                              {printerQuote.status === 'rejected' && 'Bu teklif reddedildi'}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </CardContent>
