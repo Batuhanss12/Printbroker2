@@ -199,35 +199,18 @@ export function QuoteCard({
             )}
           </div>
 
-          {showActions && (
-            <div className="flex items-center space-x-2">
-              {onViewDetails && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewDetails(quote)}
-                  className="h-7 px-2 text-xs"
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  Detay
-                </Button>
-              )}
-
-              {quote.status === 'received_quotes' && onViewQuotes && (
-                <Button
-                  size="sm"
-                  className="bg-orange-600 hover:bg-orange-700 text-white font-medium animate-pulse"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onViewQuotes(quote);
-                  }}
-                  className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
-                >
-                  <FileText className="h-3 w-3 mr-1" />
-                  Teklifleri Gör
-                </Button>
-              )}
-            </div>
+          {showActions && quote.status === 'received_quotes' && onViewQuotes && (
+            <Button
+              size="sm"
+              className="bg-orange-600 hover:bg-orange-700 text-white font-medium animate-pulse"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewQuotes(quote);
+              }}
+            >
+              <FileText className="h-3 w-3 mr-1" />
+              Teklifleri Yanıtla
+            </Button>
           )}
         </div>
       </CardContent>

@@ -2680,6 +2680,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get printer's approved orders (for "Siparişlerim" section)
+  app.get('/api/orders/my-orders', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const userRole = req.user?.role || req.session?.user?.role;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      if (userRole !== 'printer') {
+        return res.status(403).json({ message: "Only printers can access this endpoint" });
+      }
+
+      // Get all approved printer quotes for this printer
+      const printerQuotes = await storage.getPrinterQuotesByPrinter(userId);
+      const approvedQuotes = printerQuotes.filter((pq: any) => pq.status === 'approved');
+
+      // Get detailed information for each order
+      const orders = [];
+      for (const pq of approvedQuotes) {
+        const quote = await storage.getQuote(pq.quoteId);
+        const customer = await storage.getUser(quote.customerId);
+        const orderStatuses = await storage.getOrderStatuses(pq.quoteId);
+        
+        orders.push({
+          id: pq.quoteId,
+          printerQuoteId: pq.id,
+          title: quote.title,
+          type: quote.type,
+          customer: {
+            name: `${customer.firstName} ${customer.lastName}`,
+            company: customer.companyName
+          },
+          price: pq.price,
+          estimatedDays: pq.estimatedDays,
+          deadline: quote.deadline,
+          currentStatus: quote.status,
+          orderStatuses: orderStatuses.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
+          createdAt: pq.createdAt,
+          specifications: quote.specifications
+        });
+      }
+
+      res.json(orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    } catch (error) {
+      console.error("Error fetching printer orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
   // Design routes
   app.get('/api/designs/history', isAuthenticated, async (req: any, res) => {
     try {
