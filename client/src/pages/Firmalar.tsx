@@ -73,6 +73,48 @@ export default function Firmalar() {
     queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
   };
 
+  // WebSocket connection for real-time updates
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = () => {
+      console.log('🔌 Companies WebSocket connected');
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        
+        // Listen for new user registrations
+        if (data.type === 'user_registered' || data.type === 'company_registered') {
+          console.log('👥 New company registered, refreshing list');
+          refreshData();
+        }
+        
+        // Listen for general notifications that might affect company data
+        if (data.type === 'notification' && data.category === 'user_management') {
+          refreshData();
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('🔌 Companies WebSocket disconnected');
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [queryClient]);
+
   const { data: companies = [], isLoading, error, refetch } = useQuery({
     queryKey: ["/api/admin/users"],
     queryFn: async () => {
@@ -98,16 +140,12 @@ export default function Firmalar() {
   const customerCompanies = companies.filter((c: Company) => c && c.role === 'customer');
   const adminUsers = companies.filter((c: Company) => c && c.role === 'admin');
 
-  // Filter companies to show only "Ala Etiket" and filter based on search
-  const filteredCompanies = printerCompanies.filter(company => {
-    // Only show "Ala Etiket" company
-    if (company.companyName !== "Ala Etiket") {
-      return false;
-    }
-
+  // Filter companies based on search and role
+  const filteredCompanies = companies.filter((company: Company) => {
     const matchesSearch = company.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          company.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         company.lastName?.toLowerCase().includes(searchTerm.toLowerCase());
+                         company.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         company.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = filterRole === 'all' || company.role === filterRole;
 
