@@ -602,15 +602,15 @@ export default function AdminDashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                       <span className="text-sm font-medium">Aktif Kullanıcılar</span>
-                      <span className="text-lg font-bold text-blue-600">{systemStats.activeUsers || 0}</span>
+                      <span className="text-lg font-bold text-blue-600">{(systemStats as any)?.activeUsers || 0}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                       <span className="text-sm font-medium">Toplam Yükleme</span>
-                      <span className="text-lg font-bold text-green-600">{systemStats.totalUploads || 0}</span>
+                      <span className="text-lg font-bold text-green-600">{(systemStats as any)?.totalUploads || 0}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
                       <span className="text-sm font-medium">İşlenen İşler</span>
-                      <span className="text-lg font-bold text-purple-600">{systemStats.processedJobs || 0}</span>
+                      <span className="text-lg font-bold text-purple-600">{(systemStats as any)?.processedJobs || 0}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -625,7 +625,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {systemStats.recentActivities?.map((activity: any, index: number) => (
+                    {(systemStats as any)?.recentActivities?.map((activity: any, index: number) => (
                       <div key={index} className="flex items-center gap-3 p-2">
                         <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
                         <div className="flex-1">
