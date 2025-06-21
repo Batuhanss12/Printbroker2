@@ -88,6 +88,140 @@ export class DatabaseStorage implements IStorage {
     return result[0] || null;
   }
 
+  async getUser(id: string): Promise<any | null> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0] || null;
+  }
+
+  async upsertUser(userData: any): Promise<any> {
+    try {
+      const existingUser = await this.getUser(userData.id);
+      if (existingUser) {
+        const result = await db.update(users)
+          .set({
+            ...userData,
+            updatedAt: new Date()
+          })
+          .where(eq(users.id, userData.id))
+          .returning();
+        return result[0];
+      } else {
+        const result = await db.insert(users)
+          .values({
+            ...userData,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+          .returning();
+        return result[0];
+      }
+    } catch (error) {
+      console.error('Error upserting user:', error);
+      throw error;
+    }
+  }
+
+  async updateUserCreditBalance(userId: string, newBalance: string): Promise<void> {
+    await db.update(users)
+      .set({ 
+        creditBalance: newBalance,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async getQuotesByCustomer(customerId: string): Promise<any[]> {
+    return await db.select().from(quotes).where(eq(quotes.customerId, customerId));
+  }
+
+  async getQuotesForPrinter(): Promise<any[]> {
+    return await db.select().from(quotes);
+  }
+
+  async getQuote(id: string): Promise<any | null> {
+    const result = await db.select().from(quotes).where(eq(quotes.id, id));
+    return result[0] || null;
+  }
+
+  async createQuote(quoteData: any): Promise<any> {
+    const result = await db.insert(quotes).values(quoteData).returning();
+    return result[0];
+  }
+
+  async updateQuoteStatus(id: string, status: string): Promise<any> {
+    const result = await db.update(quotes)
+      .set({ 
+        status: status as any,
+        updatedAt: new Date()
+      })
+      .where(eq(quotes.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async createPrinterQuote(printerQuoteData: any): Promise<any> {
+    const result = await db.insert(printerQuotes).values(printerQuoteData).returning();
+    return result[0];
+  }
+
+  async getPrinterQuotesByQuote(quoteId: string): Promise<any[]> {
+    return await db.select().from(printerQuotes).where(eq(printerQuotes.quoteId, quoteId));
+  }
+
+  async getPrinterQuotesByPrinter(printerId: string): Promise<any[]> {
+    return await db.select().from(printerQuotes).where(eq(printerQuotes.printerId, printerId));
+  }
+
+  async getPrinterQuote(id: string): Promise<any | null> {
+    const result = await db.select().from(printerQuotes).where(eq(printerQuotes.id, id));
+    return result[0] || null;
+  }
+
+  async updatePrinterQuoteStatus(id: string, status: string): Promise<any> {
+    const result = await db.update(printerQuotes)
+      .set({ 
+        status: status as any,
+        updatedAt: new Date()
+      })
+      .where(eq(printerQuotes.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getNotifications(userId: string): Promise<any[]> {
+    console.log('📬 Querying notifications for userId:', userId);
+    try {
+      const result = await db.select().from(notifications).where(eq(notifications.userId, userId)).orderBy(desc(notifications.createdAt));
+      console.log('📬 Database returned notifications:', result.length);
+      return result;
+    } catch (error) {
+      console.error('Error reading file notifications:', error);
+      return [];
+    }
+  }
+
+  async createNotification(notificationData: any): Promise<any> {
+    const result = await db.insert(notifications).values(notificationData).returning();
+    return result[0];
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
+    await db.update(notifications)
+      .set({ isRead: true })
+      .where(and(
+        eq(notifications.id, notificationId),
+        eq(notifications.userId, userId)
+      ));
+  }
+
+  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+    await db.delete(notifications)
+      .where(and(
+        eq(notifications.id, notificationId),
+        eq(notifications.userId, userId)
+      ));
+  }
+
   async updateUser(id: string, updates: Partial<InsertUser>): Promise<void> {
     await db.update(users).set(updates).where(eq(users.id, id));
   }
