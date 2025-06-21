@@ -912,46 +912,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 12;
-
-      console.log(`🎨 Fetching design history for user ${userId}, page ${page}, limit ${limit}`);
+      const limit = parseInt(req.query.limit) || 10;
 
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Get actual design history from storage with enhanced logging
+      // Get actual design history from storage
       const designHistory = await storage.getDesignHistory(userId, { page, limit });
-      
-      console.log(`📋 Design history response:`, {
-        userId,
-        totalDesigns: designHistory.total || designHistory.designs?.length || 0,
-        currentPage: designHistory.page || page,
-        totalPages: designHistory.totalPages || 1,
-        hasDesigns: Array.isArray(designHistory.designs) && designHistory.designs.length > 0
-      });
-
-      // Ensure proper response structure
-      const response = {
-        designs: designHistory.designs || designHistory || [],
-        total: designHistory.total || (Array.isArray(designHistory.designs) ? designHistory.designs.length : 0),
-        page: designHistory.page || page,
-        totalPages: designHistory.totalPages || Math.ceil((designHistory.total || 0) / limit),
-        hasNext: designHistory.hasNext || false,
-        hasPrev: designHistory.hasPrev || false
-      };
-
-      res.json(response);
+      res.json(designHistory);
     } catch (error) {
-      console.error("❌ Design history error:", error);
-      res.status(500).json({ 
-        message: "Failed to fetch design history",
-        designs: [],
-        total: 0,
-        page: 1,
-        totalPages: 1
-      });
+      console.error("Design history error:", error);
+      res.status(500).json({ message: "Failed to fetch design history" });
     }
   });
 
@@ -1844,7 +1817,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get specific quote details
+  // Get quote form configuration by type - must come BEFORE the UUID route
+  app.get('/api/quotes/sheet_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'sheet_label',
+        title: 'Tabaka Etiket Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading sheet label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/roll_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'roll_label',
+        title: 'Rulo Etiket Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading roll label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/general_printing', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'general_printing',
+        title: 'Genel Baskı Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading general printing form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  // Get quote form configuration by type (alternative endpoint)
+  app.get('/api/quotes/form/:type', async (req: any, res) => {
+    try {
+      const { type } = req.params;
+      
+      // Validate quote type
+      const validTypes = ['sheet_label', 'roll_label', 'general_printing'];
+      if (!validTypes.includes(type)) {
+        return res.status(400).json({ message: "Invalid quote type" });
+      }
+      
+      // Return form configuration based on type
+      const formConfig = {
+        type,
+        title: `${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Teklif Formu`,
+        status: 'ready'
+      };
+      
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading quote form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  // Get specific quote details by UUID
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
@@ -1852,6 +1893,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(quoteId)) {
+        return res.status(400).json({ message: "Invalid quote ID format" });
       }
 
       const quote = await storage.getQuote(quoteId);

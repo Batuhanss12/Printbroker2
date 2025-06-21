@@ -12,123 +12,123 @@
     "createdAt": "2025-06-16T20:15:26.493Z"
   },
   {
-    "id": "c96723e5-0ecb-42f2-a534-1f9cd78856fe",
+    "id": "cb2fb460-34b0-4756-a2f9-988866c1bd17",
     "userId": "PRT-1749037737494-E603AD",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.704Z"
+    "createdAt": "2025-06-21T07:11:23.076Z"
   },
   {
-    "id": "a6873fa4-7de3-40a9-ab02-764a409c68ef",
+    "id": "f13a314e-416e-4449-b62e-4b4be56d576b",
     "userId": "PRT-1749043658182-GLSYSM",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.718Z"
+    "createdAt": "2025-06-21T07:11:23.082Z"
   },
   {
-    "id": "cc9cc42a-b3a0-4065-9fd3-7268443adb0a",
+    "id": "52839a5c-578b-4e5f-a75f-b08fc35b227a",
     "userId": "PRT-TEST-001",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.726Z"
+    "createdAt": "2025-06-21T07:11:23.086Z"
   },
   {
-    "id": "c34776f0-cb77-492a-b6b9-ae64786ba3ab",
+    "id": "767606af-9d9d-4e0a-81c0-7176577a35a5",
     "userId": "PRT-1749232946404-GJLVD5",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.732Z"
+    "createdAt": "2025-06-21T07:11:23.090Z"
   },
   {
-    "id": "6e1f2215-2722-4033-95d3-ddad3810a61f",
+    "id": "513f3ad4-85d9-4b9e-af49-dd1788e9db3a",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.762Z"
+    "createdAt": "2025-06-21T07:11:23.095Z"
   },
   {
-    "id": "e529b80f-ebc6-42f4-abbe-f4ef84b72378",
+    "id": "0da43043-738e-4973-a324-0979ab3df10b",
     "userId": "dev-user-1748984472808",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.768Z"
+    "createdAt": "2025-06-21T07:11:23.100Z"
   },
   {
-    "id": "be747d45-878c-4e3a-9c64-7130872a53db",
+    "id": "41449138-2d55-474b-88c6-6151407e9a79",
     "userId": "dev-user-1748993436134",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.793Z"
+    "createdAt": "2025-06-21T07:11:23.201Z"
   },
   {
-    "id": "0ce663bd-2b94-4841-b339-008e7a283e7c",
+    "id": "79e3d996-988c-47ee-a0c2-0f29fe679076",
     "userId": "dev-user-1749034069202",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.800Z"
+    "createdAt": "2025-06-21T07:11:23.206Z"
   },
   {
-    "id": "3c9802ea-f6fc-4ee0-b6f0-e28740663317",
+    "id": "0bfa09fd-918a-4902-9a2f-2204502e2367",
     "userId": "dev-user-1749034375398",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.806Z"
+    "createdAt": "2025-06-21T07:11:23.213Z"
   },
   {
-    "id": "d80a4a47-ae61-4080-afda-e3ac988e4ad6",
+    "id": "8c8df862-48b5-4bd7-9ac2-e7bcca0de393",
     "userId": "PRT-1749647865027-C37PE8",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
+    "message": "Katalog & Broşür - 30,672 adet - ₺15975",
     "data": {
-      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
+      "quoteId": "f47ad0dc-6101-45e3-a76c-0097a898dcac"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T06:40:43.814Z"
+    "createdAt": "2025-06-21T07:11:23.220Z"
   }
 ]

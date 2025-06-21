@@ -104,35 +104,18 @@ function AppRouter() {
           <Route path="/printer-dashboard" component={PrinterDashboard} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
           
-          {/* Quote form routes - specific paths first */}
-          <Route path="/quote/sheet_label" component={() => {
-            const userRole = (user as any)?.role;
-            if (userRole !== 'customer') {
-              window.location.href = '/';
-              return null;
-            }
-            return <QuoteFormNew />;
-          }} />
-          <Route path="/quote/roll_label" component={() => {
-            const userRole = (user as any)?.role;
-            if (userRole !== 'customer') {
-              window.location.href = '/';
-              return null;
-            }
-            return <QuoteFormNew />;
-          }} />
-          <Route path="/quote/general_printing" component={() => {
-            const userRole = (user as any)?.role;
-            if (userRole !== 'customer') {
-              window.location.href = '/';
-              return null;
-            }
-            return <QuoteFormNew />;
-          }} />
-          
-          {/* Quote detail routes - UUID patterns */}
-          <Route path="/quote-detail/:id" component={QuoteDetail} />
+          {/* Quote routes */}
           <Route path="/quote/:id" component={QuoteDetail} />
+          <Route path="/quote-detail/:id" component={QuoteDetail} />
+
+          <Route path="/quote/:type" component={() => {
+            const userRole = (user as any)?.role;
+            if (userRole !== 'customer') {
+              window.location.href = '/';
+              return null;
+            }
+            return <QuoteFormNew />;
+          }} />
 
           <Route path="/payment" component={Payment} />
         </>

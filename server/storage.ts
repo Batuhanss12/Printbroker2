@@ -149,7 +149,7 @@ export class DatabaseStorage implements IStorage {
 
   async upsertUser(userData: UpsertUser): Promise<User> {
     const existingUser = await this.getUserByEmail(userData.email);
-
+    
     if (existingUser) {
       const [updatedUser] = await db
         .update(users)
@@ -413,7 +413,7 @@ export class DatabaseStorage implements IStorage {
 
   async sendMessage(message: InsertChatMessage): Promise<ChatMessage> {
     const [newMessage] = await db.insert(chatMessages).values(message).returning();
-
+    
     await db
       .update(chatRooms)
       .set({ lastMessageAt: new Date() })
@@ -509,7 +509,7 @@ export class DatabaseStorage implements IStorage {
     if (!contract) return;
 
     const updateData: any = {};
-
+    
     if (contract.customerId === userId) {
       updateData.customerSignature = signature;
       updateData.customerSignedAt = new Date();
@@ -538,22 +538,22 @@ export class DatabaseStorage implements IStorage {
       const fs = await import('fs');
       const path = await import('path');
       const { randomUUID } = await import('crypto');
-
+      
       const newNotification = {
         id: randomUUID(),
         ...notification
       };
-
+      
       const filePath = path.join(process.cwd(), 'notifications.json');
       let notifications = [];
-
+      
       if (fs.existsSync(filePath)) {
         notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       }
-
+      
       notifications.push(newNotification);
       fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-
+      
       console.log('✅ Notification created:', newNotification.id);
       return newNotification;
     } catch (error) {
@@ -583,104 +583,18 @@ export class DatabaseStorage implements IStorage {
     return data;
   }
 
-  async getDesignHistory(userId: string, options: { page?: number; limit?: number } = {}) {
-    const { page = 1, limit = 12 } = options;
-    const offset = (page - 1) * limit;
-
-    try {
-      console.log(`🔍 Fetching design history for userId: ${userId}, page: ${page}, limit: ${limit}`);
-
-      const query = `
-        SELECT 
-          id,
-          "userId",
-          prompt,
-          options,
-          result,
-          "createdAt",
-          "updatedAt"
-        FROM design_generations 
-        WHERE "userId" = $1 
-        ORDER BY "createdAt" DESC 
-        LIMIT $2 OFFSET $3
-      `;
-
-      const countQuery = `
-        SELECT COUNT(*) as count FROM design_generations 
-        WHERE "userId" = $1
-      `;
-
-      const { pool } = await import('./db');
-      const [designs, countResult] = await Promise.all([
-        pool.query(query, [userId, limit, offset]),
-        pool.query(countQuery, [userId])
-      ]);
-
-      const total = parseInt(countResult.rows[0]?.count || '0');
-      const totalPages = Math.ceil(total / limit);
-
-      console.log(`📊 Design history results:`, {
-        designCount: designs.rows.length,
-        total,
-        page,
-        totalPages,
-        userId
-      });
-
-      // Enhance each design with proper URL extraction
-      const enhancedDesigns = designs.rows.map(design => {
-        let imageUrl = null;
-
-        try {
-          // Try to extract image URL from result
-          const result = typeof design.result === 'string' ? JSON.parse(design.result) : design.result;
-
-          if (result) {
-            // Check various URL locations
-            if (result.url) {
-              imageUrl = result.url;
-            } else if (result['0']?.url) {
-              imageUrl = result['0'].url;
-            } else if (result.data?.[0]?.url) {
-              imageUrl = result.data[0].url;
-            } else if (Array.isArray(result) && result[0]?.url) {
-              imageUrl = result[0].url;
-            }
-          }
-        } catch (parseError) {
-          console.error('Error parsing design result:', parseError);
-        }
-
-        return {
-          ...design,
-          imageUrl,
-          url: imageUrl // Store URL at top level for easier access
-        };
-      });
-
-      const response = {
-        designs: enhancedDesigns,
-        total,
-        page,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      };
-
-      console.log(`✅ Successfully fetched ${enhancedDesigns.length} designs for user ${userId}`);
-      return response;
-
-    } catch (error) {
-      console.error("❌ Error fetching design history:", error);
-      return {
-        designs: [],
-        total: 0,
-        page: 1,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false
-      };
-    }
+  async getDesignHistory(userId: string, options: { page: number; limit: number }): Promise<{
+    designs: any[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    return {
+      designs: [],
+      total: 0,
+      page: options.page,
+      totalPages: 0
+    };
   }
 
   async getDesignTemplates(): Promise<any[]> {

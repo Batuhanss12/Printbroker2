@@ -175,17 +175,6 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Design generations table
-export const designGenerations = pgTable("design_generations", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: varchar("userId").references(() => users.id).notNull(),
-  prompt: text("prompt").notNull(),
-  options: jsonb("options"),
-  result: jsonb("result"),
-  createdAt: timestamp("createdAt").defaultNow(),
-  updatedAt: timestamp("updatedAt").defaultNow(),
-});
-
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   quotes: many(quotes),
@@ -332,7 +321,6 @@ export const insertFileSchema = createInsertSchema(files).omit({ id: true, creat
 export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
 export const insertContractSchema = createInsertSchema(contracts).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertDesignGenerationSchema = createInsertSchema(designGenerations).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
@@ -353,5 +341,3 @@ export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type Contract = typeof contracts.$inferSelect;
-export type InsertDesignGeneration = z.infer<typeof insertDesignGenerationSchema>;
-export type DesignGeneration = typeof designGenerations.$inferSelect;
