@@ -133,38 +133,7 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
     },
   });
 
-  // Reject quote mutation
-  const rejectQuoteMutation = useMutation({
-    mutationFn: async (printerQuoteId: string) => {
-      return apiRequest('POST', `/api/quotes/${quote.id}/reject`, {
-        printerQuoteId
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Teklif Reddedildi',
-        description: 'Seçtiğiniz teklif reddedildi.',
-        variant: 'default',
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/quotes'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Hata',
-        description: error.message || 'Teklif reddedilirken bir hata oluştu.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleApproveQuote = (printerQuoteId: string) => {
-    setSelectedQuoteId(printerQuoteId);
-    approveQuoteMutation.mutate(printerQuoteId);
-  };
-
-  const handleRejectQuote = (printerQuoteId: string) => {
-    rejectQuoteMutation.mutate(printerQuoteId);
-  };
+  
 
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat('tr-TR', {
