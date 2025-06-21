@@ -1334,7 +1334,10 @@ export default function PrinterDashboard() {
                                         'polyester-silver': 'Polyester Gümüş',
                                         'kraft-brown': 'Kraft Kahverengi',
                                         'synthetic-pp': 'Sentetik PP',
-                                        'thermal-paper': 'Termal Kağıt'
+                                        'thermal-paper': 'Termal Kağıt',
+                                        'sticker-transparent': 'Şeffaf Etiket',
+                                        'sticker-white': 'Beyaz Etiket',
+                                        'transparent': 'Şeffaf'
                                       };
 
                                       // Roll Label Materials
@@ -1402,7 +1405,7 @@ export default function PrinterDashboard() {
                                         'a5': 'A5 (148 x 210 mm)',
                                         'a6': 'A6 (105 x 148 mm)',
                                         '85x55': 'Kartvizit (85 x 55 mm)',
-                                        '100x70': 'Kartvizit Jumbo (100 x 70 mm)',
+                                        '100x70-jumbo': 'Kartvizit Jumbo (100 x 70 mm)',
                                         '20x10': '20x10 mm',
                                         '30x20': '30x20 mm',
                                         '40x25': '40x25 mm',
@@ -1464,13 +1467,54 @@ export default function PrinterDashboard() {
                                         'inside-wound': 'İç Sarım (Inside Wound)'
                                       };
 
+                                      // Cutting Types
+                                      const cuttingTypes = {
+                                        'round-corner': 'Köşe Yuvarlama',
+                                        'straight': 'Düz Kesim',
+                                        'die-cut': 'Özel Kesim',
+                                        'perforated': 'Perforeli',
+                                        'kiss-cut': 'Kiss Cut'
+                                      };
+
+                                      // Packaging Options
+                                      const packagingOptions = {
+                                        'individual': 'Tek Tek Ambalajlama',
+                                        'bulk': 'Toplu Paketleme',
+                                        'standard': 'Standart Paketleme',
+                                        'gift-wrap': 'Hediye Paketleme',
+                                        'roll': 'Rulo Halinde',
+                                        'sheet': 'Tabaka Halinde'
+                                      };
+
+                                      // Lamination Types
+                                      const laminationTypes = {
+                                        'mat': 'Mat Laminasyon',
+                                        'matte': 'Mat Laminasyon',
+                                        'gloss': 'Parlak Laminasyon',
+                                        'glossy': 'Parlak Laminasyon',
+                                        'soft-touch': 'Soft Touch',
+                                        'anti-scratch': 'Çizilmez'
+                                      };
+
+                                      // Finishing Options
+                                      const finishingOptions = {
+                                        'uv-varnish': 'UV Vernik',
+                                        'spot-uv': 'Seçmeli UV',
+                                        'embossing': 'Kabartma',
+                                        'debossing': 'Çökertme',
+                                        'foil-stamping': 'Yaldız Baskı',
+                                        'die-cutting': 'Kalıp Kesim'
+                                      };
+
                                       // Common values
                                       const commonValues = {
                                         'yes': 'Evet',
                                         'true': 'Evet',
                                         'no': 'Hayır',
                                         'false': 'Hayır',
-                                        'custom': 'Özel'
+                                        'custom': 'Özel',
+                                        'yok': 'YOK',
+                                        'belirtilmedi': 'Belirtilmedi'
                                       };
 
                                       // Check all mappings
@@ -1485,6 +1529,10 @@ export default function PrinterDashboard() {
                                              surfaceTypes[strVal] ||
                                              orientations[strVal] ||
                                              windingDirections[strVal] ||
+                                             cuttingTypes[strVal] ||
+                                             packagingOptions[strVal] ||
+                                             laminationTypes[strVal] ||
+                                             finishingOptions[strVal] ||
                                              commonValues[strVal] ||
                                              String(val);
                                     };

@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingPage from "@/components/LoadingPage";
-import { NotificationSystem } from "@/components/NotificationSystem";
+import { EnterpriseNotificationSystem } from "@/components/EnterpriseNotificationSystem";
 import Landing from "./pages/Landing";
 import LandingNew from "./pages/LandingNew";
 import Home from "./pages/Home";
@@ -161,7 +161,7 @@ function App() {
       <TooltipProvider>
         <Router>
           <AppRouter />
-          <NotificationSystem />
+          <EnterpriseNotificationSystem />
           <Toaster />
         </Router>
       </TooltipProvider>
