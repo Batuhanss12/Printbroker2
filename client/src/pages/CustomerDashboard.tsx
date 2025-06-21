@@ -5,7 +5,7 @@ import { PrinterLoader, RollingPaperLoader } from "@/components/PrintingLoaders"
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useQuery } from "@tanstack/react-query";
 import Navigation from "@/components/Navigation";
-import QuoteCard from "@/components/QuoteCard";
+import { QuoteCard } from "@/components/QuoteCard";
 import StatsCard from "@/components/StatsCard";
 import Chat from "@/components/Chat";
 import DesignEngine from "@/components/DesignEngine";
