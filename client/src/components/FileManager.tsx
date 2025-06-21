@@ -89,6 +89,40 @@ export default function FileManager() {
     });
   };
 
+  const handleDownload = async (file: FileItem) => {
+    try {
+      const response = await fetch(`/api/files/${file.id}/download`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Dosya indirilemedi');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.originalName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Başarılı",
+        description: "Dosya indirildi.",
+      });
+    } catch (error) {
+      toast({
+        title: "Hata",
+        description: "Dosya indirilemedi.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -270,6 +304,14 @@ export default function FileManager() {
                 {getStatusBadge(file.status)}
                 <div className="flex gap-1">
                   <FilePreviewDialog file={file} />
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDownload(file)}
+                    title="Dosyayı İndir"
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
