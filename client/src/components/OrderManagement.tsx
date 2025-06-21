@@ -101,7 +101,7 @@ export function OrderManagement() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['/api/orders/my-orders'],
-    queryFn: () => apiRequest('/api/orders/my-orders')
+    queryFn: () => apiRequest('GET', '/api/orders/my-orders')
   });
 
   const updateStatusMutation = useMutation({
