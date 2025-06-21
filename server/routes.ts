@@ -2847,6 +2847,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin API routes
+  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const stats = {
+        activeUsers: await storage.getActiveUserCount(),
+        totalUploads: await storage.getTotalUploadsCount(),
+        processedJobs: await storage.getProcessedJobsCount(),
+        recentActivities: await storage.getRecentActivity()
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch statistics" });
+    }
+  });
+
+  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get('/api/admin/quotes', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allQuotes = await storage.getAllQuotes();
+      res.json(allQuotes);
+    } catch (error) {
+      console.error("Error fetching quotes:", error);
+      res.status(500).json({ message: "Failed to fetch quotes" });
+    }
+  });
+
+  app.get('/api/admin/orders', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allOrders = await storage.getAllOrders();
+      res.json(allOrders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get('/api/admin/verifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get users with pending verification status
+      const allUsers = await storage.getAllUsers();
+      const pendingVerifications = allUsers.filter((u: any) => 
+        u.role === 'printer' && u.verificationStatus === 'pending'
+      );
+
+      res.json(pendingVerifications);
+    } catch (error) {
+      console.error("Error fetching verifications:", error);
+      res.status(500).json({ message: "Failed to fetch verifications" });
+    }
+  });
+
+  app.post('/api/admin/verify-company', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { companyId, status, notes } = req.body;
+
+      if (!companyId || !status) {
+        return res.status(400).json({ message: "Company ID and status are required" });
+      }
+
+      // Update user verification status
+      await storage.updateUserVerificationStatus(companyId, status, notes);
+
+      // Create notification for the company
+      await storage.createNotification({
+        userId: companyId,
+        type: 'verification_update',
+        title: status === 'approved' ? 'Firma Doğrulaması Onaylandı' : 'Firma Doğrulaması Reddedildi',
+        message: status === 'approved' 
+          ? 'Firma doğrulamanız başarıyla onaylandı. Artık teklif verebilirsiniz.'
+          : 'Firma doğrulamanız reddedildi. Lütfen belgelerinizi kontrol edin.',
+        data: { status, notes },
+        isRead: false,
+        createdAt: new Date()
+      });
+
+      res.json({ message: "Company verification updated successfully" });
+    } catch (error) {
+      console.error("Error updating verification:", error);
+      res.status(500).json({ message: "Failed to update verification" });
+    }
+  });
+
+  app.put('/api/admin/users/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin || admin.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId } = req.params;
+      const updateData = req.body;
+
+      // Update user data
+      await storage.updateUserProfile(userId, updateData);
+
+      res.json({ message: "User updated successfully" });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  app.delete('/api/admin/users/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user?.id || req.user?.claims?.sub || req.session?.user?.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin || admin.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId } = req.params;
+
+      // Delete user
+      await storage.deleteUser(userId);
+
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Rating routes
   app.post('/api/ratings', isAuthenticated, async (req: any, res) => {
     try {
