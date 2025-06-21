@@ -580,37 +580,7 @@ export class DatabaseStorage implements IStorage {
     result: any;
     createdAt: Date;
   }): Promise<any> {
-    try {
-      const id = crypto.randomUUID();
-      const query = `
-        INSERT INTO design_generations (
-          id, "userId", prompt, options, result, "createdAt", "updatedAt"
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *
-      `;
-      
-      const values = [
-        id,
-        data.userId,
-        data.prompt,
-        JSON.stringify(data.options),
-        JSON.stringify(data.result),
-        data.createdAt,
-        new Date()
-      ];
-
-      const result = await this.db.query(query, values);
-      console.log(`✅ Design generation saved to database: ${id}`);
-      
-      return {
-        id,
-        ...data,
-        result: data.result
-      };
-    } catch (error) {
-      console.error('❌ Error saving design generation:', error);
-      throw error;
-    }
+    return data;
   }
 
   async getDesignHistory(userId: string, options: { page?: number; limit?: number } = {}) {
@@ -640,9 +610,10 @@ export class DatabaseStorage implements IStorage {
         WHERE "userId" = $1
       `;
 
+      const { pool } = await import('./db');
       const [designs, countResult] = await Promise.all([
-        this.db.query(query, [userId, limit, offset]),
-        this.db.query(countQuery, [userId])
+        pool.query(query, [userId, limit, offset]),
+        pool.query(countQuery, [userId])
       ]);
 
       const total = parseInt(countResult.rows[0]?.count || '0');

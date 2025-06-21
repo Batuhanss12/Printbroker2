@@ -302,38 +302,6 @@ async function createTestUsers() {
   }
 }
 
-// Helper function to get form fields by type
-function getFormFieldsByType(type: string) {
-  const commonFields = {
-    quantity: { type: 'number', required: true, label: 'Miktar (Adet)' },
-    description: { type: 'textarea', required: false, label: 'Açıklama' },
-    deadline: { type: 'date', required: false, label: 'Termin Tarihi' },
-    budget: { type: 'number', required: false, label: 'Bütçe (₺)' }
-  };
-
-  const typeSpecificFields = {
-    sheet_label: {
-      paperType: { type: 'select', options: ['kuşe', 'mat', 'parlak'], label: 'Kağıt Türü' },
-      size: { type: 'text', label: 'Boyut (mm)' },
-      adhesiveType: { type: 'select', options: ['permanent', 'removable'], label: 'Yapışkan Türü' }
-    },
-    roll_label: {
-      rollWidth: { type: 'number', label: 'Rulo Genişlik (mm)' },
-      rollLength: { type: 'number', label: 'Rulo Uzunluk (m)' },
-      coreSize: { type: 'select', options: ['25', '40', '76'], label: 'Makara Çapı (mm)' }
-    },
-    general_printing: {
-      printType: { type: 'select', options: ['digital', 'offset'], label: 'Baskı Türü' },
-      paperWeight: { type: 'number', label: 'Kağıt Gramajı' }
-    }
-  };
-
-  return {
-    ...commonFields,
-    ...(typeSpecificFields[type as keyof typeof typeSpecificFields] || {})
-  };
-}
-
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -1876,27 +1844,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get quote form by type (for form loading)
-  app.get('/api/quotes/form/:type', (req: any, res) => {
-    try {
-      const { type } = req.params;
-      
-      // Return form configuration based on type
-      const formConfig = {
-        type,
-        title: `${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Teklif Formu`,
-        fields: getFormFieldsByType(type),
-        status: 'ready'
-      };
-      
-      res.json(formConfig);
-    } catch (error) {
-      console.error("Error loading quote form:", error);
-      res.status(500).json({ message: "Failed to load quote form" });
-    }
-  });
-
-  // Get specific quote details by UUID
+  // Get specific quote details
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
@@ -1904,12 +1852,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
-      }
-
-      // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(quoteId)) {
-        return res.status(400).json({ message: "Invalid quote ID format" });
       }
 
       const quote = await storage.getQuote(quoteId);
