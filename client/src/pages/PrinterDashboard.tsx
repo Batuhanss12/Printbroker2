@@ -71,6 +71,7 @@ import Navigation from "@/components/Navigation";
 import FirmVerificationPanel from "@/components/FirmVerificationPanel";
 import { PrinterOrderManager } from "@/components/PrinterOrderManager";
 import { InkDropletsLoader } from "@/components/Loaders";
+import { EnterpriseNotificationSystem } from "@/components/EnterpriseNotificationSystem";
 
 // QuoteFilesViewer Component
 function QuoteFilesViewer({ quoteId }: { quoteId: string }) {
@@ -692,9 +693,10 @@ export default function PrinterDashboard() {
 
         {/* Tabs for Dashboard Sections */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-gray-100 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-1 bg-gray-100 p-1 rounded-lg">
             <TabsTrigger value="overview" className="text-xs md:text-sm">Genel Bakış</TabsTrigger>
             <TabsTrigger value="quotes" className="text-xs md:text-sm">Teklifler</TabsTrigger>
+            <TabsTrigger value="live-quotes" className="text-xs md:text-sm">Canlı Teklifler</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs md:text-sm">Siparişler</TabsTrigger>
             <TabsTrigger value="profile" className="text-xs md:text-sm">Profil</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs md:text-sm">Analizler</TabsTrigger>
@@ -885,6 +887,26 @@ export default function PrinterDashboard() {
                     <p className="text-sm md:text-base text-gray-600">Müşterilerden gelen teklif talepleri burada görünecek</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="live-quotes" className="space-y-6">
+            <Card className="shadow-lg border-0">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <Zap className="h-5 w-5 text-yellow-600" />
+                  Canlı Teklif Takibi
+                </CardTitle>
+                <CardDescription className="text-sm md:text-base">
+                  Piyasadaki gerçek zamanlı teklif taleplerini takip edin ve fırsatları yakalayın
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6">
+                <EnterpriseNotificationSystem 
+                  userRole="printer" 
+                  userId={user?.id || ''} 
+                />
               </CardContent>
             </Card>
           </TabsContent>
