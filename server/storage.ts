@@ -1,1017 +1,260 @@
-import {
-  users,
-  quotes,
-  printerQuotes,
-  orders,
-  ratings,
-  files,
-  chatRooms,
-  chatMessages,
-  contracts,
-  notifications,
-  orderStatuses,
-  type User,
-  type UpsertUser,
-  type InsertQuote,
-  type Quote,
-  type InsertPrinterQuote,
-  type PrinterQuote,
-  type InsertOrder,
-  type Order,
-  type InsertRating,
-  type Rating,
-  type InsertFile,
-  type File,
-  type InsertChatRoom,
-  type ChatRoom,
-  type InsertChatMessage,
-  type ChatMessage,
-  type InsertContract,
-  type Contract,
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, desc, and, or, sql } from "drizzle-orm";
+import { db } from './db';
+import { 
+  users, quotes, printerQuotes, orders, ratings, 
+  files, chatMessages, notifications
+} from '../shared/schema';
+import { eq, and, or, desc, sql } from 'drizzle-orm';
 
-// Interface for storage operations
+type InsertUser = typeof users.$inferInsert;
+type InsertQuote = typeof quotes.$inferInsert;
+type InsertPrinterQuote = typeof printerQuotes.$inferInsert;
+type InsertOrder = typeof orders.$inferInsert;
+type InsertRating = typeof ratings.$inferInsert;
+type InsertFile = typeof files.$inferInsert;
+type InsertChatMessage = typeof chatMessages.$inferInsert;
+type InsertNotification = typeof notifications.$inferInsert;
+
 export interface IStorage {
-  // User operations (IMPORTANT: mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: any): Promise<User>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  updateUserRole(id: string, role: string): Promise<void>;
-  updateUserCreditBalance(id: string, newBalance: string): Promise<void>;
-  updateUserSubscription(id: string, status: string): Promise<void>;
+  // User methods
+  createUser(user: InsertUser): Promise<any>;
+  getUserByEmail(email: string): Promise<any | null>;
+  getUserById(id: string): Promise<any | null>;
+  updateUser(id: string, updates: Partial<InsertUser>): Promise<void>;
+  updateUserByEmail(email: string, updates: Partial<InsertUser>): Promise<void>;
 
-  // Quote operations
-  createQuote(quote: InsertQuote): Promise<Quote>;
-  getQuote(id: string): Promise<Quote | undefined>;
-  getQuotesByCustomer(customerId: string): Promise<Quote[]>;
-  getQuotesForPrinter(): Promise<Quote[]>;
-  updateQuoteStatus(id: string, status: string): Promise<void>;
+  // Quote methods
+  createQuote(quote: InsertQuote): Promise<any>;
+  getQuoteById(id: string): Promise<any | null>;
+  getQuotesByUserId(userId: string): Promise<any[]>;
+  updateQuote(id: string, updates: Partial<InsertQuote>): Promise<void>;
 
-  // Printer quote operations
-  createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<PrinterQuote>;
-  getPrinterQuote(id: string): Promise<PrinterQuote | undefined>;
-  getPrinterQuotesByQuote(quoteId: string): Promise<PrinterQuote[]>;
-  getPrinterQuotesByPrinter(printerId: string): Promise<PrinterQuote[]>;
-  updatePrinterQuoteStatus(id: string, status: string): Promise<void>;
+  // Printer quote methods
+  createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<any>;
+  getPrinterQuotesByQuoteId(quoteId: string): Promise<any[]>;
+  getPrinterQuotesByPrinterId(printerId: string): Promise<any[]>;
+  updatePrinterQuote(id: string, updates: Partial<InsertPrinterQuote>): Promise<void>;
 
-  // Order operations
-  createOrder(order: InsertOrder): Promise<Order>;
-  getOrder(id: string): Promise<Order | undefined>;
-  getOrdersByCustomer(customerId: string): Promise<Order[]>;
-  getOrdersByPrinter(printerId: string): Promise<Order[]>;
-  updateOrderStatus(id: string, status: string): Promise<void>;
+  // Order methods
+  createOrder(order: InsertOrder): Promise<any>;
+  getOrderById(id: string): Promise<any | null>;
+  getOrdersByUserId(userId: string): Promise<any[]>;
+  updateOrder(id: string, updates: Partial<InsertOrder>): Promise<void>;
 
-  // Order status operations
-  createOrderStatus(orderStatus: {
-    quoteId: string;
-    status: string;
-    title: string;
-    description: string;
-    timestamp: Date;
-    metadata?: any;
-  }): Promise<any>;
-  getOrderStatusesByQuote(quoteId: string): Promise<any[]>;
+  // Rating methods
+  createReview(review: InsertRating): Promise<any>;
+  getReviewsByPrinterId(printerId: string): Promise<any[]>;
+  updateReview(id: string, updates: Partial<InsertRating>): Promise<void>;
 
-  // Rating operations
-  createRating(rating: InsertRating): Promise<Rating>;
-  updatePrinterRating(printerId: string): Promise<void>;
+  // File methods
+  createUpload(upload: InsertFile): Promise<any>;
+  getUploadsByUserId(userId: string): Promise<any[]>;
 
-  // File operations
-  createFile(file: InsertFile): Promise<File>;
-  updateFile(id: string, data: Partial<File>): Promise<File>;
-  getFilesByQuote(quoteId: string): Promise<File[]>;
-  getFilesByUser(userId: string): Promise<File[]>;
-  getDesign(id: string): Promise<File | undefined>;
-  getFileById(id: string): Promise<File | undefined>;
-  getFileByFilename(filename: string): Promise<File | undefined>;
+  // Message methods
+  createMessage(message: InsertChatMessage): Promise<any>;
+  getMessagesByRoomId(roomId: string): Promise<any[]>;
 
-  // Admin operations
-  getAllUsers(): Promise<User[]>;
-  getUserStats(): Promise<any>;
-  getRecentActivity(): Promise<any[]>;
-
-  // Design operations
-  saveDesignGeneration(data: {
-    userId: string;
-    prompt: string;
-    options: any;
-    result: any;
-    createdAt: Date;
-  }): Promise<any>;
-
-  getDesignHistory(userId: string, options: { page: number; limit: number }): Promise<{
-    designs: any[];
-    total: number;
-    page: number;
-    totalPages: number;
-  }>;
-
-  getDesignTemplates(): Promise<any[]>;
-
-  // Chat operations
-  createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom>;
-  getChatRoom(id: string): Promise<ChatRoom | undefined>;
-  getChatRoomByQuote(quoteId: string, customerId: string, printerId: string): Promise<ChatRoom | undefined>;
-  getChatRoomsByUser(userId: string): Promise<ChatRoom[]>;
-
-  sendMessage(message: InsertChatMessage): Promise<ChatMessage>;
-  getMessages(roomId: string, limit?: number): Promise<ChatMessage[]>;
-  markMessagesAsRead(roomId: string, userId: string): Promise<void>;
-  getUnreadMessageCount(userId: string): Promise<number>;
-
-  // Contract operations
-  createContract(contract: InsertContract): Promise<Contract>;
-  getContract(id: string): Promise<Contract | undefined>;
-  getContractsByCustomer(customerId: string): Promise<Contract[]>;
-  getContractsByPrinter(printerId: string): Promise<Contract[]>;
-  updateContractStatus(id: string, status: string): Promise<void>;
-  signContract(id: string, userId: string, signature: string): Promise<void>;
-
-  // Notification operations
-  createNotification(notification: {
-    userId: string;
-    type: string;
-    title: string;
-    message: string;
-    data: any;
-    isRead: boolean;
-    createdAt: Date;
-  }): Promise<any>;
-  
+  // Notification methods
+  createNotification(notification: InsertNotification): Promise<any>;
   getNotifications(userId: string): Promise<any[]>;
   markNotificationAsRead(notificationId: string, userId: string): Promise<void>;
   deleteNotification(notificationId: string, userId: string): Promise<void>;
 
-  updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null>;
-  
-  // Order status operations
-  createOrderStatus(status: {
-    quoteId: string;
-    status: string;
-    title: string;
-    description: string;
-    timestamp: Date;
-    metadata?: any;
-  }): Promise<any>;
-  
-  getOrderStatusesByQuote(quoteId: string): Promise<any[]>;
+  // Admin methods
+  getAllUsers(): Promise<any[]>;
+  getAllQuotes(): Promise<any[]>;
+  getAllOrders(): Promise<any[]>;
+  getActiveUserCount(): Promise<number>;
+  getTotalUploads(): Promise<number>;
+  getProcessedJobs(): Promise<number>;
+  deleteUser(userId: string): Promise<void>;
+  verifyCompany(companyId: string, status: string, notes: string): Promise<void>;
+  getPendingVerifications(): Promise<any[]>;
 }
 
-// Database storage implementation
 export class DatabaseStorage implements IStorage {
-  // User operations
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+  // User methods
+  async createUser(user: InsertUser): Promise<any> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+  async getUserByEmail(email: string): Promise<any | null> {
+    const result = await db.select().from(users).where(eq(users.email, email));
+    return result[0] || null;
   }
 
-  async createUser(userData: any): Promise<User> {
-    const [newUser] = await db.insert(users).values(userData).returning();
-    return newUser;
+  async getUserById(id: string): Promise<any | null> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0] || null;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const existingUser = await this.getUserByEmail(userData.email);
-    
-    if (existingUser) {
-      const [updatedUser] = await db
-        .update(users)
-        .set(userData)
-        .where(eq(users.id, existingUser.id))
-        .returning();
-      return updatedUser;
-    } else {
-      const [newUser] = await db.insert(users).values(userData).returning();
-      return newUser;
-    }
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<void> {
+    await db.update(users).set(updates).where(eq(users.id, id));
   }
 
-  async updateUserRole(id: string, role: string): Promise<void> {
-    await db
-      .update(users)
-      .set({ role })
-      .where(eq(users.id, id));
+  async updateUserByEmail(email: string, updates: Partial<InsertUser>): Promise<void> {
+    await db.update(users).set(updates).where(eq(users.email, email));
   }
 
-  async updateUserCreditBalance(userId: string, newBalance: string): Promise<void> {
-    await db
-      .update(users)
-      .set({ creditBalance: newBalance })
-      .where(eq(users.id, userId));
+  // Quote methods
+  async createQuote(quote: InsertQuote): Promise<any> {
+    const result = await db.insert(quotes).values(quote).returning();
+    return result[0];
   }
 
-  async updateUserSubscription(userId: string, status: 'active' | 'inactive' | 'suspended'): Promise<void> {
-    await db
-      .update(users)
-      .set({ subscriptionStatus: status })
-      .where(eq(users.id, userId));
+  async getQuoteById(id: string): Promise<any | null> {
+    const result = await db.select().from(quotes).where(eq(quotes.id, id));
+    return result[0] || null;
   }
 
-  // Quote operations
-  async createQuote(quote: InsertQuote): Promise<Quote> {
-    const [newQuote] = await db.insert(quotes).values(quote).returning();
-    return newQuote;
+  async getQuotesByUserId(userId: string): Promise<any[]> {
+    return await db.select().from(quotes).where(eq(quotes.customerId, userId));
   }
 
-  async getQuote(id: string): Promise<Quote | undefined> {
-    const [quote] = await db.select().from(quotes).where(eq(quotes.id, id));
-    return quote;
+  async updateQuote(id: string, updates: Partial<InsertQuote>): Promise<void> {
+    await db.update(quotes).set(updates).where(eq(quotes.id, id));
   }
 
-  async getQuotesByCustomer(customerId: string): Promise<Quote[]> {
-    return await db
-      .select()
-      .from(quotes)
-      .where(eq(quotes.customerId, customerId))
-      .orderBy(desc(quotes.createdAt));
+  // Printer quote methods
+  async createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<any> {
+    const result = await db.insert(printerQuotes).values(printerQuote).returning();
+    return result[0];
   }
 
-  async getQuotesForPrinter(): Promise<Quote[]> {
-    return await db
-      .select()
-      .from(quotes)
-      .where(eq(quotes.status, "pending"))
-      .orderBy(desc(quotes.createdAt));
+  async getPrinterQuotesByQuoteId(quoteId: string): Promise<any[]> {
+    return await db.select().from(printerQuotes).where(eq(printerQuotes.quoteId, quoteId));
   }
 
-  async updateQuoteStatus(id: string, status: string): Promise<void> {
-    await db
-      .update(quotes)
-      .set({ status })
-      .where(eq(quotes.id, id));
+  async getPrinterQuotesByPrinterId(printerId: string): Promise<any[]> {
+    return await db.select().from(printerQuotes).where(eq(printerQuotes.printerId, printerId));
   }
 
-  async updateQuote(id: string, updateData: Partial<Quote>): Promise<Quote | null> {
-    const [updatedQuote] = await db
-      .update(quotes)
-      .set(updateData)
-      .where(eq(quotes.id, id))
-      .returning();
-    return updatedQuote || null;
+  async updatePrinterQuote(id: string, updates: Partial<InsertPrinterQuote>): Promise<void> {
+    await db.update(printerQuotes).set(updates).where(eq(printerQuotes.id, id));
   }
 
-  // Printer quote operations
-  async createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<PrinterQuote> {
-    const [newPrinterQuote] = await db.insert(printerQuotes).values(printerQuote).returning();
-    return newPrinterQuote;
+  // Order methods
+  async createOrder(order: InsertOrder): Promise<any> {
+    const result = await db.insert(orders).values(order).returning();
+    return result[0];
   }
 
-  async getPrinterQuotesByQuote(quoteId: string): Promise<PrinterQuote[]> {
-    return await db
-      .select()
-      .from(printerQuotes)
-      .where(eq(printerQuotes.quoteId, quoteId));
+  async getOrderById(id: string): Promise<any | null> {
+    const result = await db.select().from(orders).where(eq(orders.id, id));
+    return result[0] || null;
   }
 
-  async getPrinterQuotesByPrinter(printerId: string): Promise<PrinterQuote[]> {
-    return await db
-      .select()
-      .from(printerQuotes)
-      .where(eq(printerQuotes.printerId, printerId));
+  async getOrdersByUserId(userId: string): Promise<any[]> {
+    return await db.select().from(orders).where(eq(orders.customerId, userId));
   }
 
-  async getPrinterQuote(id: string): Promise<PrinterQuote | undefined> {
-    const [printerQuote] = await db.select().from(printerQuotes).where(eq(printerQuotes.id, id));
-    return printerQuote;
+  async updateOrder(id: string, updates: Partial<InsertOrder>): Promise<void> {
+    await db.update(orders).set(updates).where(eq(orders.id, id));
   }
 
-  async updatePrinterQuoteStatus(id: string, status: string): Promise<void> {
-    await db
-      .update(printerQuotes)
-      .set({ status })
-      .where(eq(printerQuotes.id, id));
+  // Rating methods
+  async createReview(review: InsertRating): Promise<any> {
+    const result = await db.insert(ratings).values(review).returning();
+    return result[0];
   }
 
-  // Order operations
-  async createOrder(order: InsertOrder): Promise<Order> {
-    const [newOrder] = await db.insert(orders).values(order).returning();
-    return newOrder;
+  async getReviewsByPrinterId(printerId: string): Promise<any[]> {
+    return await db.select().from(ratings).where(eq(ratings.printerId, printerId));
   }
 
-  async getOrder(id: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    return order;
+  async updateReview(id: string, updates: Partial<InsertRating>): Promise<void> {
+    await db.update(ratings).set(updates).where(eq(ratings.id, id));
   }
 
-  async getOrdersByCustomer(customerId: string): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.customerId, customerId));
+  // File methods
+  async createUpload(upload: InsertFile): Promise<any> {
+    const result = await db.insert(files).values(upload).returning();
+    return result[0];
   }
 
-  async getOrdersByPrinter(printerId: string): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.printerId, printerId));
+  async getUploadsByUserId(userId: string): Promise<any[]> {
+    return await db.select().from(files).where(eq(files.uploadedBy, userId));
   }
 
-  async updateOrderStatus(id: string, status: string): Promise<void> {
-    await db
-      .update(orders)
-      .set({ status })
-      .where(eq(orders.id, id));
+  // Message methods
+  async createMessage(message: InsertChatMessage): Promise<any> {
+    const result = await db.insert(chatMessages).values(message).returning();
+    return result[0];
   }
 
-  async getOrderStatuses(quoteId: string): Promise<any[]> {
-    // For now, return empty array since we're using a simpler order tracking system
-    // In the future, this could track detailed order status history
-    return [];
+  async getMessagesByRoomId(roomId: string): Promise<any[]> {
+    return await db.select().from(chatMessages).where(eq(chatMessages.roomId, roomId));
   }
 
-  // Rating operations
-  async createRating(rating: InsertRating): Promise<Rating> {
-    const [newRating] = await db.insert(ratings).values(rating).returning();
-    return newRating;
+  // Notification methods
+  async createNotification(notification: InsertNotification): Promise<any> {
+    const result = await db.insert(notifications).values(notification).returning();
+    return result[0];
   }
 
-  async updatePrinterRating(printerId: string): Promise<void> {
-    const printerRatings = await db
-      .select()
-      .from(ratings)
-      .where(eq(ratings.printerId, printerId));
-
-    const totalRatings = printerRatings.length;
-    const averageRating = totalRatings > 0 
-      ? printerRatings.reduce((sum, rating) => sum + rating.rating, 0) / totalRatings
-      : 0;
-
-    await db
-      .update(users)
-      .set({
-        rating: averageRating.toFixed(2),
-        totalRatings: totalRatings
-      })
-      .where(eq(users.id, printerId));
+  async getNotifications(userId: string): Promise<any[]> {
+    return await db.select().from(notifications).where(eq(notifications.recipientId, userId));
   }
 
-  // File operations
-  async createFile(file: InsertFile): Promise<File> {
-    const [newFile] = await db.insert(files).values(file).returning();
-    return newFile;
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
+    await db.update(notifications).set({ 
+      readAt: new Date() 
+    }).where(and(
+      eq(notifications.id, notificationId),
+      eq(notifications.recipientId, userId)
+    ));
   }
 
-  async updateFile(id: string, data: Partial<File>): Promise<File> {
-    const [updatedFile] = await db
-      .update(files)
-      .set(data)
-      .where(eq(files.id, id))
-      .returning();
-    return updatedFile;
+  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+    await db.delete(notifications).where(and(
+      eq(notifications.id, notificationId),
+      eq(notifications.recipientId, userId)
+    ));
   }
 
-  async getFilesByQuote(quoteId: string): Promise<File[]> {
-    return await db
-      .select()
-      .from(files)
-      .where(eq(files.quoteId, quoteId));
-  }
-
-  async getFilesByUser(userId: string): Promise<File[]> {
-    return await db
-      .select()
-      .from(files)
-      .where(eq(files.uploadedBy, userId));
-  }
-
-  async getDesign(id: string): Promise<File | undefined> {
-    const [file] = await db.select().from(files).where(eq(files.id, id));
-    return file;
-  }
-
-  async getFileById(id: string): Promise<File | undefined> {
-    const [file] = await db.select().from(files).where(eq(files.id, id));
-    return file;
-  }
-
-  async getFileByFilename(filename: string): Promise<File | undefined> {
-    const [file] = await db.select().from(files).where(eq(files.filename, filename));
-    return file;
-  }
-
-  // Admin operations
-  async getAllUsers(): Promise<User[]> {
+  // Admin methods
+  async getAllUsers(): Promise<any[]> {
     return await db.select().from(users);
   }
 
-  async getUserStats(): Promise<any> {
-    const [totalUsers] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users);
-
-    const [activeUsers] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users)
-      .where(eq(users.subscriptionStatus, 'active'));
-
-    return {
-      totalUsers: totalUsers?.count || 0,
-      activeUsers: activeUsers?.count || 0
-    };
-  }
-
-  async getRecentActivity(): Promise<any[]> {
-    return [];
-  }
-
-  // Chat operations
-  async createChatRoom(chatRoom: InsertChatRoom): Promise<ChatRoom> {
-    const [newChatRoom] = await db.insert(chatRooms).values(chatRoom).returning();
-    return newChatRoom;
-  }
-
-  async getChatRoom(id: string): Promise<ChatRoom | undefined> {
-    const [chatRoom] = await db.select().from(chatRooms).where(eq(chatRooms.id, id));
-    return chatRoom;
-  }
-
-  async getChatRoomByQuote(quoteId: string, customerId: string, printerId: string): Promise<ChatRoom | undefined> {
-    const [chatRoom] = await db
-      .select()
-      .from(chatRooms)
-      .where(
-        and(
-          eq(chatRooms.quoteId, quoteId),
-          eq(chatRooms.customerId, customerId),
-          eq(chatRooms.printerId, printerId)
-        )
-      );
-    return chatRoom;
-  }
-
-  async getChatRoomsByUser(userId: string): Promise<ChatRoom[]> {
-    return await db
-      .select()
-      .from(chatRooms)
-      .where(
-        or(
-          eq(chatRooms.customerId, userId),
-          eq(chatRooms.printerId, userId)
-        )
-      );
-  }
-
-  async sendMessage(message: InsertChatMessage): Promise<ChatMessage> {
-    const [newMessage] = await db.insert(chatMessages).values(message).returning();
-    
-    await db
-      .update(chatRooms)
-      .set({ lastMessageAt: new Date() })
-      .where(eq(chatRooms.id, message.roomId));
-
-    return newMessage;
-  }
-
-  async getMessages(roomId: string, limit: number = 50): Promise<ChatMessage[]> {
-    return await db
-      .select()
-      .from(chatMessages)
-      .where(eq(chatMessages.roomId, roomId))
-      .orderBy(desc(chatMessages.createdAt))
-      .limit(limit);
-  }
-
-  async markMessagesAsRead(roomId: string, userId: string): Promise<void> {
-    await db
-      .update(chatMessages)
-      .set({ isRead: true })
-      .where(
-        and(
-          eq(chatMessages.roomId, roomId),
-          sql`sender_id != ${userId}`,
-          eq(chatMessages.isRead, false)
-        )
-      );
-  }
-
-  async getUnreadMessageCount(userId: string): Promise<number> {
-    const userRooms = await db
-      .select({ id: chatRooms.id })
-      .from(chatRooms)
-      .where(
-        or(
-          eq(chatRooms.customerId, userId),
-          eq(chatRooms.printerId, userId)
-        )
-      );
-
-    if (userRooms.length === 0) return 0;
-
-    const roomIds = userRooms.map(room => room.id);
-    const [result] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(chatMessages)
-      .where(
-        and(
-          sql`room_id = ANY(${roomIds})`,
-          sql`sender_id != ${userId}`,
-          eq(chatMessages.isRead, false)
-        )
-      );
-
-    return result?.count || 0;
-  }
-
-  // Contract operations
-  async createContract(contract: InsertContract): Promise<Contract> {
-    const [newContract] = await db.insert(contracts).values(contract).returning();
-    return newContract;
-  }
-
-  async getContract(id: string): Promise<Contract | undefined> {
-    const [contract] = await db.select().from(contracts).where(eq(contracts.id, id));
-    return contract;
-  }
-
-  async getContractsByCustomer(customerId: string): Promise<Contract[]> {
-    return await db
-      .select()
-      .from(contracts)
-      .where(eq(contracts.customerId, customerId));
-  }
-
-  async getContractsByPrinter(printerId: string): Promise<Contract[]> {
-    return await db
-      .select()
-      .from(contracts)
-      .where(eq(contracts.printerId, printerId));
-  }
-
-  async updateContractStatus(id: string, status: string): Promise<void> {
-    await db
-      .update(contracts)
-      .set({ status })
-      .where(eq(contracts.id, id));
-  }
-
-  async signContract(id: string, userId: string, signature: string): Promise<void> {
-    const contract = await this.getContract(id);
-    if (!contract) return;
-
-    const updateData: any = {};
-    
-    if (contract.customerId === userId) {
-      updateData.customerSignature = signature;
-      updateData.customerSignedAt = new Date();
-    } else if (contract.printerId === userId) {
-      updateData.printerSignature = signature;
-      updateData.printerSignedAt = new Date();
-    }
-
-    await db
-      .update(contracts)
-      .set(updateData)
-      .where(eq(contracts.id, id));
-  }
-
-  // Notification operations
-  async createNotification(notification: {
-    userId: string;
-    type: string;
-    title: string;
-    message: string;
-    data: any;
-    isRead: boolean;
-    createdAt: Date;
-  }): Promise<any> {
-    try {
-      const [newNotification] = await db.insert(notifications).values({
-        recipientId: notification.userId,
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        data: notification.data,
-        isRead: notification.isRead,
-        priority: notification.data?.priority || 'medium',
-        category: notification.data?.category || 'general',
-        actionRequired: notification.data?.actionRequired || false
-      }).returning();
-      
-      console.log('✅ Notification created:', newNotification.id);
-      return newNotification;
-    } catch (error) {
-      console.error('❌ Error creating notification:', error);
-      const { randomUUID } = await import('crypto');
-      return { id: randomUUID(), ...notification };
-    }
-  }
-
-  async getNotifications(userId: string): Promise<any[]> {
-    try {
-      console.log('📬 Querying notifications for userId:', userId);
-      
-      // First try database query
-      const userNotifications = await db
-        .select()
-        .from(notifications)
-        .where(eq(notifications.recipientId, userId))
-        .orderBy(desc(notifications.createdAt))
-        .limit(50);
-        
-      console.log('📬 Database returned notifications:', userNotifications.length);
-      
-      console.log('📬 Found notifications:', userNotifications.length);
-      return userNotifications;
-    } catch (error) {
-      console.error('Error getting notifications:', error);
-      return [];
-    }
-  }
-
-  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
-    try {
-      await db
-        .update(notifications)
-        .set({ isRead: true, updatedAt: new Date() })
-        .where(and(
-          eq(notifications.id, notificationId),
-          eq(notifications.recipientId, userId)
-        ));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  }
-
-  async deleteNotification(notificationId: string, userId: string): Promise<void> {
-    try {
-      await db
-        .delete(notifications)
-        .where(and(
-          eq(notifications.id, notificationId),
-          eq(notifications.recipientId, userId)
-        ));
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-    }
-  }
-
-  // Order status operations
-  async createOrderStatus(status: {
-    quoteId: string;
-    status: string;
-    title: string;
-    description: string;
-    timestamp: Date;
-    metadata?: any;
-  }): Promise<any> {
-    try {
-      const [newStatus] = await db.insert(orderStatuses).values({
-        quoteId: status.quoteId,
-        status: status.status,
-        title: status.title,
-        description: status.description,
-        timestamp: status.timestamp,
-        metadata: status.metadata
-      }).returning();
-      
-      return newStatus;
-    } catch (error) {
-      console.error('Error creating order status:', error);
-      return null;
-    }
-  }
-  
-  async getOrderStatusesByQuote(quoteId: string): Promise<any[]> {
-    try {
-      return await db
-        .select()
-        .from(orderStatuses)
-        .where(eq(orderStatuses.quoteId, quoteId))
-        .orderBy(desc(orderStatuses.timestamp));
-    } catch (error) {
-      console.error('Error getting order statuses:', error);
-      return [];
-    }
-  }
-
-  // Design operations
-  async saveDesignGeneration(data: {
-    userId: string;
-    prompt: string;
-    options: any;
-    result: any;
-    createdAt: Date;
-  }): Promise<any> {
-    return data;
-  }
-
-  async getDesignHistory(userId: string, options: { page: number; limit: number }): Promise<{
-    designs: any[];
-    total: number;
-    page: number;
-    totalPages: number;
-  }> {
-    return {
-      designs: [],
-      total: 0,
-      page: options.page,
-      totalPages: 0
-    };
-  }
-
-  async getDesignTemplates(): Promise<any[]> {
-    return [];
-  }
-
-  // Additional helper methods
-  async getRecentQuotes(limit: number = 10): Promise<any[]> {
-    const recentQuotes = await db
-      .select()
-      .from(quotes)
-      .orderBy(desc(quotes.createdAt))
-      .limit(limit);
-    return recentQuotes;
-  }
-
-  async getAllFiles(userId?: string): Promise<any[]> {
-    let query = db.select().from(files);
-    if (userId) {
-      query = query.where(eq(files.uploadedBy, userId));
-    }
-    return await query.orderBy(desc(files.createdAt));
-  }
-
-  async createAutomaticQuote(data: any): Promise<any> {
-    const [quote] = await db
-      .insert(quotes)
-      .values({
-        ...data,
-        id: data.id || (await import('crypto')).randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
-      .returning();
-    return quote;
-  }
-
   async getAllQuotes(): Promise<any[]> {
-    return await db
-      .select()
-      .from(quotes)
-      .orderBy(desc(quotes.createdAt));
+    return await db.select().from(quotes);
   }
 
   async getAllOrders(): Promise<any[]> {
-    return await db
-      .select()
-      .from(orders)
-      .orderBy(desc(orders.createdAt));
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    await db
-      .delete(users)
-      .where(eq(users.id, userId));
-  }
-
-  async deleteFile(id: string): Promise<void> {
-    await db
-      .delete(files)
-      .where(eq(files.id, id));
-  }
-
-  async getDesignById(id: string): Promise<any> {
-    const [design] = await db
-      .select()
-      .from(files)
-      .where(eq(files.id, id));
-    return design;
-  }
-
-  async deleteDesign(id: string): Promise<void> {
-    await db
-      .delete(files)
-      .where(eq(files.id, id));
-  }
-
-  async bookmarkDesign(designId: string, userId: string): Promise<void> {
-    console.log(`Bookmarking design ${designId} for user ${userId}`);
+    return await db.select().from(orders);
   }
 
   async getActiveUserCount(): Promise<number> {
-    const [result] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users)
-      .where(eq(users.subscriptionStatus, 'active'));
-    return result?.count || 0;
+    const result = await db.select({ count: sql`count(*)` }).from(users).where(eq(users.isActive, true));
+    return Number(result[0]?.count || 0);
   }
 
-  async getTotalUploadsCount(): Promise<number> {
-    const [result] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(files);
-    return result?.count || 0;
+  async getTotalUploads(): Promise<number> {
+    const result = await db.select({ count: sql`count(*)` }).from(files);
+    return Number(result[0]?.count || 0);
   }
 
-  async getProcessedJobsCount(): Promise<number> {
-    const [result] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(files)
-      .where(eq(files.status, 'ready'));
-    return result?.count || 0;
-  }
-
-  async storeFile(fileData: any): Promise<any> {
-    const [file] = await db
-      .insert(files)
-      .values({
-        ...fileData,
-        id: fileData.id || (await import('crypto')).randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
-      .returning();
-    return file;
-  }
-
-  async getNotifications(userId: string): Promise<any[]> {
-    try {
-      console.log('📬 Querying notifications for userId:', userId);
-      
-      // First try database query
-      const userNotifications = await db
-        .select()
-        .from(notifications)
-        .where(eq(notifications.recipientId, userId))
-        .orderBy(desc(notifications.createdAt))
-        .limit(50);
-        
-      console.log('📬 Database returned notifications:', userNotifications.length);
-      
-      if (userNotifications.length > 0) {
-        console.log('📬 Sample notification data:', userNotifications[0]);
-        return userNotifications;
-      }
-      
-      return [];
-    } catch (error) {
-      console.error('Error getting notifications:', error);
-      return [];
-    }
-  }
-
-  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
-    try {
-      await db
-        .update(notifications)
-        .set({ isRead: true, updatedAt: new Date() })
-        .where(and(
-          eq(notifications.id, notificationId),
-          eq(notifications.recipientId, userId)
-        ));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  }
-
-  async deleteNotification(notificationId: string, userId: string): Promise<void> {
-    try {
-      await db
-        .delete(notifications)
-        .where(and(
-          eq(notifications.id, notificationId),
-          eq(notifications.recipientId, userId)
-        ));
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-    }
-  }
-
-  // Admin-specific methods
-  async getAllUsers(): Promise<any[]> {
-    try {
-      const result = await db.select().from(users);
-      return result;
-    } catch (error) {
-      console.error('Error fetching all users:', error);
-      return [];
-    }
-  }
-
-  async getAllQuotes(): Promise<any[]> {
-    try {
-      const result = await db.select().from(quotes);
-      return result;
-    } catch (error) {
-      console.error('Error fetching all quotes:', error);
-      return [];
-    }
-  }
-
-  async getAllOrders(): Promise<any[]> {
-    try {
-      const result = await db.select().from(orders);
-      return result;
-    } catch (error) {
-      console.error('Error fetching all orders:', error);
-      return [];
-    }
-  }
-
-  async getActiveUserCount(): Promise<number> {
-    try {
-      const result = await db.select().from(users);
-      return result.length;
-    } catch (error) {
-      console.error('Error getting active user count:', error);
-      return 0;
-    }
-  }
-
-  async getTotalUploadsCount(): Promise<number> {
-    try {
-      const result = await db.select().from(uploads);
-      return result.length;
-    } catch (error) {
-      console.error('Error getting upload count:', error);
-      return 0;
-    }
-  }
-
-  async getProcessedJobsCount(): Promise<number> {
-    try {
-      const result = await db.select().from(orders);
-      return result.filter((order: any) => order.status === 'completed').length;
-    } catch (error) {
-      console.error('Error getting processed jobs count:', error);
-      return 0;
-    }
-  }
-
-  async getRecentActivity(): Promise<any[]> {
-    try {
-      // Get recent orders and quotes as activities
-      const recentOrders = await db
-        .select()
-        .from(orders)
-        .limit(5);
-      
-      const activities = recentOrders.map((order: any) => ({
-        description: `Yeni sipariş: ${order.id}`,
-        timestamp: order.createdAt
-      }));
-
-      return activities;
-    } catch (error) {
-      console.error('Error getting recent activity:', error);
-      return [];
-    }
-  }
-
-  async updateUserVerificationStatus(userId: string, status: string, notes?: string): Promise<void> {
-    try {
-      await db
-        .update(users)
-        .set({ 
-          verificationStatus: status,
-          verificationNotes: notes,
-          updatedAt: new Date()
-        })
-        .where(eq(users.id, userId));
-    } catch (error) {
-      console.error('Error updating verification status:', error);
-      throw error;
-    }
-  }
-
-  async updateUserProfile(userId: string, updateData: any): Promise<void> {
-    try {
-      await db
-        .update(users)
-        .set({ 
-          ...updateData,
-          updatedAt: new Date()
-        })
-        .where(eq(users.id, userId));
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-      throw error;
-    }
+  async getProcessedJobs(): Promise<number> {
+    const result = await db.select({ count: sql`count(*)` }).from(orders).where(eq(orders.status, 'delivered'));
+    return Number(result[0]?.count || 0);
   }
 
   async deleteUser(userId: string): Promise<void> {
-    try {
-      // Delete related data first
-      await db.delete(notifications).where(eq(notifications.recipientId, userId));
-      await db.delete(uploads).where(eq(uploads.uploadedBy, userId));
-      await db.delete(quotes).where(eq(quotes.customerId, userId));
-      await db.delete(orders).where(eq(orders.customerId, userId));
-      
-      // Delete user
-      await db.delete(users).where(eq(users.id, userId));
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      throw error;
-    }
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  async verifyCompany(companyId: string, status: string, notes: string): Promise<void> {
+    await db.update(users).set({ 
+      subscriptionStatus: status === 'approved' ? 'active' : 'inactive'
+    }).where(eq(users.id, companyId));
+  }
+
+  async getPendingVerifications(): Promise<any[]> {
+    return await db.select().from(users).where(and(
+      eq(users.role, 'printer'),
+      eq(users.subscriptionStatus, 'inactive')
+    ));
   }
 }
 
