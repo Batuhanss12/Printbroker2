@@ -516,5 +516,138 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T08:22:15.054Z"
+  },
+  {
+    "id": "41cfd5f8-ff4a-447e-a970-21216422642b",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.929Z"
+  },
+  {
+    "id": "7e66bbc5-2b1b-4f1e-b3ef-e87bc20ddc6e",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.938Z"
+  },
+  {
+    "id": "5c986833-02ea-4370-b992-be3485bba2b7",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.945Z"
+  },
+  {
+    "id": "ea3ac36c-b404-4538-9524-b670755ebd47",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.954Z"
+  },
+  {
+    "id": "c8af2c16-6984-4b2b-89c1-26b6ac3195ec",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.968Z"
+  },
+  {
+    "id": "d826e5ea-01c5-47fb-946a-577765c9dc16",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.977Z"
+  },
+  {
+    "id": "7efa07b3-39fe-425f-9f26-7b0faf6d1b6a",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.988Z"
+  },
+  {
+    "id": "9813d1f7-1212-42c9-9434-98d8afbc74d3",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:27.998Z"
+  },
+  {
+    "id": "4e934e65-c0f6-4843-b195-76aa9706951f",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:28.005Z"
+  },
+  {
+    "id": "18224839-3188-41cf-91d8-8088aab93331",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "undefined - undefined adet - ₺undefined",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:37:28.032Z"
+  },
+  {
+    "id": "52c09bda-49a5-41f4-9846-f917d256fcf0",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "type": "quote_response",
+    "title": "Teklif Yanıtı Alındı",
+    "message": "Ala Etiket firmasından teklif geldi: ₺34 - 34 gün",
+    "data": {
+      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32",
+      "printerQuoteId": "5425c76f-d36b-4a34-a528-f38e308c0d27"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T08:38:13.084Z"
   }
 ]
