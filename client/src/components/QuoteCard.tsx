@@ -203,9 +203,10 @@ export default function QuoteCard({
                 </Button>
               )}
 
-              {quote.status === 'received_quotes' && (
+              {quote.status === 'received_quotes' && onViewDetails && (
                 <Button
                   size="sm"
+                  onClick={() => onViewDetails(quote)}
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
                 >
                   Teklifleri Gör
