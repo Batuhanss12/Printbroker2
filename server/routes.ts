@@ -2158,6 +2158,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
+      
+      // Skip mock routes
+      if (quoteId === 'mock' || quoteId.startsWith('mock_')) {
+        return res.status(404).json({ message: "Use mock quote endpoints" });
+      }
+      
       const quote = await storage.getQuote(quoteId);
 
       if (!quote) {
