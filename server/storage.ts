@@ -603,6 +603,7 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('📬 Querying notifications for userId:', userId);
       
+      // First try database query
       const userNotifications = await db
         .select()
         .from(notifications)
@@ -611,9 +612,32 @@ export class DatabaseStorage implements IStorage {
         .limit(50);
         
       console.log('📬 Database returned notifications:', userNotifications.length);
-      console.log('📬 Sample notification data:', userNotifications.length > 0 ? userNotifications[0] : 'none');
       
-      return userNotifications;
+      if (userNotifications.length > 0) {
+        console.log('📬 Sample notification data:', userNotifications[0]);
+        return userNotifications;
+      }
+      
+      // Fallback to file-based storage if no database notifications
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(process.cwd(), 'notifications.json');
+        if (fs.existsSync(filePath)) {
+          const fileNotifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+          const userFileNotifications = fileNotifications
+            .filter((notification: any) => notification.userId === userId || notification.recipientId === userId)
+            .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 50);
+          
+          console.log('📬 File returned notifications:', userFileNotifications.length);
+          return userFileNotifications;
+        }
+      } catch (fileError) {
+        console.error('Error reading file notifications:', fileError);
+      }
+      
+      return [];
     } catch (error) {
       console.error('Error getting notifications:', error);
       return [];
