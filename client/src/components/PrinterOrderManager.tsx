@@ -129,19 +129,15 @@ export function PrinterOrderManager({ quote, onClose }: PrinterOrderManagerProps
   // Fetch order statuses for this quote
   const { data: orderStatuses, isLoading: isLoadingStatuses } = useQuery({
     queryKey: ['/api/orders/status', quote.id],
-    queryFn: () => apiRequest(`/api/orders/status/${quote.id}`),
     enabled: !!approvedPrinterQuote,
   });
 
   // Update order status mutation
   const updateOrderStatusMutation = useMutation({
     mutationFn: async (data: OrderStatusFormData) => {
-      return apiRequest(`/api/orders/status/${quote.id}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          ...data,
-          metadata: { updatedBy: user?.id }
-        }),
+      return apiRequest(`/api/orders/status/${quote.id}`, 'POST', {
+        ...data,
+        metadata: { updatedBy: user?.id }
       });
     },
     onSuccess: () => {
