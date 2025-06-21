@@ -175,6 +175,18 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Order status tracking table
+export const orderStatuses = pgTable("order_statuses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  quoteId: uuid("quote_id").references(() => quotes.id).notNull(),
+  status: varchar("status").notNull(),
+  title: varchar("title").notNull(),
+  description: text("description").notNull(),
+  timestamp: timestamp("timestamp").notNull(),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   quotes: many(quotes),

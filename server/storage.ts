@@ -50,8 +50,10 @@ export interface IStorage {
 
   // Printer quote operations
   createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<PrinterQuote>;
+  getPrinterQuote(id: string): Promise<PrinterQuote | undefined>;
   getPrinterQuotesByQuote(quoteId: string): Promise<PrinterQuote[]>;
   getPrinterQuotesByPrinter(printerId: string): Promise<PrinterQuote[]>;
+  updatePrinterQuoteStatus(id: string, status: string): Promise<void>;
 
   // Order operations
   createOrder(order: InsertOrder): Promise<Order>;
@@ -59,6 +61,17 @@ export interface IStorage {
   getOrdersByCustomer(customerId: string): Promise<Order[]>;
   getOrdersByPrinter(printerId: string): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<void>;
+
+  // Order status operations
+  createOrderStatus(orderStatus: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<any>;
+  getOrderStatusesByQuote(quoteId: string): Promise<any[]>;
 
   // Rating operations
   createRating(rating: InsertRating): Promise<Rating>;
@@ -245,6 +258,18 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(printerQuotes)
       .where(eq(printerQuotes.printerId, printerId));
+  }
+
+  async getPrinterQuote(id: string): Promise<PrinterQuote | undefined> {
+    const [printerQuote] = await db.select().from(printerQuotes).where(eq(printerQuotes.id, id));
+    return printerQuote;
+  }
+
+  async updatePrinterQuoteStatus(id: string, status: string): Promise<void> {
+    await db
+      .update(printerQuotes)
+      .set({ status })
+      .where(eq(printerQuotes.id, id));
   }
 
   // Order operations
