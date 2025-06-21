@@ -927,6 +927,134 @@ export class DatabaseStorage implements IStorage {
       console.error('Error deleting notification:', error);
     }
   }
+
+  // Admin-specific methods
+  async getAllUsers(): Promise<any[]> {
+    try {
+      const result = await db.select().from(users);
+      return result;
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      return [];
+    }
+  }
+
+  async getAllQuotes(): Promise<any[]> {
+    try {
+      const result = await db.select().from(quotes);
+      return result;
+    } catch (error) {
+      console.error('Error fetching all quotes:', error);
+      return [];
+    }
+  }
+
+  async getAllOrders(): Promise<any[]> {
+    try {
+      const result = await db.select().from(orders);
+      return result;
+    } catch (error) {
+      console.error('Error fetching all orders:', error);
+      return [];
+    }
+  }
+
+  async getActiveUserCount(): Promise<number> {
+    try {
+      const result = await db.select().from(users);
+      return result.length;
+    } catch (error) {
+      console.error('Error getting active user count:', error);
+      return 0;
+    }
+  }
+
+  async getTotalUploadsCount(): Promise<number> {
+    try {
+      const result = await db.select().from(uploads);
+      return result.length;
+    } catch (error) {
+      console.error('Error getting upload count:', error);
+      return 0;
+    }
+  }
+
+  async getProcessedJobsCount(): Promise<number> {
+    try {
+      const result = await db.select().from(orders);
+      return result.filter((order: any) => order.status === 'completed').length;
+    } catch (error) {
+      console.error('Error getting processed jobs count:', error);
+      return 0;
+    }
+  }
+
+  async getRecentActivity(): Promise<any[]> {
+    try {
+      // Get recent orders and quotes as activities
+      const recentOrders = await db
+        .select()
+        .from(orders)
+        .limit(5);
+      
+      const activities = recentOrders.map((order: any) => ({
+        description: `Yeni sipariş: ${order.id}`,
+        timestamp: order.createdAt
+      }));
+
+      return activities;
+    } catch (error) {
+      console.error('Error getting recent activity:', error);
+      return [];
+    }
+  }
+
+  async updateUserVerificationStatus(userId: string, status: string, notes?: string): Promise<void> {
+    try {
+      await db
+        .update(users)
+        .set({ 
+          verificationStatus: status,
+          verificationNotes: notes,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      console.error('Error updating verification status:', error);
+      throw error;
+    }
+  }
+
+  async updateUserProfile(userId: string, updateData: any): Promise<void> {
+    try {
+      await db
+        .update(users)
+        .set({ 
+          ...updateData,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      // Delete related data first
+      await db.delete(notifications).where(eq(notifications.recipientId, userId));
+      await db.delete(uploads).where(eq(uploads.uploadedBy, userId));
+      await db.delete(quotes).where(eq(quotes.customerId, userId));
+      await db.delete(orders).where(eq(orders.customerId, userId));
+      
+      // Delete user
+      await db.delete(users).where(eq(users.id, userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

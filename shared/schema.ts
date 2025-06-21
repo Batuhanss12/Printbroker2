@@ -48,6 +48,11 @@ export const users = pgTable("users", {
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
   totalRatings: integer("total_ratings").default(0),
   isActive: boolean("is_active").default(true),
+  verificationStatus: varchar("verification_status", { enum: ["pending", "approved", "rejected"] }).default("pending"),
+  verificationNotes: text("verification_notes"),
+  documents: jsonb("documents"),
+  taxNumber: varchar("tax_number"),
+  address: text("address"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

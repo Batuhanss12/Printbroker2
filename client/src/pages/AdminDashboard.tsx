@@ -117,7 +117,6 @@ export default function AdminDashboard() {
   // Fetch system statistics with proper error handling
   const { data: systemStats = {}, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/admin/stats'],
-    queryFn: () => apiRequest('/api/admin/stats', { method: 'GET' }),
     enabled: !!user?.id && user?.role === 'admin',
     refetchInterval: 30000
   });
@@ -125,38 +124,31 @@ export default function AdminDashboard() {
   // Fetch all users with proper error handling
   const { data: allUsers = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/admin/users'],
-    queryFn: () => apiRequest('/api/admin/users', { method: 'GET' }),
     enabled: !!user?.id && user?.role === 'admin'
   });
 
   // Fetch all quotes with proper error handling
   const { data: allQuotes = [], isLoading: quotesLoading } = useQuery({
     queryKey: ['/api/admin/quotes'],
-    queryFn: () => apiRequest('/api/admin/quotes', { method: 'GET' }),
     enabled: !!user?.id && user?.role === 'admin'
   });
 
   // Fetch all orders with proper error handling
   const { data: allOrders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['/api/admin/orders'],
-    queryFn: () => apiRequest('/api/admin/orders', { method: 'GET' }),
     enabled: !!user?.id && user?.role === 'admin'
   });
 
   // Fetch pending verifications
   const { data: pendingVerifications = [], isLoading: verificationsLoading } = useQuery({
     queryKey: ['/api/admin/verifications'],
-    queryFn: () => apiRequest('/api/admin/verifications', { method: 'GET' }),
     enabled: !!user?.id && user?.role === 'admin'
   });
 
   // Company verification mutation
   const verifyCompanyMutation = useMutation({
     mutationFn: ({ companyId, status, notes }: { companyId: string; status: string; notes: string }) =>
-      apiRequest('/api/admin/verify-company', {
-        method: 'POST',
-        body: JSON.stringify({ companyId, status, notes })
-      }),
+      apiRequest('/api/admin/verify-company', 'POST', { companyId, status, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/verifications'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
@@ -178,10 +170,7 @@ export default function AdminDashboard() {
   // User update mutation
   const updateUserMutation = useMutation({
     mutationFn: ({ userId, updateData }: { userId: string; updateData: any }) =>
-      apiRequest(`/api/admin/users/${userId}`, {
-        method: 'PUT',
-        body: JSON.stringify(updateData)
-      }),
+      apiRequest(`/api/admin/users/${userId}`, 'PUT', updateData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       setSelectedUserDialog(false);
@@ -202,7 +191,7 @@ export default function AdminDashboard() {
   // Delete user mutation
   const deleteUserMutation = useMutation({
     mutationFn: (userId: string) =>
-      apiRequest(`/api/admin/users/${userId}`, { method: 'DELETE' }),
+      apiRequest(`/api/admin/users/${userId}`, 'DELETE'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       toast({
@@ -220,7 +209,7 @@ export default function AdminDashboard() {
   });
 
   // Filter users based on search term and status
-  const filteredUsers = allUsers.filter((user: any) => {
+  const filteredUsers = Array.isArray(allUsers) ? allUsers.filter((user: any) => {
     const matchesSearch = user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -229,7 +218,7 @@ export default function AdminDashboard() {
     const matchesStatus = filterStatus === "all" || user.role === filterStatus;
     
     return matchesSearch && matchesStatus;
-  });
+  }) : [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -293,7 +282,7 @@ export default function AdminDashboard() {
                 <Users className="h-8 w-8 text-blue-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Toplam Kullanıcı</p>
-                  <p className="text-2xl font-bold text-gray-900">{allUsers.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{Array.isArray(allUsers) ? allUsers.length : 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -305,7 +294,7 @@ export default function AdminDashboard() {
                 <FileText className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Toplam Teklif</p>
-                  <p className="text-2xl font-bold text-gray-900">{allQuotes.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{Array.isArray(allQuotes) ? allQuotes.length : 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -317,7 +306,7 @@ export default function AdminDashboard() {
                 <Package className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Toplam Sipariş</p>
-                  <p className="text-2xl font-bold text-gray-900">{allOrders.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{Array.isArray(allOrders) ? allOrders.length : 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -329,7 +318,7 @@ export default function AdminDashboard() {
                 <Clock className="h-8 w-8 text-orange-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Bekleyen Doğrulama</p>
-                  <p className="text-2xl font-bold text-gray-900">{pendingVerifications.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{Array.isArray(pendingVerifications) ? pendingVerifications.length : 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -501,7 +490,7 @@ export default function AdminDashboard() {
                     <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
                     Yükleniyor...
                   </div>
-                ) : pendingVerifications.length === 0 ? (
+                ) : !Array.isArray(pendingVerifications) || pendingVerifications.length === 0 ? (
                   <div className="text-center py-12">
                     <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Bekleyen doğrulama yok</h3>
