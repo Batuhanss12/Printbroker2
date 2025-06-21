@@ -48,6 +48,7 @@ import { oneClickLayoutSystem } from "./oneClickLayoutSystem";
 import { aiDesignAnalyzer } from "./aiDesignAnalyzer";
 import { professionalDesignAnalyzer } from "./professionalDesignAnalyzer";
 import { pythonAnalyzerService } from "./pythonAnalyzerService";
+import { mockQuoteSystem } from "./mockQuoteSystem";
 import { multiMethodAnalyzer } from "./multiMethodAnalyzer";
 import { operationalLayoutSystem } from "./operationalLayoutSystem";
 import { fastApiClient } from "./fastApiClient";
@@ -4761,6 +4762,9 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
   const clients = new Map<string, Set<WebSocket>>();
   const connectionCount = { current: 0 };
 
+  // Initialize mock quote system
+  mockQuoteSystem.initialize(wss);
+
   // Connection monitoring
   setInterval(() => {
     console.log(`Active WebSocket connections: ${connectionCount.current}`);
@@ -5692,6 +5696,127 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
     } catch (error: any) {
       console.error('Admin contracts error:', error);
       res.status(500).json({ message: 'Sözleşme listesi getirme başarısız' });
+    }
+  });
+
+  // Mock Quote System API Endpoints
+  app.get('/api/quotes/mock', async (req, res) => {
+    try {
+      const mockQuotes = mockQuoteSystem.getMockQuotes();
+      res.json({
+        success: true,
+        quotes: mockQuotes,
+        total: mockQuotes.length
+      });
+    } catch (error) {
+      console.error('Mock quotes fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklifler alınamadı' 
+      });
+    }
+  });
+
+  app.get('/api/quotes/mock/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const mockQuote = mockQuoteSystem.getMockQuoteById(id);
+      
+      if (!mockQuote) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Mock teklif bulunamadı' 
+        });
+      }
+
+      res.json({
+        success: true,
+        quote: mockQuote
+      });
+    } catch (error) {
+      console.error('Mock quote fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif alınamadı' 
+      });
+    }
+  });
+
+  app.post('/api/quotes/mock/:id/respond', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'printer') {
+        return res.status(403).json({ 
+          success: false, 
+          message: "Sadece matbaa firmaları teklif verebilir" 
+        });
+      }
+
+      const { id } = req.params;
+      const { price, estimatedDays, notes } = req.body;
+
+      if (!price || !estimatedDays) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Fiyat ve tahmini süre gerekli' 
+        });
+      }
+
+      const mockQuote = mockQuoteSystem.getMockQuoteById(id);
+      if (!mockQuote) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Mock teklif bulunamadı' 
+        });
+      }
+
+      // Submit response to mock quote (isolated from real system)
+      const response = mockQuoteSystem.submitMockQuote(id, {
+        printerId: user.id,
+        printerName: `${user.firstName} ${user.lastName}`,
+        companyName: user.companyName || 'Bilinmeyen Matbaa',
+        price: parseInt(price.toString().replace(/[^\d]/g, '')),
+        estimatedDays: parseInt(estimatedDays.toString()),
+        notes: notes || 'Kaliteli ve zamanında teslimat garantisi.',
+        rating: Math.random() * 2 + 3.5, // 3.5-5.5 rating
+        totalRatings: Math.floor(Math.random() * 200) + 50
+      });
+
+      console.log(`📋 Mock quote response: ${user.companyName} -> ${mockQuote.title} (₺${price})`);
+
+      res.json({
+        success: true,
+        response,
+        message: 'Mock teklife başarıyla yanıt verildi'
+      });
+
+    } catch (error) {
+      console.error('Mock quote response error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif yanıtı gönderilemedi' 
+      });
+    }
+  });
+
+  app.get('/api/quotes/mock/:id/responses', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const responses = mockQuoteSystem.getMockQuoteResponses(id);
+      
+      res.json({
+        success: true,
+        responses,
+        total: responses.length
+      });
+    } catch (error) {
+      console.error('Mock quote responses fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif yanıtları alınamadı' 
+      });
     }
   });
 
