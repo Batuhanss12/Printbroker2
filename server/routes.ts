@@ -52,13 +52,13 @@ import { multiMethodAnalyzer } from "./multiMethodAnalyzer";
 import { operationalLayoutSystem } from "./operationalLayoutSystem";
 import { fastApiClient } from "./fastApiClient";
 
-// Otomatik iş teklifleri oluştur - Gerçekçi firma talepleri
+// Sürekli otomatik iş teklifleri oluştur - Gerçekçi firma talepleri
 async function generateAutomaticLabelQuotes(currentTime: Date) {
   try {
-    const tenMinuteSlot = Math.floor(currentTime.getTime() / (10 * 60 * 1000));
+    const twoMinuteSlot = Math.floor(currentTime.getTime() / (2 * 60 * 1000));
     
-    // Her 10 dakikada bir yeni teklif oluştur (günlük 50-100 hedefe ulaşmak için)
-    const shouldGenerate = Math.random() > 0.6; // %40 şans
+    // Her 2 dakikada sürekli yeni teklif oluştur - 60 dakika limit yok
+    const shouldGenerate = Math.random() > 0.3; // %70 şans ile sürekli yeni teklifler
     
     if (shouldGenerate) {
       // Gerçekçi firma kategorileri ve teklif türleri
@@ -1329,14 +1329,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cache for live feed (5 minutes)
+  // Cache for live feed (1 minute for fresh content)
   let liveFeedCache: { data: any; timestamp: number } | null = null;
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  const CACHE_DURATION = 1 * 60 * 1000; // 1 minute for more frequent updates
 
-  // Enhanced live feed endpoint with realistic business volumes
+  // Enhanced live feed endpoint with continuous new quotes
   app.get('/api/quotes/live-feed', async (req, res) => {
     try {
-      // Check cache first
+      // Check cache first (shorter duration for fresher content)
       if (liveFeedCache && (Date.now() - liveFeedCache.timestamp) < CACHE_DURATION) {
         return res.json(liveFeedCache.data);
       }
@@ -1344,23 +1344,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Gerçek sisteme verilerini çek
       const realQuotes = await storage.getRecentQuotes ? await storage.getRecentQuotes(20) : [];
       
-      // Günlük iş hacmi tracking
+      // Sürekli yeni teklif akışı için zaman tracking
       const now = new Date();
-      const fiveMinuteSlot = Math.floor(now.getTime() / (5 * 60 * 1000));
-      const dailySlot = Math.floor(now.getTime() / (24 * 60 * 60 * 1000));
+      const twoMinuteSlot = Math.floor(now.getTime() / (2 * 60 * 1000)); // Her 2 dakikada yeni slot
       
-      // Firma panellerine otomatik etiket teklifleri gönder (min 500 adet)
+      // Sürekli otomatik etiket teklifleri gönder
       await generateAutomaticLabelQuotes(now);
       
-      // Günlük 50-100 teklif ve 200-300k TL hacim için enhanced mock system
-      const dailyQuoteTarget = 50 + Math.floor(Math.random() * 50); // 50-100 teklif
-      const dailyVolumeTarget = 200000 + Math.floor(Math.random() * 100000); // 200-300k TL
+      // Sürekli teklif akışı için enhanced mock system - 60 dakika limiti yok
+      const continuousQuoteTarget = 100 + Math.floor(Math.random() * 50); // Sürekli 100-150 teklif pool'u
+      const dailyVolumeTarget = 500000 + Math.floor(Math.random() * 200000); // 500-700k TL günlük hacim
       
-      // High-volume realistic business jobs
-      const mockJobs = [
-        // Büyük hacimli kurumsal projeler
+      // Sürekli akışlı gerçekçi iş teklifleri - 60 dakika sınırı olmadan
+      const continuousMockJobs = [
+        // Sürekli büyük hacimli kurumsal projeler
         {
-          id: `mock_${fiveMinuteSlot}_1`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Kurumsal Katalog Baskı Projesi - 50.000 Adet',
           type: 'Katalog & Dergi',
           location: 'İstanbul',
@@ -1373,7 +1372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           category: 'corporate'
         },
         {
-          id: `mock_${fiveMinuteSlot}_1a`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Endüstriyel Etiket Mega Üretim - 100.000 Adet',
           type: 'Endüstriyel Etiket',
           location: 'Bursa',
@@ -1386,7 +1385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           category: 'industrial'
         },
         {
-          id: `mock_${fiveMinuteSlot}_2`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Lüks Ambalaj Tasarım & Üretim - 25.000 Adet',
           type: 'Premium Ambalaj',
           location: 'Ankara',
@@ -1399,7 +1398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           category: 'packaging'
         },
         {
-          id: `mock_${fiveMinuteSlot}_2a`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Event & Fuar Materyali Toplu Üretim',
           type: 'Event Malzemeleri',
           location: 'İzmir',
@@ -1412,96 +1411,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
           category: 'event'
         },
         {
-          id: `mock_${fiveMinuteSlot}_3`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Özel Kesim Etiket - 800 Adet',
           type: 'Özel Etiket',
           location: 'İzmir',
           amount: `₺${(Math.random() * 12000 + 8000).toFixed(0)}`,
           status: Math.random() > 0.6 ? 'Teklif aşamasında' : 'Üretimde',
-          time: `${Math.floor(Math.random() * 180) + 10} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`, // Sürekli fresh görünüm
           estimatedBudget: Math.random() * 12000 + 8000,
           quantity: 800,
           isGenerated: true
         },
         {
-          id: `mock_${fiveMinuteSlot}_4`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Hologram Güvenlik Etiketi - 1200 Adet',
           type: 'Güvenlik Etiket',
           location: 'Bursa',
           amount: `₺${(Math.random() * 22000 + 16000).toFixed(0)}`,
           status: Math.random() > 0.4 ? 'Tamamlandı' : 'Üretimde',
-          time: `${Math.floor(Math.random() * 240) + 15} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 22000 + 16000,
           quantity: 1200,
           isGenerated: true
         },
         {
-          id: `mock_${fiveMinuteSlot}_5`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Premium Kartvizit Koleksiyonu',
           type: 'Kartvizit',
           location: 'Antalya',
           amount: `₺${(Math.random() * 8000 + 5000).toFixed(0)}`,
           status: Math.random() > 0.7 ? 'Teklif aşamasında' : 'Kalite Kontrolde',
-          time: `${Math.floor(Math.random() * 300) + 20} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 8000 + 5000,
           isGenerated: true
         },
         {
-          id: `mock_${fiveMinuteSlot}_6`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Lüks Ambalaj Tasarım Üretimi',
           type: 'Ambalaj',
           location: 'İstanbul',
           amount: `₺${(Math.random() * 30000 + 25000).toFixed(0)}`,
           status: Math.random() > 0.4 ? 'Üretimde' : 'Teklif aşamasında',
-          time: `${Math.floor(Math.random() * 90) + 30} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 30000 + 25000,
           isGenerated: true
         },
         {
-          id: `mock_${fiveMinuteSlot}_7`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Katalog ve Broşür Mega Üretim',
           type: 'Broşür',
           location: 'Ankara',
           amount: `₺${(Math.random() * 35000 + 20000).toFixed(0)}`,
           status: Math.random() > 0.5 ? 'Kalite Kontrolde' : 'Tamamlandı',
-          time: `${Math.floor(Math.random() * 150) + 45} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 35000 + 20000,
           isGenerated: true
         },
         {
-          id: `mock_${fiveMinuteSlot}_8`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Kurumsal Kimlik Projesi - Komple Set',
           type: 'Kurumsal Kimlik',
           location: 'İzmir',
           amount: `₺${(Math.random() * 25000 + 18000).toFixed(0)}`,
           status: Math.random() > 0.6 ? 'Üretimde' : 'Teklif aşamasında',
-          time: `${Math.floor(Math.random() * 120) + 30} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 25000 + 18000,
           quantity: 50000,
           isGenerated: true,
           category: 'corporate_identity'
         },
         {
-          id: `mock_${fiveMinuteSlot}_9`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Medikal Etiket Sertifikalı Üretim - 75.000 Adet',
           type: 'Medikal Etiket',
           location: 'İstanbul',
           amount: `₺${(Math.random() * 18000 + 32000).toFixed(0)}`,
           status: Math.random() > 0.4 ? 'Kalite Kontrolde' : 'Üretimde',
-          time: `${Math.floor(Math.random() * 75) + 45} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 18000 + 32000,
           quantity: 75000,
           isGenerated: true,
           category: 'medical'
         },
         {
-          id: `mock_${fiveMinuteSlot}_10`,
+          id: `continuous_${twoMinuteSlot}_${Math.random().toString(36).substr(2, 4)}`,
           title: 'Gıda Sektörü Ambalaj Mega Proje',
           type: 'Gıda Ambalaj',
           location: 'Konya',
           amount: `₺${(Math.random() * 22000 + 28000).toFixed(0)}`,
           status: Math.random() > 0.3 ? 'Teklif aşamasında' : 'Müşteri Onayı',
-          time: `${Math.floor(Math.random() * 150) + 60} dk önce`,
+          time: `${Math.floor(Math.random() * 30) + 1} dk önce`,
           estimatedBudget: Math.random() * 22000 + 28000,
           quantity: 200000,
           isGenerated: true,
@@ -1509,7 +1508,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      // Gerçek ve mock verileri birleştir
+      // Gerçek ve sürekli mock verileri birleştir
       const combinedQuotes = [
         ...realQuotes.map(quote => ({
           id: quote.id,
@@ -1527,18 +1526,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           isGenerated: false,
           category: quote.category || 'general'
         })),
-        ...mockJobs
+        ...continuousMockJobs
       ];
 
-      // Son 12 işi göster (daha fazla aktivite)
+      // Sürekli fresh görünüm için son 15 işi göster - sürekli karışık sıralama
       const shuffled = combinedQuotes.sort(() => Math.random() - 0.5);
-      const displayQuotes = shuffled.slice(0, 12);
+      const displayQuotes = shuffled.slice(0, 15);
 
-      // Günlük istatistikler
+      // Sürekli istatistikler - 60 dakika limit yok
       const totalDailyVolume = combinedQuotes.reduce((sum, quote) => sum + (quote.estimatedBudget || 0), 0);
-      const dailyQuoteCount = combinedQuotes.length;
+      const continuousQuoteCount = combinedQuotes.length;
       
-      // Firma kategorileri için teklif dağılımı
+      // Firma kategorileri için sürekli teklif dağılımı
       const categoryStats = {
         corporate: combinedQuotes.filter(q => q.category === 'corporate' || q.category === 'corporate_identity').length,
         industrial: combinedQuotes.filter(q => q.category === 'industrial' || q.category === 'medical').length,
@@ -1549,15 +1548,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const responseData = { 
         quotes: displayQuotes,
         totalReal: realQuotes.length,
-        totalMock: mockJobs.length,
-        dailyStats: {
-          totalVolume: Math.min(totalDailyVolume, dailyVolumeTarget),
-          quoteCount: Math.min(dailyQuoteCount, dailyQuoteTarget),
+        totalMock: continuousMockJobs.length,
+        continuousStats: {
+          totalVolume: totalDailyVolume,
+          quoteCount: continuousQuoteCount,
           targetVolume: dailyVolumeTarget,
-          targetQuotes: dailyQuoteTarget,
-          categoryDistribution: categoryStats
+          targetQuotes: continuousQuoteTarget,
+          categoryDistribution: categoryStats,
+          systemMode: 'continuous' // Sürekli mod göstergesi
         },
-        lastUpdated: now.toISOString()
+        lastUpdated: now.toISOString(),
+        refreshInterval: 60000 // 1 dakika refresh
       };
 
       // Update cache
