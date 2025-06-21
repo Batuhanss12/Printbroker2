@@ -46,6 +46,7 @@ import {
   AlertCircle,
   XCircle,
   Upload,
+  Download,
   Linkedin,
   AlertTriangle,
   Info,
@@ -347,6 +348,7 @@ export default function PrinterDashboard() {
   // Dialog state'leri
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [selectedQuoteForOrderManagement, setSelectedQuoteForOrderManagement] = useState(null);
   const [isCampaignDialogOpen, setIsCampaignDialogOpen] = useState(false);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
@@ -862,6 +864,15 @@ export default function PrinterDashboard() {
                             <Badge variant="secondary" className="self-start md:self-center text-xs">
                               Teklif Verildi
                             </Badge>
+                          )}
+                          {quote.status === 'approved' && quote.printerQuotes?.some((pq: any) => pq.printerId === user?.id && pq.status === 'approved') && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => setSelectedQuoteForOrderManagement(quote)}
+                              className="bg-green-600 hover:bg-green-700 text-white self-start md:self-center"
+                            >
+                              Siparişi Yönet
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -1737,6 +1748,14 @@ export default function PrinterDashboard() {
                   </DialogContent>
                 </Dialog>
               )}
+
+        {/* Order Management Modal */}
+        {selectedQuoteForOrderManagement && (
+          <PrinterOrderManager
+            quote={selectedQuoteForOrderManagement}
+            onClose={() => setSelectedQuoteForOrderManagement(null)}
+          />
+        )}
       </main>
     </div>
   );
