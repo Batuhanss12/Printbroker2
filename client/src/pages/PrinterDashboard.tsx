@@ -1277,8 +1277,9 @@ export default function PrinterDashboard() {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.entries(selectedQuote.specifications).map(([key, value]) => {
                                   if (value && key !== 'uploadedFiles') {
-                                    // Türkçe alan isimleri için mapping
+                                    // Türkçe alan isimleri için mapping - TÜM ÜRÜN TİPLERİ İÇİN
                                     const fieldNames = {
+                                      // Genel Bilgiler
                                       'type': 'Ürün Tipi',
                                       'quantity': 'Adet',
                                       'width': 'Genişlik',
@@ -1286,34 +1287,104 @@ export default function PrinterDashboard() {
                                       'diameter': 'Çap',
                                       'length': 'Uzunluk',
                                       'size': 'Boyut',
+                                      'description': 'Açıklama',
+                                      'notes': 'Özel Notlar',
+                                      
+                                      // Malzeme ve Kağıt
                                       'paperType': 'Kağıt Türü',
                                       'material': 'Malzeme',
                                       'thickness': 'Kalınlık',
+                                      'weight': 'Ağırlık (gsm)',
+                                      'paperWeight': 'Kağıt Gramajı',
+                                      
+                                      // Baskı Özellikleri
                                       'colors': 'Renk Sayısı',
-                                      'finishing': 'Son İşlem',
-                                      'coating': 'Kaplama',
-                                      'binding': 'Ciltleme',
-                                      'folding': 'Katlama',
-                                      'cutting': 'Kesim',
-                                      'gilding': 'Yaldız',
-                                      'embossing': 'Kabartma',
-                                      'lamination': 'Laminasyon',
-                                      'varnish': 'Vernik',
+                                      'colorType': 'Renk Türü',
                                       'printSides': 'Baskı Tarafı',
                                       'printType': 'Baskı Türü',
-                                      'notes': 'Özel Notlar',
-                                      'labelType': 'Etiket Türü',
-                                      'adhesive': 'Yapışkan',
-                                      'shape': 'Şekil',
-                                      'perforation': 'Perforasyon',
+                                      'printTechnology': 'Baskı Teknolojisi',
                                       'printQuality': 'Baskı Kalitesi',
                                       'colorProfile': 'Renk Profili',
-                                      'description': 'Açıklama',
-                                      'packaging': 'Paketleme',
+                                      'orientation': 'Yönlendirme',
+                                      
+                                      // Son İşlemler
+                                      'finishing': 'Son İşlem',
+                                      'coating': 'Kaplama',
+                                      'lamination': 'Laminasyon',
+                                      'varnish': 'Vernik',
                                       'cellophaneType': 'Selofan Türü',
+                                      'surface': 'Yüzey Türü',
+                                      
+                                      // Özel İşlemler
+                                      'gilding': 'Yaldız',
+                                      'embossing': 'Kabartma',
                                       'foilType': 'Foil Türü',
                                       'embossType': 'Emboss Türü',
-                                      'varnishType': 'Vernik Türü'
+                                      'varnishType': 'Vernik Türü',
+                                      'uvVarnish': 'UV Vernik',
+                                      'spotUV': 'Seçmeli UV',
+                                      
+                                      // Kesim ve Şekillendirme
+                                      'cutting': 'Kesim',
+                                      'cuttingType': 'Kesim Türü',
+                                      'shape': 'Şekil',
+                                      'binding': 'Ciltleme',
+                                      'folding': 'Katlama',
+                                      'perforation': 'Perforasyon',
+                                      'roundCorners': 'Köşe Yuvarlama',
+                                      
+                                      // Etiket Özellikleri (Sheet & Roll)
+                                      'labelType': 'Etiket Türü',
+                                      'adhesive': 'Yapışkan',
+                                      'adhesiveType': 'Yapışkan Türü',
+                                      'application': 'Uygulama Alanı',
+                                      
+                                      // Roll Label Özel Alanları
+                                      'rollWidth': 'Rulo Genişliği',
+                                      'rollHeight': 'Rulo Yüksekliği',
+                                      'coreDiameter': 'Makara Çapı',
+                                      'windingDirection': 'Sarım Yönü',
+                                      'totalQuantity': 'Toplam Adet',
+                                      'perforationGap': 'Perforasyon Aralığı',
+                                      'labelSpacing': 'Etiket Arası Mesafe',
+                                      'rollDiameter': 'Rulo Çapı',
+                                      'unwindDirection': 'Açılma Yönü',
+                                      
+                                      // General Printing Özel Alanları
+                                      'pageCount': 'Sayfa Sayısı',
+                                      'bindingType': 'Cilt Türü',
+                                      'coverType': 'Kapak Türü',
+                                      'innerPages': 'İç Sayfa',
+                                      'coverFinishing': 'Kapak Son İşlem',
+                                      'bookBinding': 'Kitap Ciltleme',
+                                      'spiralBinding': 'Spiral Cilt',
+                                      'sadleStitch': 'Tel Dikiş',
+                                      'perfectBind': 'Amerikan Cilt',
+                                      'wireO': 'Wire-O Cilt',
+                                      'hardcover': 'Sert Kapak',
+                                      'softcover': 'Yumuşak Kapak',
+                                      'dustJacket': 'Kitap Kılıfı',
+                                      
+                                      // Paketleme ve Teslimat
+                                      'packaging': 'Paketleme',
+                                      'packagingType': 'Paketleme Türü',
+                                      'delivery': 'Teslimat',
+                                      'shippingMethod': 'Kargo Türü',
+                                      
+                                      // Kalite ve Standartlar
+                                      'qualityStandard': 'Kalite Standardı',
+                                      'certification': 'Sertifikasyon',
+                                      'foodSafe': 'Gıda Uyumlu',
+                                      'weatherResistant': 'Hava Koşullarına Dayanıklı',
+                                      'temperatureResistance': 'Sıcaklık Dayanımı',
+                                      
+                                      // Teknik Detaylar
+                                      'resolution': 'Çözünürlük',
+                                      'bleed': 'Taşma Payı',
+                                      'safetyMargin': 'Güvenlik Payı',
+                                      'cropMarks': 'Kesim İşaretleri',
+                                      'colorBars': 'Renk Çubukları',
+                                      'registrationMarks': 'Register İşaretleri'
                                     };
 
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
@@ -1352,7 +1423,14 @@ export default function PrinterDashboard() {
                                         'polyester-pet': 'Polyester PET (50 mikron)',
                                         'kraft-paper': 'Kraft Kağıt (70gsm)',
                                         'security-void': 'Güvenlik Etiketi (VOID)',
-                                        'freezer-grade': 'Dondurulmuş Ürün Etiketi'
+                                        'freezer-grade': 'Dondurulmuş Ürün Etiketi',
+                                        'pp-white': 'PP Beyaz',
+                                        'pp-transparent': 'PP Şeffaf',
+                                        'pp-silver': 'PP Gümüş',
+                                        'pe-white': 'PE Beyaz',
+                                        'thermal-eco': 'Termal Eco',
+                                        'thermal-top': 'Termal Top',
+                                        'thermal-protected': 'Termal Korumalı'
                                       };
 
                                       // General Printing Materials
@@ -1370,7 +1448,7 @@ export default function PrinterDashboard() {
                                         'recycled-80gsm': 'Geri Dönüşüm 80 gsm'
                                       };
 
-                                      // Adhesive Types
+                                      // Adhesive Types - Genişletilmiş
                                       const adhesiveTypes = {
                                         'permanent-acrylic': 'Kalıcı Akrilik',
                                         'removable-acrylic': 'Çıkarılabilir Akrilik',
@@ -1379,7 +1457,14 @@ export default function PrinterDashboard() {
                                         'low-tack': 'Düşük Yapışkanlı',
                                         'marine-grade': 'Denizcilik Sınıfı',
                                         'permanent': 'Kalıcı',
-                                        'removable': 'Çıkarılabilir'
+                                        'removable': 'Çıkarılabilir',
+                                        'high-temp': 'Yüksek Sıcaklık',
+                                        'ultra-removable': 'Ultra Çıkarılabilir',
+                                        'repositionable': 'Yeniden Konumlandırılabilir',
+                                        'tamper-evident': 'Müdahale Belirleyici',
+                                        'deep-freeze': 'Derin Dondurucu',
+                                        'outdoor': 'Dış Mekan',
+                                        'chemical-resistant': 'Kimyasal Dayanıklı'
                                       };
 
                                       // Product Types
@@ -1464,10 +1549,16 @@ export default function PrinterDashboard() {
                                         'square': 'Kare'
                                       };
 
-                                      // Winding Directions
+                                      // Winding Directions - Genişletilmiş
                                       const windingDirections = {
                                         'outside-wound': 'Dış Sarım (Outside Wound)',
-                                        'inside-wound': 'İç Sarım (Inside Wound)'
+                                        'inside-wound': 'İç Sarım (Inside Wound)',
+                                        'out': 'Dış Sarım',
+                                        'in': 'İç Sarım',
+                                        'right': 'Sağa Doğru',
+                                        'left': 'Sola Doğru',
+                                        'clockwise': 'Saat Yönünde',
+                                        'counter-clockwise': 'Saat Yönü Tersine'
                                       };
 
                                       // Cutting Types
@@ -1555,7 +1646,52 @@ export default function PrinterDashboard() {
                                         'soft-touch': 'Soft Touch Laminasyon'
                                       };
 
-                                      // Common values
+                                      // Binding Types - General Printing
+                                      const bindingTypes = {
+                                        'saddle-stitch': 'Tel Dikiş',
+                                        'perfect-bind': 'Amerikan Cilt',
+                                        'spiral-bind': 'Spiral Cilt',
+                                        'wire-o': 'Wire-O Cilt',
+                                        'hardcover': 'Sert Kapak',
+                                        'softcover': 'Yumuşak Kapak',
+                                        'case-bind': 'Kutu Cilt',
+                                        'japanese-bind': 'Japon Cilt',
+                                        'ring-bind': 'Halka Cilt',
+                                        'thermal-bind': 'Termal Cilt',
+                                        'glue-bind': 'Tutkal Cilt',
+                                        'staple': 'Zımba',
+                                        'sewn': 'Dikilmiş',
+                                        'layflat': 'Layflat Cilt'
+                                      };
+
+                                      // Paper Weights
+                                      const paperWeights = {
+                                        '70gsm': '70 gsm',
+                                        '80gsm': '80 gsm',
+                                        '90gsm': '90 gsm',
+                                        '100gsm': '100 gsm',
+                                        '115gsm': '115 gsm',
+                                        '135gsm': '135 gsm',
+                                        '150gsm': '150 gsm',
+                                        '170gsm': '170 gsm',
+                                        '200gsm': '200 gsm',
+                                        '250gsm': '250 gsm',
+                                        '300gsm': '300 gsm',
+                                        '350gsm': '350 gsm'
+                                      };
+
+                                      // Core Diameters
+                                      const coreDiameters = {
+                                        '25': '25mm',
+                                        '38': '38mm',
+                                        '40': '40mm',
+                                        '76': '76mm',
+                                        '1': '1 inç (25mm)',
+                                        '1.5': '1.5 inç (38mm)',
+                                        '3': '3 inç (76mm)'
+                                      };
+
+                                      // Common values - Genişletilmiş
                                       const commonValues = {
                                         'yes': 'Evet',
                                         'true': 'Evet',
@@ -1563,7 +1699,18 @@ export default function PrinterDashboard() {
                                         'false': 'Hayır',
                                         'custom': 'Özel',
                                         'yok': 'YOK',
-                                        'belirtilmedi': 'Belirtilmedi'
+                                        'belirtilmedi': 'Belirtilmedi',
+                                        'var': 'Var',
+                                        'istemiyorum': 'İstemiyorum',
+                                        'istiyorum': 'İstiyorum',
+                                        'gerekli': 'Gerekli',
+                                        'opsiyonel': 'Opsiyonel',
+                                        'standart': 'Standart',
+                                        'premium': 'Premium',
+                                        'ekonomik': 'Ekonomik',
+                                        'hızlı': 'Hızlı',
+                                        'normal': 'Normal',
+                                        'kaliteli': 'Kaliteli'
                                       };
 
                                       // Check all mappings
