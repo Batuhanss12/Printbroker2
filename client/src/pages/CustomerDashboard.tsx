@@ -177,10 +177,6 @@ export default function CustomerDashboard() {
   }
 
   // Quote management handlers
-  const handleViewQuoteDetails = (quote: any) => {
-    setSelectedQuote(quote);
-    setIsQuoteManagerOpen(true);
-  };
 
   const pendingQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'pending') : [];
   const receivedQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'received_quotes') : [];
@@ -350,7 +346,10 @@ export default function CustomerDashboard() {
                       <QuoteCard 
                         key={quote.id} 
                         quote={quote} 
-                        onViewDetails={handleViewQuoteDetails}
+                        onViewDetails={(quote) => {
+                          setSelectedQuote(quote);
+                          setIsQuoteManagerOpen(true);
+                        }}
                       />
                     ))}
                   </div>

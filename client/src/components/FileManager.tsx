@@ -354,6 +354,14 @@ export default function FileManager() {
                 <Button 
                   variant="outline" 
                   size="sm"
+                  onClick={() => handleDownload(file)}
+                  title="Dosyayı İndir"
+                >
+                  <Download className="h-3 w-3" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
                   onClick={() => deleteMutation.mutate(file.id)}
                   disabled={deleteMutation.isPending}
                 >

@@ -1915,6 +1915,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download file by ID
+  app.get('/api/files/:id/download', isAuthenticated, async (req: any, res) => {
+    try {
+      const fileId = req.params.id;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Get file metadata
+      const file = await storage.getFile(fileId);
+      if (!file) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Check if user owns the file
+      if (file.uploadedBy !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Construct file path
+      const filePath = path.join(process.cwd(), 'uploads', file.filename);
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "Physical file not found" });
+      }
+
+      // Set headers for download
+      res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
+      res.setHeader('Content-Type', file.mimeType);
+      
+      // Stream the file
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+      
+      fileStream.on('error', (error) => {
+        console.error('Error streaming file:', error);
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Error downloading file" });
+        }
+      });
+
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      res.status(500).json({ message: "Failed to download file" });
+    }
+  });
+
   // Serve uploaded files
   app.get('/api/files/:filename', isAuthenticated, async (req, res) => {
     try {
