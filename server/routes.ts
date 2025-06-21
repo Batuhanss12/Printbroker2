@@ -1817,7 +1817,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get quote form configuration by type - must come BEFORE the UUID route
+  // Form type endpoints - MUST come before the UUID routes
+  app.get('/api/quotes/form/sheet_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'sheet_label',
+        title: 'Tabaka Etiket Teklif Formu',
+        status: 'ready',
+        fields: [
+          { name: 'quantity', label: 'Adet', type: 'number', required: true },
+          { name: 'material', label: 'Malzeme', type: 'select', required: true },
+          { name: 'size', label: 'Boyut', type: 'select', required: true }
+        ]
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading sheet label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/form/roll_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'roll_label',
+        title: 'Rulo Etiket Teklif Formu',
+        status: 'ready',
+        fields: [
+          { name: 'quantity', label: 'Adet', type: 'number', required: true },
+          { name: 'material', label: 'Malzeme', type: 'select', required: true },
+          { name: 'rollWidth', label: 'Rulo Eni', type: 'text', required: true }
+        ]
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading roll label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/form/general_printing', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'general_printing',
+        title: 'Genel Baskı Teklif Formu',
+        status: 'ready',
+        fields: [
+          { name: 'quantity', label: 'Adet', type: 'number', required: true },
+          { name: 'printType', label: 'Baskı Türü', type: 'select', required: true },
+          { name: 'paperType', label: 'Kağıt Türü', type: 'select' }
+        ]
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading general printing form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  // Legacy endpoints for backward compatibility
   app.get('/api/quotes/sheet_label', async (req: any, res) => {
     try {
       const formConfig = {
@@ -1860,32 +1918,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get quote form configuration by type (alternative endpoint)
-  app.get('/api/quotes/form/:type', async (req: any, res) => {
-    try {
-      const { type } = req.params;
-      
-      // Validate quote type
-      const validTypes = ['sheet_label', 'roll_label', 'general_printing'];
-      if (!validTypes.includes(type)) {
-        return res.status(400).json({ message: "Invalid quote type" });
-      }
-      
-      // Return form configuration based on type
-      const formConfig = {
-        type,
-        title: `${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Teklif Formu`,
-        status: 'ready'
-      };
-      
-      res.json(formConfig);
-    } catch (error) {
-      console.error("Error loading quote form:", error);
-      res.status(500).json({ message: "Failed to load quote form" });
-    }
-  });
-
-  // Get specific quote details by UUID
+  // Get specific quote details by UUID - comes AFTER form endpoints
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
@@ -1893,6 +1926,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Skip form type routes
+      const formTypes = ['sheet_label', 'roll_label', 'general_printing'];
+      if (formTypes.includes(quoteId)) {
+        return res.status(400).json({ message: "Use form endpoint for form types" });
       }
 
       // Validate UUID format
