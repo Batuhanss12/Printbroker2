@@ -601,6 +601,8 @@ export class DatabaseStorage implements IStorage {
 
   async getNotifications(userId: string): Promise<any[]> {
     try {
+      console.log('📬 Querying notifications for userId:', userId);
+      
       const userNotifications = await db
         .select()
         .from(notifications)
@@ -608,7 +610,9 @@ export class DatabaseStorage implements IStorage {
         .orderBy(desc(notifications.createdAt))
         .limit(50);
         
-      console.log('📬 Found notifications:', userNotifications.length);
+      console.log('📬 Database returned notifications:', userNotifications.length);
+      console.log('📬 Sample notification data:', userNotifications.length > 0 ? userNotifications[0] : 'none');
+      
       return userNotifications;
     } catch (error) {
       console.error('Error getting notifications:', error);
