@@ -2246,6 +2246,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let quotes;
       if (user.role === 'customer') {
         quotes = await storage.getQuotesByCustomer(userId);
+        
+        // For customers, include printer quotes with detailed information
+        const quotesWithPrinterQuotes = await Promise.all(
+          quotes.map(async (quote: any) => {
+            const printerQuotes = await storage.getPrinterQuotesByQuote(quote.id);
+            
+            // Enrich printer quotes with printer information
+            const enrichedPrinterQuotes = await Promise.all(
+              printerQuotes.map(async (pq: any) => {
+                const printer = await storage.getUser(pq.printerId);
+                return {
+                  ...pq,
+                  printerName: printer?.firstName + ' ' + printer?.lastName,
+                  companyName: printer?.companyName || 'Matbaa Firması',
+                  rating: 4.5, // Mock rating for now
+                  totalRatings: 25 // Mock total ratings
+                };
+              })
+            );
+            
+            return {
+              ...quote,
+              printerQuotes: enrichedPrinterQuotes
+            };
+          })
+        );
+        
+        quotes = quotesWithPrinterQuotes;
       } else if (user.role === 'printer') {
         quotes = await storage.getQuotesForPrinter();
       } else {
