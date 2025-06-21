@@ -2070,6 +2070,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notifications API endpoint
+  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      console.log('📬 Fetching notifications for user:', userId);
+      const notifications = await storage.getNotifications(userId);
+      
+      console.log('📬 Found notifications:', notifications.length);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // Mark notification as read
+  app.post('/api/notifications/:id/read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const notificationId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      await storage.markNotificationAsRead(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  // Delete notification
+  app.delete('/api/notifications/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const notificationId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      await storage.deleteNotification(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ message: "Failed to delete notification" });
+    }
+  });
+
   // Public quote submission for non-authenticated users
   app.post('/api/quotes/public', async (req, res) => {
     try {
