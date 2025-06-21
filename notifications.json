@@ -130,5 +130,245 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T07:11:23.220Z"
+  },
+  {
+    "id": "ec1431cd-5cdd-4343-8f00-1361c8b699e2",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.014Z"
+  },
+  {
+    "id": "981388f4-0516-433a-a1c9-f93f2fca52f6",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.024Z"
+  },
+  {
+    "id": "39c528d3-9963-4a01-a641-2dc4c4bba8ee",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.032Z"
+  },
+  {
+    "id": "896746cf-1f52-4a19-98de-b196b883a0aa",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.044Z"
+  },
+  {
+    "id": "8a5eb7ff-bb8c-4200-a33c-6ab2e9076db1",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.055Z"
+  },
+  {
+    "id": "3aa1b8a3-14e5-430a-b1e3-17c47d80319a",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.064Z"
+  },
+  {
+    "id": "d44e550c-dee0-4fd4-8ada-6b29b9fde3e7",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.069Z"
+  },
+  {
+    "id": "de910668-812a-46a7-b1c6-6370748749c9",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.077Z"
+  },
+  {
+    "id": "a88d2ab5-771e-4d26-b091-056e32df420e",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.089Z"
+  },
+  {
+    "id": "bd773495-407f-4ea5-b756-0a129638955e",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Premium Ambalaj - 20,543 adet - ₺29840",
+    "data": {
+      "quoteId": "4e5bdd54-444e-4b35-90d3-a47f3deb6823"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:10.099Z"
+  },
+  {
+    "id": "119deffc-e286-4b4b-865a-77ec5638a258",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.722Z"
+  },
+  {
+    "id": "635386c2-7d0a-401f-9b2c-c5bde87cbeca",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.728Z"
+  },
+  {
+    "id": "78d11d21-8388-46e7-8665-220f506a36d5",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.740Z"
+  },
+  {
+    "id": "6fe61d01-19d4-460f-bf8c-af97bc4f392e",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.746Z"
+  },
+  {
+    "id": "823b31b6-d1e2-4b9d-bd38-b0c56760aa07",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.761Z"
+  },
+  {
+    "id": "27330138-be31-42ec-b5a2-76d2925266d3",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.777Z"
+  },
+  {
+    "id": "aa7847ca-adff-4685-bbb6-49762b9a52e5",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.785Z"
+  },
+  {
+    "id": "1adcc6e7-374b-481a-9391-af2f3c41ba46",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.799Z"
+  },
+  {
+    "id": "38429969-821d-488e-a00b-10ac200b1b2f",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.803Z"
+  },
+  {
+    "id": "ac854825-c3b6-46b5-ba66-c039127a7a82",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Kozmetik - 54,668 adet - ₺14471",
+    "data": {
+      "quoteId": "b741e8e1-67b4-4a41-91db-73adf3457611"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T07:21:40.810Z"
   }
 ]
