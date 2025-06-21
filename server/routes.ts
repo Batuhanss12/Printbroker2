@@ -767,6 +767,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user with proper role typing
       const userRole = (role === 'printer' || role === 'admin') ? role : 'customer';
       const userData = {
+        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         email,
         password, // In production, hash with bcrypt
         firstName,
