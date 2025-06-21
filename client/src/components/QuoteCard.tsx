@@ -220,3 +220,5 @@ export function QuoteCard({
     </Card>
   );
 }
+
+export default QuoteCard;
