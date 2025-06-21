@@ -1506,6 +1506,52 @@ export default function PrinterDashboard() {
                                         'die-cutting': 'Kalıp Kesim'
                                       };
 
+                                      // Foil Types
+                                      const foilTypes = {
+                                        'gold': 'Altın Yaldız',
+                                        'silver': 'Gümüş Yaldız',
+                                        'red': 'Kırmızı Yaldız',
+                                        'blue': 'Mavi Yaldız',
+                                        'green': 'Yeşil Yaldız',
+                                        'black': 'Siyah Yaldız',
+                                        'white': 'Beyaz Yaldız',
+                                        'holographic': 'Holografik Yaldız'
+                                      };
+
+                                      // Emboss Types
+                                      const embossTypes = {
+                                        'blind': 'Kör Kabartma',
+                                        'foil': 'Yaldızlı Kabartma',
+                                        'deboss': 'Çökertme',
+                                        'combination': 'Kombine Kabartma'
+                                      };
+
+                                      // Varnish Types
+                                      const varnishTypes = {
+                                        'uv-spot': 'Seçmeli UV Vernik',
+                                        'uv-full': 'Tam UV Vernik',
+                                        'aqua': 'Su Bazlı Vernik',
+                                        'oil': 'Yağ Bazlı Vernik',
+                                        'matte-uv': 'Mat UV Vernik',
+                                        'gloss-uv': 'Parlak UV Vernik'
+                                      };
+
+                                      // Material specific translations
+                                      const materialValues = {
+                                        'sticker-opaque': 'Opak Etiket',
+                                        'sticker-transparent': 'Şeffaf Etiket',
+                                        'sticker-white': 'Beyaz Etiket',
+                                        'paper-white': 'Beyaz Kağıt',
+                                        'vinyl-white': 'Beyaz Vinil'
+                                      };
+
+                                      // Cellophane Types
+                                      const cellophaneTypes = {
+                                        'gloss': 'Parlak Laminasyon',
+                                        'matte': 'Mat Laminasyon',
+                                        'soft-touch': 'Soft Touch Laminasyon'
+                                      };
+
                                       // Common values
                                       const commonValues = {
                                         'yes': 'Evet',
@@ -1533,6 +1579,11 @@ export default function PrinterDashboard() {
                                              packagingOptions[strVal] ||
                                              laminationTypes[strVal] ||
                                              finishingOptions[strVal] ||
+                                             foilTypes[strVal] ||
+                                             embossTypes[strVal] ||
+                                             varnishTypes[strVal] ||
+                                             materialValues[strVal] ||
+                                             cellophaneTypes[strVal] ||
                                              commonValues[strVal] ||
                                              String(val);
                                     };
