@@ -1310,7 +1310,10 @@ export default function PrinterDashboard() {
                                       'colorProfile': 'Renk Profili',
                                       'description': 'Açıklama',
                                       'packaging': 'Paketleme',
-                                      'cellophaneType': 'Selofan Türü'
+                                      'cellophaneType': 'Selofan Türü',
+                                      'foilType': 'Foil Türü',
+                                      'embossType': 'Emboss Türü',
+                                      'varnishType': 'Vernik Türü'
                                     };
 
                                     const displayName = fieldNames[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
