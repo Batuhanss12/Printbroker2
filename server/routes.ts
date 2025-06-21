@@ -1817,7 +1817,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get specific quote details
+  // Get quote form configuration by type
+  app.get('/api/quotes/form/:type', async (req: any, res) => {
+    try {
+      const { type } = req.params;
+      
+      // Validate quote type
+      const validTypes = ['sheet_label', 'roll_label', 'general_printing'];
+      if (!validTypes.includes(type)) {
+        return res.status(400).json({ message: "Invalid quote type" });
+      }
+      
+      // Return form configuration based on type
+      const formConfig = {
+        type,
+        title: `${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Teklif Formu`,
+        status: 'ready'
+      };
+      
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading quote form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  // Get specific quote details by UUID
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
@@ -1825,6 +1850,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(quoteId)) {
+        return res.status(400).json({ message: "Invalid quote ID format" });
       }
 
       const quote = await storage.getQuote(quoteId);
