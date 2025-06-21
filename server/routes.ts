@@ -48,6 +48,7 @@ import { oneClickLayoutSystem } from "./oneClickLayoutSystem";
 import { aiDesignAnalyzer } from "./aiDesignAnalyzer";
 import { professionalDesignAnalyzer } from "./professionalDesignAnalyzer";
 import { pythonAnalyzerService } from "./pythonAnalyzerService";
+import { mockQuoteSystem } from "./mockQuoteSystem";
 import { multiMethodAnalyzer } from "./multiMethodAnalyzer";
 import { operationalLayoutSystem } from "./operationalLayoutSystem";
 import { fastApiClient } from "./fastApiClient";
@@ -189,21 +190,16 @@ async function notifyPrintersForNewQuote(quote: any) {
             createdAt: new Date()
           });
 
-          // Broadcast real-time notification via WebSocket
-          notificationService.broadcastToUser(printer.id, {
-            type: 'new_quote_notification',
-            title: 'Yeni Teklif Talebi',
-            message: `${quote.category} - ${quote.quantity?.toLocaleString()} adet - ₺${quote.totalPrice}`,
-            quote: {
-              id: quote.id,
-              title: quote.title,
-              category: quote.category,
-              quantity: quote.quantity,
-              totalPrice: quote.totalPrice,
-              location: quote.location,
-              deadline: quote.deadline
-            },
-            timestamp: new Date().toISOString()
+          // Broadcast enhanced real-time notification via WebSocket
+          notificationService.sendQuoteNotification(printer.id, {
+            id: quote.id,
+            title: quote.title,
+            category: quote.category,
+            quantity: quote.quantity,
+            totalPrice: quote.totalPrice,
+            location: quote.location,
+            deadline: quote.deadline,
+            customerName: `${quote.firstName} ${quote.lastName}`
           });
         } catch (notifError) {
           console.error(`Failed to create notification for printer ${printer.id}:`, notifError);
@@ -772,6 +768,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new user with proper role typing
       const userRole = (role === 'printer' || role === 'admin') ? role : 'customer';
       const userData = {
+        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         email,
         password, // In production, hash with bcrypt
         firstName,
@@ -912,46 +909,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 12;
-
-      console.log(`🎨 Fetching design history for user ${userId}, page ${page}, limit ${limit}`);
+      const limit = parseInt(req.query.limit) || 10;
 
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Get actual design history from storage with enhanced logging
+      // Get actual design history from storage
       const designHistory = await storage.getDesignHistory(userId, { page, limit });
-      
-      console.log(`📋 Design history response:`, {
-        userId,
-        totalDesigns: designHistory.total || designHistory.designs?.length || 0,
-        currentPage: designHistory.page || page,
-        totalPages: designHistory.totalPages || 1,
-        hasDesigns: Array.isArray(designHistory.designs) && designHistory.designs.length > 0
-      });
-
-      // Ensure proper response structure
-      const response = {
-        designs: designHistory.designs || designHistory || [],
-        total: designHistory.total || (Array.isArray(designHistory.designs) ? designHistory.designs.length : 0),
-        page: designHistory.page || page,
-        totalPages: designHistory.totalPages || Math.ceil((designHistory.total || 0) / limit),
-        hasNext: designHistory.hasNext || false,
-        hasPrev: designHistory.hasPrev || false
-      };
-
-      res.json(response);
+      res.json(designHistory);
     } catch (error) {
-      console.error("❌ Design history error:", error);
-      res.status(500).json({ 
-        message: "Failed to fetch design history",
-        designs: [],
-        total: 0,
-        page: 1,
-        totalPages: 1
-      });
+      console.error("Design history error:", error);
+      res.status(500).json({ message: "Failed to fetch design history" });
     }
   });
 
@@ -1844,104 +1814,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get specific quote details
-  app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const quoteId = req.params.id;
-      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "User not authenticated" });
-      }
-
-      const quote = await storage.getQuote(quoteId);
-      if (!quote) {
-        return res.status(404).json({ message: "Quote not found" });
-      }
-
-      // Check if user has access to this quote
-      const userRole = req.user?.role || req.session?.user?.role;
-      const canAccess = (
-        quote.customerId === userId || // Customer owns the quote
-        userRole === 'printer' ||     // Printer can view quotes
-        userRole === 'admin'          // Admin can view all
-      );
-
-      if (!canAccess) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      res.json(quote);
-    } catch (error) {
-      console.error("Error fetching quote:", error);
-      res.status(500).json({ message: "Failed to fetch quote" });
-    }
-  });
-
-  // Get printer quotes for a specific quote
-  app.get('/api/quotes/:id/printer-quotes', isAuthenticated, async (req: any, res) => {
-    try {
-      const quoteId = req.params.id;
-      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "User not authenticated" });
-      }
-
-      // Verify user has access to this quote
-      const quote = await storage.getQuote(quoteId);
-      if (!quote) {
-        return res.status(404).json({ message: "Quote not found" });
-      }
-
-      const userRole = req.user?.role || req.session?.user?.role;
-      const canAccess = (
-        quote.customerId === userId || // Customer owns the quote
-        userRole === 'printer' ||     // Printer can view quotes
-        userRole === 'admin'          // Admin can view all
-      );
-
-      if (!canAccess) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      const printerQuotes = await storage.getPrinterQuotesByQuote(quoteId);
-      res.json(printerQuotes);
-    } catch (error) {
-      console.error("Error fetching printer quotes:", error);
-      res.status(500).json({ message: "Failed to fetch printer quotes" });
-    }
-  });
-
-  // Accept a printer quote
-  app.post('/api/quotes/:id/accept', isAuthenticated, async (req: any, res) => {
-    try {
-      const quoteId = req.params.id;
-      const { printerQuoteId } = req.body;
-      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "User not authenticated" });
-      }
-
-      // Verify user owns this quote
-      const quote = await storage.getQuote(quoteId);
-      if (!quote || quote.customerId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      // Update quote status
-      await storage.updateQuoteStatus(quoteId, 'approved');
-      
-      // TODO: Create order from accepted quote
-      
-      res.json({ message: "Quote accepted successfully" });
-    } catch (error) {
-      console.error("Error accepting quote:", error);
-      res.status(500).json({ message: "Failed to accept quote" });
-    }
-  });
-
   // Get files for a specific quote (for printers to view customer files)
   app.get('/api/quotes/:id/files', isAuthenticated, async (req: any, res) => {
     try {
@@ -2283,9 +2155,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mock quote specific routes first
+  app.get('/api/quotes/mock', isAuthenticated, async (req: any, res) => {
+    try {
+      const mockQuotes = mockQuoteSystem.getMockQuotes();
+      res.json(mockQuotes);
+    } catch (error) {
+      console.error("Error fetching mock quotes:", error);
+      res.status(500).json({ message: "Failed to fetch mock quotes" });
+    }
+  });
+
   app.get('/api/quotes/:id', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
+      
+      // Skip mock routes - they have their own endpoint
+      if (quoteId === 'mock') {
+        return res.status(404).json({ message: "Use /api/quotes/mock endpoint" });
+      }
+      
       const quote = await storage.getQuote(quoteId);
 
       if (!quote) {
@@ -2408,13 +2297,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Approve quote and create chat room
+  // Approve specific printer quote by customer
   app.post('/api/quotes/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
-      // Enhanced user ID extraction for session-based auth
       const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
-      const { printerId } = req.body;
+      const { printerQuoteId } = req.body;
 
       if (!userId) {
         return res.status(401).json({ message: "User session not found" });
@@ -2431,30 +2319,276 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only quote owner can approve" });
       }
 
-      // Update quote status to approved
+      // Get printer quote details
+      const printerQuote = await storage.getPrinterQuote(printerQuoteId);
+      if (!printerQuote) {
+        return res.status(404).json({ message: "Printer quote not found" });
+      }
+
+      // Update printer quote status to approved
+      await storage.updatePrinterQuoteStatus(printerQuoteId, 'approved');
+      
+      // Update main quote status to approved
       await storage.updateQuoteStatus(quoteId, "approved");
 
-      // Create chat room automatically when contract is approved
-      try {
-        const existingRoom = await storage.getChatRoomByQuote(quoteId, quote.customerId, printerId);
+      // Create initial order status
+      await storage.createOrderStatus({
+        quoteId,
+        status: 'approved',
+        title: 'Sipariş Onaylandı',
+        description: 'Müşteri tarafından teklif onaylandı. Üretim süreci başlatılacak.',
+        timestamp: new Date(),
+        metadata: { printerQuoteId, approvedBy: userId }
+      });
 
+      // Create chat room for communication
+      try {
+        const existingRoom = await storage.getChatRoomByQuote(quoteId, quote.customerId, printerQuote.printerId);
         if (!existingRoom) {
           await storage.createChatRoom({
             quoteId,
             customerId: quote.customerId,
-            printerId,
+            printerId: printerQuote.printerId,
             status: 'active'
           });
         }
       } catch (chatError) {
         console.error("Error creating chat room:", chatError);
-        // Don't fail the approval if chat room creation fails
       }
 
-      res.json({ message: "Quote approved and chat room created" });
+      // Notify printer about approval
+      try {
+        const printer = await storage.getUser(printerQuote.printerId);
+        if (printer) {
+          await storage.createNotification({
+            userId: printerQuote.printerId,
+            type: 'quote_approved',
+            title: 'Teklif Onaylandı',
+            message: `${quote.title} siparişiniz müşteri tarafından onaylandı. Üretim sürecini başlatabilirsiniz.`,
+            data: { quoteId, printerQuoteId },
+            isRead: false,
+            createdAt: new Date()
+          });
+
+          // Send real-time notification
+          notificationService.broadcastToUser(printerQuote.printerId, {
+            type: 'quote_approved_notification',
+            title: 'Teklif Onaylandı',
+            message: `${quote.title} siparişiniz müşteri tarafından onaylandı.`,
+            priority: 'high',
+            category: 'order',
+            actionRequired: true,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              status: 'approved'
+            },
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (notifError) {
+        console.error(`Failed to notify printer ${printerQuote.printerId}:`, notifError);
+      }
+
+      res.json({ 
+        success: true,
+        message: "Teklif onaylandı ve sipariş süreci başlatıldı" 
+      });
     } catch (error) {
       console.error("Error approving quote:", error);
       res.status(500).json({ message: "Failed to approve quote" });
+    }
+  });
+
+  // Reject specific printer quote by customer
+  app.post('/api/quotes/:id/reject', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.id;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const { printerQuoteId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      // Get quote details
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify user is the customer for this quote
+      if (quote.customerId !== userId) {
+        return res.status(403).json({ message: "Only quote owner can reject" });
+      }
+
+      // Update printer quote status to rejected
+      await storage.updatePrinterQuoteStatus(printerQuoteId, 'rejected');
+
+      // Get printer quote details for notification
+      const printerQuote = await storage.getPrinterQuote(printerQuoteId);
+      
+      // Notify printer about rejection
+      if (printerQuote) {
+        try {
+          await storage.createNotification({
+            userId: printerQuote.printerId,
+            type: 'quote_rejected',
+            title: 'Teklif Reddedildi',
+            message: `${quote.title} için gönderdiğiniz teklif müşteri tarafından reddedildi.`,
+            data: { quoteId, printerQuoteId },
+            isRead: false,
+            createdAt: new Date()
+          });
+
+          // Send real-time notification
+          notificationService.broadcastToUser(printerQuote.printerId, {
+            type: 'quote_rejected_notification',
+            title: 'Teklif Reddedildi',
+            message: `${quote.title} için gönderdiğiniz teklif reddedildi.`,
+            priority: 'medium',
+            category: 'quote',
+            actionRequired: false,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              status: 'rejected'
+            },
+            timestamp: new Date().toISOString()
+          });
+        } catch (notifError) {
+          console.error(`Failed to notify printer ${printerQuote.printerId}:`, notifError);
+        }
+      }
+
+      res.json({ 
+        success: true,
+        message: "Teklif reddedildi" 
+      });
+    } catch (error) {
+      console.error("Error rejecting quote:", error);
+      res.status(500).json({ message: "Failed to reject quote" });
+    }
+  });
+
+  // Get order status for a quote
+  app.get('/api/orders/status/:quoteId', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.quoteId;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      // Get quote details to verify access
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify user has access to this quote (customer or assigned printer)
+      const userRole = req.user?.role || req.session?.user?.role;
+      if (userRole === 'customer' && quote.customerId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Get order statuses for this quote
+      const orderStatuses = await storage.getOrderStatusesByQuote(quoteId);
+      res.json(orderStatuses || []);
+    } catch (error) {
+      console.error("Error fetching order status:", error);
+      res.status(500).json({ message: "Failed to fetch order status" });
+    }
+  });
+
+  // Update order status (printer only)
+  app.post('/api/orders/status/:quoteId', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.quoteId;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const userRole = req.user?.role || req.session?.user?.role;
+      const { status, title, description, metadata } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      if (userRole !== 'printer') {
+        return res.status(403).json({ message: "Only printers can update order status" });
+      }
+
+      // Get quote details
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify printer is assigned to this quote
+      const printerQuotes = await storage.getPrinterQuotesByQuote(quoteId);
+      const printerQuote = printerQuotes.find((pq: any) => pq.printerId === userId && pq.status === 'approved');
+      
+      if (!printerQuote) {
+        return res.status(403).json({ message: "You are not assigned to this order" });
+      }
+
+      // Create new order status
+      const orderStatus = await storage.createOrderStatus({
+        quoteId,
+        status,
+        title,
+        description,
+        timestamp: new Date(),
+        metadata: metadata || {}
+      });
+
+      // Update quote status if needed
+      if (status === 'completed') {
+        await storage.updateQuoteStatus(quoteId, 'completed');
+      } else if (status === 'in_production') {
+        await storage.updateQuoteStatus(quoteId, 'in_progress');
+      }
+
+      // Notify customer about status update
+      try {
+        await storage.createNotification({
+          userId: quote.customerId,
+          type: 'order_status_update',
+          title: `Sipariş Durumu: ${title}`,
+          message: description,
+          data: { quoteId, orderStatusId: orderStatus.id, status },
+          isRead: false,
+          createdAt: new Date()
+        });
+
+        // Send real-time notification to customer
+        notificationService.broadcastToUser(quote.customerId, {
+          type: 'order_status_update_notification',
+          title: `Sipariş Durumu: ${title}`,
+          message: description,
+          priority: status === 'completed' ? 'high' : 'medium',
+          category: 'order',
+          actionRequired: false,
+          order: {
+            id: quoteId,
+            title: quote.title,
+            status,
+            statusTitle: title
+          },
+          timestamp: new Date().toISOString()
+        });
+      } catch (notifError) {
+        console.error(`Failed to notify customer ${quote.customerId}:`, notifError);
+      }
+
+      res.json({ 
+        success: true,
+        orderStatus,
+        message: "Sipariş durumu güncellendi" 
+      });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
     }
   });
 
@@ -4645,6 +4779,9 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
   const clients = new Map<string, Set<WebSocket>>();
   const connectionCount = { current: 0 };
 
+  // Initialize mock quote system
+  mockQuoteSystem.initialize(wss);
+
   // Connection monitoring
   setInterval(() => {
     console.log(`Active WebSocket connections: ${connectionCount.current}`);
@@ -5576,6 +5713,127 @@ app.post('/api/automation/plotter/generate-enhanced-pdf', isAuthenticated, async
     } catch (error: any) {
       console.error('Admin contracts error:', error);
       res.status(500).json({ message: 'Sözleşme listesi getirme başarısız' });
+    }
+  });
+
+  // Mock Quote System API Endpoints
+  app.get('/api/quotes/mock', async (req, res) => {
+    try {
+      const mockQuotes = mockQuoteSystem.getMockQuotes();
+      res.json({
+        success: true,
+        quotes: mockQuotes,
+        total: mockQuotes.length
+      });
+    } catch (error) {
+      console.error('Mock quotes fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklifler alınamadı' 
+      });
+    }
+  });
+
+  app.get('/api/quotes/mock/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const mockQuote = mockQuoteSystem.getMockQuoteById(id);
+      
+      if (!mockQuote) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Mock teklif bulunamadı' 
+        });
+      }
+
+      res.json({
+        success: true,
+        quote: mockQuote
+      });
+    } catch (error) {
+      console.error('Mock quote fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif alınamadı' 
+      });
+    }
+  });
+
+  app.post('/api/quotes/mock/:id/respond', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.session?.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'printer') {
+        return res.status(403).json({ 
+          success: false, 
+          message: "Sadece matbaa firmaları teklif verebilir" 
+        });
+      }
+
+      const { id } = req.params;
+      const { price, estimatedDays, notes } = req.body;
+
+      if (!price || !estimatedDays) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Fiyat ve tahmini süre gerekli' 
+        });
+      }
+
+      const mockQuote = mockQuoteSystem.getMockQuoteById(id);
+      if (!mockQuote) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Mock teklif bulunamadı' 
+        });
+      }
+
+      // Submit response to mock quote (isolated from real system)
+      const response = mockQuoteSystem.submitMockQuote(id, {
+        printerId: user.id,
+        printerName: `${user.firstName} ${user.lastName}`,
+        companyName: user.companyName || 'Bilinmeyen Matbaa',
+        price: parseInt(price.toString().replace(/[^\d]/g, '')),
+        estimatedDays: parseInt(estimatedDays.toString()),
+        notes: notes || 'Kaliteli ve zamanında teslimat garantisi.',
+        rating: Math.random() * 2 + 3.5, // 3.5-5.5 rating
+        totalRatings: Math.floor(Math.random() * 200) + 50
+      });
+
+      console.log(`📋 Mock quote response: ${user.companyName} -> ${mockQuote.title} (₺${price})`);
+
+      res.json({
+        success: true,
+        response,
+        message: 'Mock teklife başarıyla yanıt verildi'
+      });
+
+    } catch (error) {
+      console.error('Mock quote response error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif yanıtı gönderilemedi' 
+      });
+    }
+  });
+
+  app.get('/api/quotes/mock/:id/responses', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const responses = mockQuoteSystem.getMockQuoteResponses(id);
+      
+      res.json({
+        success: true,
+        responses,
+        total: responses.length
+      });
+    } catch (error) {
+      console.error('Mock quote responses fetch error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Mock teklif yanıtları alınamadı' 
+      });
     }
   });
 

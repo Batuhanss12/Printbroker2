@@ -28,7 +28,6 @@ import {
   User,
   BarChart3,
   Calendar,
-  Download,
   Edit,
   Filter,
   Search,
@@ -47,7 +46,7 @@ import {
   AlertCircle,
   XCircle,
   Upload,
-  Download2,
+  Download,
   Linkedin,
   AlertTriangle,
   Info,
@@ -70,7 +69,9 @@ import Chat from "@/components/Chat";
 import StatsCard from "@/components/StatsCard";
 import Navigation from "@/components/Navigation";
 import FirmVerificationPanel from "@/components/FirmVerificationPanel";
+import { PrinterOrderManager } from "@/components/PrinterOrderManager";
 import { InkDropletsLoader } from "@/components/Loaders";
+import { EnterpriseNotificationSystem } from "@/components/EnterpriseNotificationSystem";
 
 // QuoteFilesViewer Component
 function QuoteFilesViewer({ quoteId }: { quoteId: string }) {
@@ -348,6 +349,7 @@ export default function PrinterDashboard() {
   // Dialog state'leri
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [selectedQuoteForOrderManagement, setSelectedQuoteForOrderManagement] = useState(null);
   const [isCampaignDialogOpen, setIsCampaignDialogOpen] = useState(false);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
@@ -691,9 +693,10 @@ export default function PrinterDashboard() {
 
         {/* Tabs for Dashboard Sections */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-gray-100 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-1 bg-gray-100 p-1 rounded-lg">
             <TabsTrigger value="overview" className="text-xs md:text-sm">Genel Bakış</TabsTrigger>
             <TabsTrigger value="quotes" className="text-xs md:text-sm">Teklifler</TabsTrigger>
+            <TabsTrigger value="live-quotes" className="text-xs md:text-sm">Canlı Teklifler</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs md:text-sm">Siparişler</TabsTrigger>
             <TabsTrigger value="profile" className="text-xs md:text-sm">Profil</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs md:text-sm">Analizler</TabsTrigger>
@@ -864,6 +867,15 @@ export default function PrinterDashboard() {
                               Teklif Verildi
                             </Badge>
                           )}
+                          {quote.status === 'approved' && quote.printerQuotes?.some((pq: any) => pq.printerId === user?.id && pq.status === 'approved') && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => setSelectedQuoteForOrderManagement(quote)}
+                              className="bg-green-600 hover:bg-green-700 text-white self-start md:self-center"
+                            >
+                              Siparişi Yönet
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -875,6 +887,26 @@ export default function PrinterDashboard() {
                     <p className="text-sm md:text-base text-gray-600">Müşterilerden gelen teklif talepleri burada görünecek</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="live-quotes" className="space-y-6">
+            <Card className="shadow-lg border-0">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <Zap className="h-5 w-5 text-yellow-600" />
+                  Canlı Teklif Takibi
+                </CardTitle>
+                <CardDescription className="text-sm md:text-base">
+                  Piyasadaki gerçek zamanlı teklif taleplerini takip edin ve fırsatları yakalayın
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6">
+                <EnterpriseNotificationSystem 
+                  userRole="printer" 
+                  userId={user?.id || ''} 
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -1321,23 +1353,220 @@ export default function PrinterDashboard() {
                                     const getDisplayValue = (val: any): string => {
                                       const strVal = String(val).toLowerCase();
 
-                                      switch (strVal) {
-                                        case 'straight': return 'Düz Kesim';
-                                        case 'thermal-direct': return 'Termal Direkt';
-                                        case 'thermal-transfer': return 'Termal Transfer';
-                                        case 'permanent': return 'Kalıcı';
-                                        case 'removable': return 'Çıkarılabilir';
-                                        case 'yes': case 'true': return 'Evet';
-                                        case 'no': case 'false': return 'Hayır';
-                                        case 'business-card': return 'Kartvizit';
-                                        case 'brochure': return 'Broşür';
-                                        case 'poster': return 'Poster';
-                                        case 'a4': return 'A4';
-                                        case 'a3': return 'A3';
-                                        case 'color': return 'Renkli';
-                                        case 'bw': return 'Siyah Beyaz';
-                                        default: return String(val);
-                                      }
+                                      // Sheet Label Materials
+                                      const sheetMaterials = {
+                                        'vinyl-white': 'Vinil Beyaz',
+                                        'vinyl-transparent': 'Vinil Şeffaf',
+                                        'vinyl-silver': 'Vinil Gümüş',
+                                        'vinyl-gold': 'Vinil Altın',
+                                        'paper-white': 'Kağıt Beyaz',
+                                        'paper-cream': 'Kağıt Krem',
+                                        'polyester-clear': 'Polyester Şeffaf',
+                                        'polyester-white': 'Polyester Beyaz',
+                                        'polyester-silver': 'Polyester Gümüş',
+                                        'kraft-brown': 'Kraft Kahverengi',
+                                        'synthetic-pp': 'Sentetik PP',
+                                        'thermal-paper': 'Termal Kağıt',
+                                        'sticker-transparent': 'Şeffaf Etiket',
+                                        'sticker-white': 'Beyaz Etiket',
+                                        'transparent': 'Şeffaf'
+                                      };
+
+                                      // Roll Label Materials
+                                      const rollMaterials = {
+                                        'thermal-direct': 'Termal Direkt (58gsm)',
+                                        'thermal-transfer': 'Termal Transfer (65gsm)',
+                                        'synthetic-pp': 'Sentetik PP (50 mikron)',
+                                        'vinyl-pvc': 'Vinil PVC (80 mikron)',
+                                        'polyester-pet': 'Polyester PET (50 mikron)',
+                                        'kraft-paper': 'Kraft Kağıt (70gsm)',
+                                        'security-void': 'Güvenlik Etiketi (VOID)',
+                                        'freezer-grade': 'Dondurulmuş Ürün Etiketi'
+                                      };
+
+                                      // General Printing Materials
+                                      const printingMaterials = {
+                                        'offset-80gsm': 'Offset 80 gsm',
+                                        'offset-90gsm': 'Offset 90 gsm',
+                                        'kuşe-115gsm': 'Kuşe 115 gsm',
+                                        'kuşe-135gsm': 'Kuşe 135 gsm',
+                                        'kuşe-170gsm': 'Kuşe 170 gsm',
+                                        'kuşe-250gsm': 'Kuşe 250 gsm',
+                                        'kuşe-300gsm': 'Kuşe 300 gsm',
+                                        'bristol-250gsm': 'Bristol 250 gsm',
+                                        'bristol-300gsm': 'Bristol 300 gsm',
+                                        'kraft-200gsm': 'Kraft 200 gsm',
+                                        'recycled-80gsm': 'Geri Dönüşüm 80 gsm'
+                                      };
+
+                                      // Adhesive Types
+                                      const adhesiveTypes = {
+                                        'permanent-acrylic': 'Kalıcı Akrilik',
+                                        'removable-acrylic': 'Çıkarılabilir Akrilik',
+                                        'freezer-grade': 'Dondurulmuş Ürün',
+                                        'high-tack': 'Yüksek Yapışkanlı',
+                                        'low-tack': 'Düşük Yapışkanlı',
+                                        'marine-grade': 'Denizcilik Sınıfı',
+                                        'permanent': 'Kalıcı',
+                                        'removable': 'Çıkarılabilir'
+                                      };
+
+                                      // Product Types
+                                      const productTypes = {
+                                        'catalog': 'Katalog / Dergi',
+                                        'brochure': 'Broşür / Tanıtım',
+                                        'business-card': 'Kartvizit',
+                                        'letterhead': 'Antetli Kağıt',
+                                        'flyer': 'Flyer / El İlanı',
+                                        'poster': 'Poster / Afiş',
+                                        'book': 'Kitap / Dergi',
+                                        'manual': 'Manuel / Kılavuz',
+                                        'calendar': 'Takvim',
+                                        'packaging': 'Ambalaj / Kutu',
+                                        'certificate': 'Sertifika / Diploma',
+                                        'presentation': 'Sunum Dosyası'
+                                      };
+
+                                      // Size Standards
+                                      const sizeStandards = {
+                                        'a0': 'A0 (841 x 1189 mm)',
+                                        'a1': 'A1 (594 x 841 mm)',
+                                        'a2': 'A2 (420 x 594 mm)',
+                                        'a3': 'A3 (297 x 420 mm)',
+                                        'a4': 'A4 (210 x 297 mm)',
+                                        'a5': 'A5 (148 x 210 mm)',
+                                        'a6': 'A6 (105 x 148 mm)',
+                                        '85x55': 'Kartvizit (85 x 55 mm)',
+                                        '100x70-jumbo': 'Kartvizit Jumbo (100 x 70 mm)',
+                                        '20x10': '20x10 mm',
+                                        '30x20': '30x20 mm',
+                                        '40x25': '40x25 mm',
+                                        '50x30': '50x30 mm',
+                                        '58x40': '58x40 mm',
+                                        '70x50': '70x50 mm',
+                                        '100x70': '100x70 mm'
+                                      };
+
+                                      // Print Technologies
+                                      const printTechnologies = {
+                                        'digital-hp-indigo': 'Dijital HP Indigo',
+                                        'digital-xerox': 'Dijital Xerox',
+                                        'offset-sheet': 'Ofset Tabaka',
+                                        'offset-web': 'Ofset Rotativ',
+                                        'uv-offset': 'UV Ofset',
+                                        'screen-printing': 'Serigrafi',
+                                        'large-format': 'Geniş Format',
+                                        'inkjet-digital': 'İnkjet Dijital',
+                                        'flexo-print': 'Flekso Baskı',
+                                        'offset-print': 'Ofset Baskı',
+                                        'screen-print': 'Serigrafi'
+                                      };
+
+                                      // Color Options
+                                      const colorOptions = {
+                                        '1-0': '1+0 (Tek Yüz Siyah)',
+                                        '1-1': '1+1 (Çift Yüz Siyah)',
+                                        '4-0': '4+0 (Tek Yüz Renkli)',
+                                        '4-4': '4+4 (Çift Yüz Renkli)',
+                                        '4-1': '4+1 (Renkli + Siyah)',
+                                        '5-0': '5+0 (4 Renk + Pantone)',
+                                        '5-5': '5+5 (Çift Yüz + Pantone)',
+                                        'spot-color': 'Özel Pantone Renkleri',
+                                        'color': 'Renkli',
+                                        'bw': 'Siyah Beyaz'
+                                      };
+
+                                      // Surface Types
+                                      const surfaceTypes = {
+                                        'matte': 'Mat',
+                                        'glossy': 'Parlak',
+                                        'silk': 'İpek Mat',
+                                        'textured': 'Dokulu',
+                                        'linen': 'Keten Dokulu',
+                                        'hammered': 'Dövme Dokulu'
+                                      };
+
+                                      // Orientations
+                                      const orientations = {
+                                        'portrait': 'Dikey (Portrait)',
+                                        'landscape': 'Yatay (Landscape)',
+                                        'square': 'Kare'
+                                      };
+
+                                      // Winding Directions
+                                      const windingDirections = {
+                                        'outside-wound': 'Dış Sarım (Outside Wound)',
+                                        'inside-wound': 'İç Sarım (Inside Wound)'
+                                      };
+
+                                      // Cutting Types
+                                      const cuttingTypes = {
+                                        'round-corner': 'Köşe Yuvarlama',
+                                        'straight': 'Düz Kesim',
+                                        'die-cut': 'Özel Kesim',
+                                        'perforated': 'Perforeli',
+                                        'kiss-cut': 'Kiss Cut'
+                                      };
+
+                                      // Packaging Options
+                                      const packagingOptions = {
+                                        'individual': 'Tek Tek Ambalajlama',
+                                        'bulk': 'Toplu Paketleme',
+                                        'standard': 'Standart Paketleme',
+                                        'gift-wrap': 'Hediye Paketleme',
+                                        'roll': 'Rulo Halinde',
+                                        'sheet': 'Tabaka Halinde'
+                                      };
+
+                                      // Lamination Types
+                                      const laminationTypes = {
+                                        'mat': 'Mat Laminasyon',
+                                        'matte': 'Mat Laminasyon',
+                                        'gloss': 'Parlak Laminasyon',
+                                        'glossy': 'Parlak Laminasyon',
+                                        'soft-touch': 'Soft Touch',
+                                        'anti-scratch': 'Çizilmez'
+                                      };
+
+                                      // Finishing Options
+                                      const finishingOptions = {
+                                        'uv-varnish': 'UV Vernik',
+                                        'spot-uv': 'Seçmeli UV',
+                                        'embossing': 'Kabartma',
+                                        'debossing': 'Çökertme',
+                                        'foil-stamping': 'Yaldız Baskı',
+                                        'die-cutting': 'Kalıp Kesim'
+                                      };
+
+                                      // Common values
+                                      const commonValues = {
+                                        'yes': 'Evet',
+                                        'true': 'Evet',
+                                        'no': 'Hayır',
+                                        'false': 'Hayır',
+                                        'custom': 'Özel',
+                                        'yok': 'YOK',
+                                        'belirtilmedi': 'Belirtilmedi'
+                                      };
+
+                                      // Check all mappings
+                                      return sheetMaterials[strVal] ||
+                                             rollMaterials[strVal] ||
+                                             printingMaterials[strVal] ||
+                                             adhesiveTypes[strVal] ||
+                                             productTypes[strVal] ||
+                                             sizeStandards[strVal] ||
+                                             printTechnologies[strVal] ||
+                                             colorOptions[strVal] ||
+                                             surfaceTypes[strVal] ||
+                                             orientations[strVal] ||
+                                             windingDirections[strVal] ||
+                                             cuttingTypes[strVal] ||
+                                             packagingOptions[strVal] ||
+                                             laminationTypes[strVal] ||
+                                             finishingOptions[strVal] ||
+                                             commonValues[strVal] ||
+                                             String(val);
                                     };
 
                                     const displayValue = getDisplayValue(value);
@@ -1541,6 +1770,14 @@ export default function PrinterDashboard() {
                   </DialogContent>
                 </Dialog>
               )}
+
+        {/* Order Management Modal */}
+        {selectedQuoteForOrderManagement && (
+          <PrinterOrderManager
+            quote={selectedQuoteForOrderManagement}
+            onClose={() => setSelectedQuoteForOrderManagement(null)}
+          />
+        )}
       </main>
     </div>
   );

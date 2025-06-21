@@ -8,6 +8,7 @@ import {
   chatRooms,
   chatMessages,
   contracts,
+  orderStatuses,
   type User,
   type UpsertUser,
   type InsertQuote,
@@ -26,6 +27,8 @@ import {
   type ChatMessage,
   type InsertContract,
   type Contract,
+  type InsertOrderStatus,
+  type OrderStatus,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, sql } from "drizzle-orm";
@@ -50,8 +53,10 @@ export interface IStorage {
 
   // Printer quote operations
   createPrinterQuote(printerQuote: InsertPrinterQuote): Promise<PrinterQuote>;
+  getPrinterQuote(id: string): Promise<PrinterQuote | undefined>;
   getPrinterQuotesByQuote(quoteId: string): Promise<PrinterQuote[]>;
   getPrinterQuotesByPrinter(printerId: string): Promise<PrinterQuote[]>;
+  updatePrinterQuoteStatus(id: string, status: string): Promise<void>;
 
   // Order operations
   createOrder(order: InsertOrder): Promise<Order>;
@@ -59,6 +64,17 @@ export interface IStorage {
   getOrdersByCustomer(customerId: string): Promise<Order[]>;
   getOrdersByPrinter(printerId: string): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<void>;
+
+  // Order status operations
+  createOrderStatus(orderStatus: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<any>;
+  getOrderStatusesByQuote(quoteId: string): Promise<any[]>;
 
   // Rating operations
   createRating(rating: InsertRating): Promise<Rating>;
@@ -143,13 +159,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: any): Promise<User> {
-    const [newUser] = await db.insert(users).values(userData).returning();
+    // Ensure ID is provided and properly formatted
+    const userDataWithId = {
+      ...userData,
+      id: userData.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    console.log('Creating user with data:', userDataWithId);
+    const [newUser] = await db.insert(users).values(userDataWithId).returning();
     return newUser;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
     const existingUser = await this.getUserByEmail(userData.email);
-
+    
     if (existingUser) {
       const [updatedUser] = await db
         .update(users)
@@ -195,12 +220,44 @@ export class DatabaseStorage implements IStorage {
     return quote;
   }
 
-  async getQuotesByCustomer(customerId: string): Promise<Quote[]> {
-    return await db
+  async getQuotesByCustomer(customerId: string): Promise<any[]> {
+    const quotesData = await db
       .select()
       .from(quotes)
       .where(eq(quotes.customerId, customerId))
       .orderBy(desc(quotes.createdAt));
+
+    // For each quote, get associated printer quotes with printer details
+    const quotesWithPrinterQuotes = await Promise.all(
+      quotesData.map(async (quote) => {
+        const printerQuotesData = await db
+          .select({
+            id: printerQuotes.id,
+            printerId: printerQuotes.printerId,
+            price: printerQuotes.price,
+            estimatedDays: printerQuotes.estimatedDays,
+            notes: printerQuotes.notes,
+            status: printerQuotes.status,
+            createdAt: printerQuotes.createdAt,
+            // Printer details
+            printerName: users.firstName,
+            companyName: users.companyName,
+            rating: users.averageRating,
+            totalRatings: users.totalRatings,
+          })
+          .from(printerQuotes)
+          .leftJoin(users, eq(printerQuotes.printerId, users.id))
+          .where(eq(printerQuotes.quoteId, quote.id))
+          .orderBy(printerQuotes.price);
+
+        return {
+          ...quote,
+          printerQuotes: printerQuotesData,
+        };
+      })
+    );
+
+    return quotesWithPrinterQuotes;
   }
 
   async getQuotesForPrinter(): Promise<Quote[]> {
@@ -247,6 +304,18 @@ export class DatabaseStorage implements IStorage {
       .where(eq(printerQuotes.printerId, printerId));
   }
 
+  async getPrinterQuote(id: string): Promise<PrinterQuote | undefined> {
+    const [printerQuote] = await db.select().from(printerQuotes).where(eq(printerQuotes.id, id));
+    return printerQuote;
+  }
+
+  async updatePrinterQuoteStatus(id: string, status: string): Promise<void> {
+    await db
+      .update(printerQuotes)
+      .set({ status })
+      .where(eq(printerQuotes.id, id));
+  }
+
   // Order operations
   async createOrder(order: InsertOrder): Promise<Order> {
     const [newOrder] = await db.insert(orders).values(order).returning();
@@ -277,6 +346,27 @@ export class DatabaseStorage implements IStorage {
       .update(orders)
       .set({ status })
       .where(eq(orders.id, id));
+  }
+
+  // Order status operations
+  async createOrderStatus(orderStatus: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<OrderStatus> {
+    const [newOrderStatus] = await db.insert(orderStatuses).values(orderStatus).returning();
+    return newOrderStatus;
+  }
+
+  async getOrderStatusesByQuote(quoteId: string): Promise<OrderStatus[]> {
+    return await db
+      .select()
+      .from(orderStatuses)
+      .where(eq(orderStatuses.quoteId, quoteId))
+      .orderBy(desc(orderStatuses.timestamp));
   }
 
   // Rating operations
@@ -413,7 +503,7 @@ export class DatabaseStorage implements IStorage {
 
   async sendMessage(message: InsertChatMessage): Promise<ChatMessage> {
     const [newMessage] = await db.insert(chatMessages).values(message).returning();
-
+    
     await db
       .update(chatRooms)
       .set({ lastMessageAt: new Date() })
@@ -509,7 +599,7 @@ export class DatabaseStorage implements IStorage {
     if (!contract) return;
 
     const updateData: any = {};
-
+    
     if (contract.customerId === userId) {
       updateData.customerSignature = signature;
       updateData.customerSignedAt = new Date();
@@ -538,22 +628,22 @@ export class DatabaseStorage implements IStorage {
       const fs = await import('fs');
       const path = await import('path');
       const { randomUUID } = await import('crypto');
-
+      
       const newNotification = {
         id: randomUUID(),
         ...notification
       };
-
+      
       const filePath = path.join(process.cwd(), 'notifications.json');
       let notifications = [];
-
+      
       if (fs.existsSync(filePath)) {
         notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       }
-
+      
       notifications.push(newNotification);
       fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-
+      
       console.log('✅ Notification created:', newNotification.id);
       return newNotification;
     } catch (error) {
@@ -583,104 +673,18 @@ export class DatabaseStorage implements IStorage {
     return data;
   }
 
-  async getDesignHistory(userId: string, options: { page?: number; limit?: number } = {}) {
-    const { page = 1, limit = 12 } = options;
-    const offset = (page - 1) * limit;
-
-    try {
-      console.log(`🔍 Fetching design history for userId: ${userId}, page: ${page}, limit: ${limit}`);
-
-      const query = `
-        SELECT 
-          id,
-          "userId",
-          prompt,
-          options,
-          result,
-          "createdAt",
-          "updatedAt"
-        FROM design_generations 
-        WHERE "userId" = $1 
-        ORDER BY "createdAt" DESC 
-        LIMIT $2 OFFSET $3
-      `;
-
-      const countQuery = `
-        SELECT COUNT(*) as count FROM design_generations 
-        WHERE "userId" = $1
-      `;
-
-      const { pool } = await import('./db');
-      const [designs, countResult] = await Promise.all([
-        pool.query(query, [userId, limit, offset]),
-        pool.query(countQuery, [userId])
-      ]);
-
-      const total = parseInt(countResult.rows[0]?.count || '0');
-      const totalPages = Math.ceil(total / limit);
-
-      console.log(`📊 Design history results:`, {
-        designCount: designs.rows.length,
-        total,
-        page,
-        totalPages,
-        userId
-      });
-
-      // Enhance each design with proper URL extraction
-      const enhancedDesigns = designs.rows.map(design => {
-        let imageUrl = null;
-
-        try {
-          // Try to extract image URL from result
-          const result = typeof design.result === 'string' ? JSON.parse(design.result) : design.result;
-
-          if (result) {
-            // Check various URL locations
-            if (result.url) {
-              imageUrl = result.url;
-            } else if (result['0']?.url) {
-              imageUrl = result['0'].url;
-            } else if (result.data?.[0]?.url) {
-              imageUrl = result.data[0].url;
-            } else if (Array.isArray(result) && result[0]?.url) {
-              imageUrl = result[0].url;
-            }
-          }
-        } catch (parseError) {
-          console.error('Error parsing design result:', parseError);
-        }
-
-        return {
-          ...design,
-          imageUrl,
-          url: imageUrl // Store URL at top level for easier access
-        };
-      });
-
-      const response = {
-        designs: enhancedDesigns,
-        total,
-        page,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      };
-
-      console.log(`✅ Successfully fetched ${enhancedDesigns.length} designs for user ${userId}`);
-      return response;
-
-    } catch (error) {
-      console.error("❌ Error fetching design history:", error);
-      return {
-        designs: [],
-        total: 0,
-        page: 1,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false
-      };
-    }
+  async getDesignHistory(userId: string, options: { page: number; limit: number }): Promise<{
+    designs: any[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    return {
+      designs: [],
+      total: 0,
+      page: options.page,
+      totalPages: 0
+    };
   }
 
   async getDesignTemplates(): Promise<any[]> {

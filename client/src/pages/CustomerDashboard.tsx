@@ -10,6 +10,8 @@ import StatsCard from "@/components/StatsCard";
 import Chat from "@/components/Chat";
 import DesignEngine from "@/components/DesignEngine";
 import FileManager from "@/components/FileManager";
+import CustomerQuoteManager from "@/components/CustomerQuoteManager";
+import { EnterpriseNotificationSystem } from "@/components/EnterpriseNotificationSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +43,8 @@ export default function CustomerDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isDesignDialogOpen, setIsDesignDialogOpen] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<any>(null);
+  const [isQuoteManagerOpen, setIsQuoteManagerOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
@@ -165,6 +169,17 @@ export default function CustomerDashboard() {
       </div>
     );
   }
+
+  // Quote management handlers
+  const handleViewQuoteDetails = (quote: any) => {
+    setSelectedQuote(quote);
+    setIsQuoteManagerOpen(true);
+  };
+
+  const handleCloseQuoteManager = () => {
+    setSelectedQuote(null);
+    setIsQuoteManagerOpen(false);
+  };
 
   const pendingQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'pending') : [];
   const receivedQuotes = Array.isArray(quotes) ? quotes.filter((q: any) => q.status === 'received_quotes') : [];
@@ -331,7 +346,11 @@ export default function CustomerDashboard() {
                 ) : Array.isArray(quotes) && quotes.length > 0 ? (
                   <div className="space-y-3">
                     {quotes.slice(0, 5).map((quote: any) => (
-                      <QuoteCard key={quote.id} quote={quote} />
+                      <QuoteCard 
+                        key={quote.id} 
+                        quote={quote} 
+                        onViewDetails={handleViewQuoteDetails}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -459,52 +478,39 @@ export default function CustomerDashboard() {
                                 console.log('🎯 Final image URL for design', design.id, ':', imageUrl);
 
                                 return imageUrl ? (
-                                  <div className="relative w-full h-full bg-white">
+                                  <div className="relative w-full h-full">
                                     <img 
                                       src={`/api/proxy/image?url=${encodeURIComponent(imageUrl)}`} 
                                       alt={design.prompt || 'Tasarım'}
-                                      className="w-full h-full object-cover rounded-lg transition-all duration-300 hover:scale-105"
+                                      className="w-full h-full object-cover rounded-lg transition-all duration-200"
                                       onError={(e) => {
                                         console.error('❌ Image failed to load:', imageUrl);
                                         const target = e.currentTarget as HTMLImageElement;
                                         target.style.display = 'none';
-                                        const fallback = target.parentElement?.querySelector('.image-fallback') as HTMLElement;
-                                        if (fallback) {
-                                          fallback.classList.remove('hidden');
-                                          fallback.classList.add('flex');
-                                        }
+                                        const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
+                                        if (fallback) fallback.classList.remove('hidden');
                                       }}
                                       onLoad={(e) => {
-                                        console.log('✅ Image loaded successfully for design:', design.id);
                                         const target = e.currentTarget as HTMLImageElement;
                                         target.style.opacity = '1';
-                                        target.style.transform = 'scale(1)';
                                       }}
-                                      style={{ 
-                                        opacity: '0', 
-                                        transform: 'scale(0.95)',
-                                        transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out' 
-                                      }}
+                                      style={{ opacity: '0', transition: 'opacity 0.3s ease-in-out' }}
                                     />
-                                    <div className="image-fallback hidden absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
-                                      <ImageIcon className="h-16 w-16 text-gray-400 mb-2" />
-                                      <span className="text-sm text-gray-500 text-center px-2">Görsel yüklenemedi</span>
-                                      <button 
-                                        onClick={() => window.open(imageUrl, '_blank')}
-                                        className="mt-2 text-xs text-blue-500 hover:text-blue-700 underline"
-                                      >
-                                        Orijinal linki aç
-                                      </button>
+                                    <div className="fallback-icon hidden absolute inset-0 bg-gray-100 flex items-center justify-center rounded-lg">
+                                      <ImageIcon className="h-12 w-12 text-gray-400" />
+                                      <span className="text-sm text-gray-500 ml-2">Görsel yüklenemedi</span>
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
-                                    <ImageIcon className="h-16 w-16 text-gray-400 mb-3" />
-                                    <span className="text-sm text-gray-600 font-medium">Görsel Bulunamadı</span>
-                                    <span className="text-xs text-gray-500 mt-1 text-center px-2">Tasarım verisi işlenemiyor</span>
+                                  <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-lg">
+                                    <ImageIcon className="h-12 w-12 text-gray-400" />
+                                    <span className="text-sm text-gray-500 ml-2">Görsel bulunamadı</span>
                                   </div>
                                 );
                               })()}
+                            <div className="fallback-icon hidden w-full h-full bg-gray-100 flex items-center justify-center rounded-lg absolute inset-0">
+                              <ImageIcon className="h-12 w-12 text-gray-400" />
+                            </div>
 
 
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -894,6 +900,17 @@ export default function CustomerDashboard() {
         </div>
       </Button>
 
+
+      {/* Customer Quote Manager */}
+      {selectedQuote && isQuoteManagerOpen && (
+        <CustomerQuoteManager
+          quote={selectedQuote}
+          onClose={handleCloseQuoteManager}
+        />
+      )}
+
+      {/* Enterprise Notification System */}
+      <EnterpriseNotificationSystem />
 
       {isChatOpen && (
         <Chat

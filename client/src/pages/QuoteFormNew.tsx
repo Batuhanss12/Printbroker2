@@ -34,198 +34,6 @@ import {
   Zap
 } from "lucide-react";
 import { Link } from "wouter";
-import { useLocation } from "wouter";
-import { Loader2, FileText, Package } from "lucide-react";
-
-// Form field configurations
-const getFormFieldsByType = (type: string) => {
-  const commonFields = {
-    quantity: { type: 'number', required: true, label: 'Miktar (Adet)' },
-    description: { type: 'textarea', required: false, label: 'Açıklama' },
-    deadline: { type: 'date', required: false, label: 'Termin Tarihi' },
-    budget: { type: 'number', required: false, label: 'Bütçe (₺)' }
-  };
-
-  const typeSpecificFields = {
-    sheet_label: {
-      paperType: { 
-        type: 'select', 
-        options: [
-          { value: 'kuse', label: 'Kuşe Kağıt' },
-          { value: 'mat', label: 'Mat Kuşe' },
-          { value: 'parlak', label: 'Parlak Kuşe' },
-          { value: 'bristol', label: 'Bristol' }
-        ], 
-        label: 'Kağıt Türü' 
-      },
-      size: { 
-        type: 'select', 
-        options: [
-          { value: 'a4', label: 'A4 (210x297mm)' },
-          { value: 'a3', label: 'A3 (297x420mm)' },
-          { value: 'custom', label: 'Özel Boyut' }
-        ], 
-        label: 'Boyut' 
-      },
-      customWidth: { type: 'number', label: 'Genişlik (mm)', condition: 'size', conditionValue: 'custom' },
-      customHeight: { type: 'number', label: 'Yükseklik (mm)', condition: 'size', conditionValue: 'custom' },
-      adhesiveType: { 
-        type: 'select', 
-        options: [
-          { value: 'permanent', label: 'Kalıcı Yapışkan' },
-          { value: 'removable', label: 'Çıkarılabilir' },
-          { value: 'freezer', label: 'Dondurucu Yapışkan' }
-        ], 
-        label: 'Yapışkan Türü' 
-      },
-      printType: { 
-        type: 'select', 
-        options: [
-          { value: 'digital', label: 'Dijital Baskı' },
-          { value: 'offset', label: 'Offset Baskı' }
-        ], 
-        label: 'Baskı Türü' 
-      },
-      finishType: { 
-        type: 'select', 
-        options: [
-          { value: 'matte', label: 'Mat Selefon' },
-          { value: 'glossy', label: 'Parlak Selefon' },
-          { value: 'none', label: 'Yüzey İşlemi Yok' }
-        ], 
-        label: 'Yüzey İşlemi' 
-      }
-    },
-    roll_label: {
-      material: { 
-        type: 'select', 
-        options: [
-          { value: 'pp-white', label: 'PP Beyaz' },
-          { value: 'pp-transparent', label: 'PP Şeffaf' },
-          { value: 'pe-white', label: 'PE Beyaz' },
-          { value: 'thermal', label: 'Termal Kağıt' }
-        ], 
-        label: 'Malzeme' 
-      },
-      rollWidth: { type: 'number', label: 'Rulo Genişlik (mm)' },
-      rollLength: { type: 'number', label: 'Rulo Uzunluk (m)' },
-      coreSize: { 
-        type: 'select', 
-        options: [
-          { value: '25', label: '25mm Makara' },
-          { value: '40', label: '40mm Makara' },
-          { value: '76', label: '76mm Makara' }
-        ], 
-        label: 'Makara Çapı' 
-      },
-      labelType: { 
-        type: 'select', 
-        options: [
-          { value: 'thermal-direct', label: 'Termal Direkt' },
-          { value: 'thermal-transfer', label: 'Termal Transfer' },
-          { value: 'inkjet', label: 'Inkjet' }
-        ], 
-        label: 'Etiket Türü' 
-      },
-      adhesiveType: { 
-        type: 'select', 
-        options: [
-          { value: 'permanent', label: 'Kalıcı Yapışkan' },
-          { value: 'removable', label: 'Çıkarılabilir' },
-          { value: 'freezer', label: 'Dondurucu Yapışkan' }
-        ], 
-        label: 'Yapışkan Türü' 
-      },
-      windingDirection: { 
-        type: 'select', 
-        options: [
-          { value: 'in', label: 'İçe Sarım' },
-          { value: 'out', label: 'Dışa Sarım' }
-        ], 
-        label: 'Sarım Yönü' 
-      },
-      perforationGap: { 
-        type: 'select', 
-        options: [
-          { value: '3', label: '3mm Perfore' },
-          { value: '5', label: '5mm Perfore' },
-          { value: 'custom', label: 'Özel Perfore' }
-        ], 
-        label: 'Perfore Aralığı' 
-      }
-    },
-    general_printing: {
-      printType: { 
-        type: 'select', 
-        options: [
-          { value: 'poster', label: 'Poster' },
-          { value: 'banner', label: 'Banner' },
-          { value: 'brochure', label: 'Broşür' },
-          { value: 'business_card', label: 'Kartvizit' },
-          { value: 'catalog', label: 'Katalog' },
-          { value: 'magazine', label: 'Dergi' },
-          { value: 'book', label: 'Kitap' }
-        ], 
-        label: 'Baskı Türü' 
-      },
-      printSize: { 
-        type: 'select', 
-        options: [
-          { value: 'a4', label: 'A4' },
-          { value: 'a3', label: 'A3' },
-          { value: 'a2', label: 'A2' },
-          { value: 'a1', label: 'A1' },
-          { value: 'custom', label: 'Özel Boyut' }
-        ], 
-        label: 'Boyut' 
-      },
-      printPaper: { 
-        type: 'select', 
-        options: [
-          { value: 'kuse', label: 'Kuşe Kağıt' },
-          { value: 'bristol', label: 'Bristol' },
-          { value: 'kraft', label: 'Kraft Kağıt' },
-          { value: 'vinyl', label: 'Vinil' }
-        ], 
-        label: 'Kağıt Türü' 
-      },
-      printColor: { 
-        type: 'select', 
-        options: [
-          { value: 'cmyk', label: 'CMYK (4 Renk)' },
-          { value: 'pantone', label: 'Pantone Renk' },
-          { value: 'black', label: 'Siyah Beyaz' }
-        ], 
-        label: 'Renk Seçeneği' 
-      },
-      printQuantity: { 
-        type: 'select', 
-        options: [
-          { value: '100', label: '100 Adet' },
-          { value: '500', label: '500 Adet' },
-          { value: '1000', label: '1000 Adet' },
-          { value: '5000', label: '5000 Adet' },
-          { value: 'custom', label: 'Özel Miktar' }
-        ], 
-        label: 'Miktar' 
-      },
-      foilType: { 
-        type: 'select', 
-        options: [
-          { value: 'none', label: 'Yaldız Yok' },
-          { value: 'gold', label: 'Altın Yaldız' },
-          { value: 'silver', label: 'Gümüş Yaldız' }
-        ], 
-        label: 'Yaldız Türü' 
-      }
-    }
-  };
-
-  return {
-    ...commonFields,
-    ...(typeSpecificFields[type as keyof typeof typeSpecificFields] || {})
-  };
-};
 
 const quoteSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
@@ -234,13 +42,6 @@ const quoteSchema = z.object({
     quantity: z.number().min(1, "Miktar en az 1 olmalı"),
     material: z.string().min(1, "Malzeme seçimi gerekli"),
     size: z.string().min(1, "Boyut bilgisi gerekli"),
-    color: z.string().optional(),
-    adhesive: z.string().optional(),
-    shape: z.string().optional(),
-    layout: z.string().optional(),
-    finishing: z.string().optional(),
-    application: z.string().optional(),
-    durability: z.string().optional(),
     description: z.string().min(10, "En az 10 karakter açıklama gerekli")
   }),
   contactInfo: z.object({
@@ -255,19 +56,6 @@ const quoteSchema = z.object({
 });
 
 type QuoteFormData = z.infer<typeof quoteSchema>;
-
-function getQuoteTypeDisplay(type: string): string {
-  switch (type) {
-    case 'sheet_label':
-      return 'Tabaka Etiket';
-    case 'roll_label':
-      return 'Rulo Etiket';
-    case 'general_printing':
-      return 'Genel Baskı';
-    default:
-      return 'Teklif';
-  }
-}
 
 export default function QuoteForm() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -291,13 +79,6 @@ export default function QuoteForm() {
         quantity: 1000,
         material: "",
         size: "",
-        color: "",
-        adhesive: "",
-        shape: "",
-        layout: "",
-        finishing: "",
-        application: "",
-        durability: "",
         description: ""
       },
       contactInfo: {
@@ -534,7 +315,7 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
           description: "AI tasarımınız başarıyla oluşturuldu!",
         });
       }
-    } catch (error: any) {
+    } catch (error: any) => {
       if (error.message.includes("401") || error.message.includes("403")) {
         setHasApiKey(false);
         toast({
@@ -657,30 +438,6 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
   };
 
   const typeConfig = getTypeConfig();
-
-  // Get form type from URL
-  const pathParts = window.location.pathname.split('/');
-  const quoteType = pathParts[pathParts.length - 1] as 'sheet_label' | 'roll_label' | 'general_printing';
-
-  // Get form fields configuration
-  const formFields = getFormFieldsByType(quoteType);
-
-  const [formData, setFormData] = useState(() => {
-    const initialData: any = {
-      title: '',
-      description: '',
-      quantity: '',
-      deadline: '',
-      budget: '',
-    };
-
-    // Initialize all form fields
-    Object.keys(formFields).forEach(key => {
-      initialData[key] = '';
-    });
-
-    return initialData;
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -818,844 +575,124 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                 </TabsContent>
 
                 <TabsContent value="specifications" className="space-y-6">
-                  {/* Seçilen Özellikler Özeti */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-                    <h3 className="font-semibold text-blue-900 mb-4 text-lg">📋 Seçilen Ürün Özellikleri</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-white rounded-lg p-3 border border-blue-100">
-                        <span className="text-xs text-blue-600 font-medium block mb-1">Malzeme:</span>
-                        <div className="text-sm font-bold text-blue-900">
-                          {form.watch('specifications.material') || '❌ Seçilmedi'}
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 border border-blue-100">
-                        <span className="text-xs text-blue-600 font-medium block mb-1">Boyut:</span>
-                        <div className="text-sm font-bold text-blue-900">
-                          {form.watch('specifications.size') || '❌ Seçilmedi'}
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 border border-blue-100">
-                        <span className="text-xs text-blue-600 font-medium block mb-1">Adet:</span>
-                        <div className="text-sm font-bold text-blue-900">
-                          {form.watch('specifications.quantity') || 0}
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 border border-blue-100">
-                        <span className="text-xs text-blue-600 font-medium block mb-1">Renk:</span>
-                        <div className="text-sm font-bold text-blue-900">
-                          {form.watch('specifications.color') || '❌ Seçilmedi'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   {type === 'sheet_label' && (
-                    <div className="space-y-8">
-                      {/* Malzeme Özellikleri */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📄 Malzeme Özellikleri</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Kağıt Tipi</Label>
-                            <Select 
-                              value={form.watch('specifications.material')} 
-                              onValueChange={(value) => form.setValue('specifications.material', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Kağıt tipini seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="transparent-pp">Şeffaf PP Etiket (60 mikron)</SelectItem>
-                                <SelectItem value="white-pp">Beyaz PP Etiket (50 mikron)</SelectItem>
-                                <SelectItem value="silver-pet">Gümüş PET Etiket (40 mikron)</SelectItem>
-                                <SelectItem value="gold-pet">Altın PET Etiket (40 mikron)</SelectItem>
-                                <SelectItem value="kraft-paper">Kraft Kağıt (80 gsm)</SelectItem>
-                                <SelectItem value="thermal-paper">Termal Kağıt (58 gsm)</SelectItem>
-                                <SelectItem value="vinyl-white">Vinil Beyaz (80 mikron)</SelectItem>
-                                <SelectItem value="vinyl-transparent">Vinil Şeffaf (80 mikron)</SelectItem>
-                                <SelectItem value="destructible">Güvenlik Etiketi (Parçalanabilir)</SelectItem>
-                                <SelectItem value="removable">Çıkarılabilir Etiket</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Yapışkan Tipi</Label>
-                            <Select 
-                              value={form.watch('specifications.adhesive')} 
-                              onValueChange={(value) => form.setValue('specifications.adhesive', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Yapışkan seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="permanent">Kalıcı Yapışkan</SelectItem>
-                                <SelectItem value="removable">Çıkarılabilir Yapışkan</SelectItem>
-                                <SelectItem value="freezer">Dondurulmuş Ürün Yapışkanı</SelectItem>
-                                <SelectItem value="high-temp">Yüksek Sıcaklık Yapışkanı</SelectItem>
-                                <SelectItem value="marine">Denizcilik Yapışkanı</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Kağıt Tipi</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Kağıt tipini seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="transparent">Şeffaf Etiket</SelectItem>
+                            <SelectItem value="opaque">Opak Etiket</SelectItem>
+                            <SelectItem value="kraft">Kraft Etiket</SelectItem>
+                            <SelectItem value="metalize">Metalize Etiket</SelectItem>
+                            <SelectItem value="textured">Dokulu Etiket</SelectItem>
+                            <SelectItem value="sticker">Sticker Kağıt</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
-                      {/* Boyut ve Şekil */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📐 Boyut ve Şekil</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Etiket Boyutu</Label>
-                            <Select 
-                              value={form.watch('specifications.size')} 
-                              onValueChange={(value) => form.setValue('specifications.size', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Boyut seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="30x20">30x20 mm</SelectItem>
-                                <SelectItem value="40x30">40x30 mm</SelectItem>
-                                <SelectItem value="50x30">50x30 mm</SelectItem>
-                                <SelectItem value="60x40">60x40 mm</SelectItem>
-                                <SelectItem value="70x50">70x50 mm</SelectItem>
-                                <SelectItem value="100x50">100x50 mm</SelectItem>
-                                <SelectItem value="100x70">100x70 mm</SelectItem>
-                                <SelectItem value="custom">Özel Boyut</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Etiket Şekli</Label>
-                            <Select 
-                              value={form.watch('specifications.shape')} 
-                              onValueChange={(value) => form.setValue('specifications.shape', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Şekil seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="rectangle">Dikdörtgen</SelectItem>
-                                <SelectItem value="square">Kare</SelectItem>
-                                <SelectItem value="circle">Yuvarlak</SelectItem>
-                                <SelectItem value="oval">Oval</SelectItem>
-                                <SelectItem value="rounded-corner">Köşe Yuvarlaklı</SelectItem>
-                                <SelectItem value="custom-die-cut">Özel Kesim</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Dizilim (Per Tabaka)</Label>
-                            <Select 
-                              value={form.watch('specifications.layout')} 
-                              onValueChange={(value) => form.setValue('specifications.layout', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Dizilim seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1x1">1x1 (1 etiket/tabaka)</SelectItem>
-                                <SelectItem value="2x1">2x1 (2 etiket/tabaka)</SelectItem>
-                                <SelectItem value="2x2">2x2 (4 etiket/tabaka)</SelectItem>
-                                <SelectItem value="3x2">3x2 (6 etiket/tabaka)</SelectItem>
-                                <SelectItem value="4x2">4x2 (8 etiket/tabaka)</SelectItem>
-                                <SelectItem value="4x4">4x4 (16 etiket/tabaka)</SelectItem>
-                                <SelectItem value="custom">Özel Dizilim</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Boyut</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Boyut seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="a3">A3 (297 x 420 mm)</SelectItem>
+                            <SelectItem value="a4">A4 (210 x 297 mm)</SelectItem>
+                            <SelectItem value="custom">Özel Boyut</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
-                      {/* Baskı Özellikleri */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">🎨 Baskı Özellikleri</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Baskı Tipi</Label>
-                            <Select 
-                              value={form.watch('specifications.color')} 
-                              onValueChange={(value) => form.setValue('specifications.color', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Baskı tipi seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="digital-cmyk">Dijital CMYK</SelectItem>
-                                <SelectItem value="digital-6color">Dijital 6 Renk</SelectItem>
-                                <SelectItem value="offset-4color">Ofset 4 Renk</SelectItem>
-                                <SelectItem value="offset-pantone">Ofset + Pantone</SelectItem>
-                                <SelectItem value="flexo">Flekso Baskı</SelectItem>
-                                <SelectItem value="thermal-transfer">Termal Transfer</SelectItem>
-                                <SelectItem value="screen-print">Serigrafi</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Özel Efektler</Label>
-                            <Select 
-                              value={form.watch('specifications.finishing')} 
-                              onValueChange={(value) => form.setValue('specifications.finishing', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Efekt seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="none">Efekt Yok</SelectItem>
-                                <SelectItem value="matte-lamination">Mat Laminasyon</SelectItem>
-                                <SelectItem value="gloss-lamination">Parlak Laminasyon</SelectItem>
-                                <SelectItem value="uv-varnish">UV Vernik</SelectItem>
-                                <SelectItem value="hot-foil-gold">Altın Yaldız</SelectItem>
-                                <SelectItem value="hot-foil-silver">Gümüş Yaldız</SelectItem>
-                                <SelectItem value="embossing">Kabartma</SelectItem>
-                                <SelectItem value="hologram">Hologram</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Adet</Label>
-                            <Input 
-                              type="number"
-                              placeholder="Minimum 500 adet"
-                              value={form.watch('specifications.quantity')}
-                              onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
-                            />
-                            <p className="text-xs text-gray-500">Min: 500, Optimum: 1000+</p>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Adet</Label>
+                        <Input placeholder="Örn: 1000" />
                       </div>
 
-                      {/* Uygulama Alanı */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">🏷️ Uygulama Alanı</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Kullanım Amacı</Label>
-                            <Select 
-                              value={form.watch('specifications.application')} 
-                              onValueChange={(value) => form.setValue('specifications.application', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Kullanım amacı seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="product-label">Ürün Etiketi</SelectItem>
-                                <SelectItem value="barcode-label">Barkod Etiketi</SelectItem>
-                                <SelectItem value="warning-label">Uyarı Etiketi</SelectItem>
-                                <SelectItem value="brand-label">Marka Etiketi</SelectItem>
-                                <SelectItem value="ingredient-label">İçerik Etiketi</SelectItem>
-                                <SelectItem value="address-label">Adres Etiketi</SelectItem>
-                                <SelectItem value="security-label">Güvenlik Etiketi</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Dayanıklılık</Label>
-                            <Select 
-                              value={form.watch('specifications.durability')} 
-                              onValueChange={(value) => form.setValue('specifications.durability', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Dayanıklılık seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="indoor-standard">İç Mekan Standart</SelectItem>
-                                <SelectItem value="indoor-longterm">İç Mekan Uzun Vadeli</SelectItem>
-                                <SelectItem value="outdoor-1year">Dış Mekan 1 Yıl</SelectItem>
-                                <SelectItem value="outdoor-3year">Dış Mekan 3 Yıl</SelectItem>
-                                <SelectItem value="industrial">Endüstriyel Kullanım</SelectItem>
-                                <SelectItem value="freezer-safe">Dondurulmuş Ürün</SelectItem>
-                                <SelectItem value="chemical-resistant">Kimyasal Dayanıklı</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Renk</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Renk seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="4-0">4+0 (Tek Yüz Renkli)</SelectItem>
+                            <SelectItem value="4-4">4+4 (Çift Yüz Renkli)</SelectItem>
+                            <SelectItem value="1-0">1+0 (Tek Yüz Siyah)</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                   )}
 
                   {type === 'roll_label' && (
-                    <div className="space-y-8">
-                      {/* Rulo Özellikleri */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">🎯 Rulo Etiket Özellikleri</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Etiket Malzemesi</Label>
-                            <Select 
-                              value={form.watch('specifications.material')} 
-                              onValueChange={(value) => form.setValue('specifications.material', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Malzeme seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="thermal-direct">Termal Direkt (58gsm)</SelectItem>
-                                <SelectItem value="thermal-transfer">Termal Transfer (65gsm)</SelectItem>
-                                <SelectItem value="synthetic-pp">Sentetik PP (50 mikron)</SelectItem>
-                                <SelectItem value="vinyl-pvc">Vinil PVC (80 mikron)</SelectItem>
-                                <SelectItem value="polyester-pet">Polyester PET (50 mikron)</SelectItem>
-                                <SelectItem value="kraft-paper">Kraft Kağıt (70gsm)</SelectItem>
-                                <SelectItem value="security-void">Güvenlik Etiketi (VOID)</SelectItem>
-                                <SelectItem value="freezer-grade">Dondurulmuş Ürün Etiketi</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Yapışkan Tipi</Label>
-                            <Select 
-                              value={form.watch('specifications.adhesive')} 
-                              onValueChange={(value) => form.setValue('specifications.adhesive', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Yapışkan seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="permanent-acrylic">Kalıcı Akrilik</SelectItem>
-                                <SelectItem value="removable-acrylic">Çıkarılabilir Akrilik</SelectItem>
-                                <SelectItem value="freezer-grade">Dondurulmuş Ürün</SelectItem>
-                                <SelectItem value="high-tack">Yüksek Yapışkanlı</SelectItem>
-                                <SelectItem value="low-tack">Düşük Yapışkanlı</SelectItem>
-                                <SelectItem value="marine-grade">Denizcilik Sınıfı</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Baskı Yöntemi</Label>
-                            <Select 
-                              value={form.watch('specifications.color')} 
-                              onValueChange={(value) => form.setValue('specifications.color', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Baskı yöntemi seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="thermal-direct">Termal Direkt</SelectItem>
-                                <SelectItem value="thermal-transfer">Termal Transfer</SelectItem>
-                                <SelectItem value="inkjet-digital">İnkjet Dijital</SelectItem>
-                                <SelectItem value="flexo-print">Flekso Baskı</SelectItem>
-                                <SelectItem value="offset-print">Ofset Baskı</SelectItem>
-                                <SelectItem value="screen-print">Serigrafi</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Etiket Tipi</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Tip seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="thermal">Termal</SelectItem>
+                            <SelectItem value="adhesive">Yapışkanlı</SelectItem>
+                            <SelectItem value="removable">Çıkarılabilir</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
-                      {/* Boyut ve Format */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📏 Boyut ve Format Ayarları</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div className="space-y-2">
-                            <Label>Etiket Boyutu</Label>
-                            <Select 
-                              value={form.watch('specifications.size')} 
-                              onValueChange={(value) => form.setValue('specifications.size', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Boyut seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="20x10">20x10 mm</SelectItem>
-                                <SelectItem value="30x20">30x20 mm</SelectItem>
-                                <SelectItem value="40x25">40x25 mm</SelectItem>
-                                <SelectItem value="50x30">50x30 mm</SelectItem>
-                                <SelectItem value="58x40">58x40 mm</SelectItem>
-                                <SelectItem value="70x50">70x50 mm</SelectItem>
-                                <SelectItem value="100x70">100x70 mm</SelectItem>
-                                <SelectItem value="custom">Özel Boyut</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Rulo Genişliği</Label>
-                            <Select 
-                              value={form.watch('specifications.layout')} 
-                              onValueChange={(value) => form.setValue('specifications.layout', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Genişlik seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="25mm">25 mm</SelectItem>
-                                <SelectItem value="40mm">40 mm</SelectItem>
-                                <SelectItem value="50mm">50 mm</SelectItem>
-                                <SelectItem value="76mm">76 mm</SelectItem>
-                                <SelectItem value="100mm">100 mm</SelectItem>
-                                <SelectItem value="150mm">150 mm</SelectItem>
-                                <SelectItem value="custom">Özel Genişlik</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Mandrel Çapı</Label>
-                            <Select 
-                              value={form.watch('specifications.shape')} 
-                              onValueChange={(value) => form.setValue('specifications.shape', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Mandrel çapı" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="25mm">25 mm (1")</SelectItem>
-                                <SelectItem value="40mm">40 mm (1.5")</SelectItem>
-                                <SelectItem value="76mm">76 mm (3")</SelectItem>
-                                <SelectItem value="custom">Özel Çap</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Rulo Çapı (Maksimum)</Label>
-                            <Select 
-                              value={form.watch('specifications.finishing')} 
-                              onValueChange={(value) => form.setValue('specifications.finishing', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Max çap" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="100mm">100 mm</SelectItem>
-                                <SelectItem value="150mm">150 mm</SelectItem>
-                                <SelectItem value="200mm">200 mm</SelectItem>
-                                <SelectItem value="250mm">250 mm</SelectItem>
-                                <SelectItem value="300mm">300 mm</SelectItem>
-                                <SelectItem value="custom">Özel Çap</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Rulo Çapı (mm)</Label>
+                        <Input placeholder="Örn: 76" />
                       </div>
 
-                      {/* Miktar ve Sarım */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📦 Miktar ve Sarım Detayları</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Toplam Etiket Adedi</Label>
-                            <Input 
-                              type="number"
-                              placeholder="Minimum 1000 adet"
-                              value={form.watch('specifications.quantity')}
-                              onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
-                            />
-                            <p className="text-xs text-gray-500">Min: 1000, Optimum: 5000+</p>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Sarım Yönü</Label>
-                            <Select 
-                              value={form.watch('specifications.application')} 
-                              onValueChange={(value) => form.setValue('specifications.application', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Sarım yönü" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="outside-wound">Dış Sarım (Outside Wound)</SelectItem>
-                                <SelectItem value="inside-wound">İç Sarım (Inside Wound)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Etiket Arası Boşluk</Label>
-                            <Select 
-                              value={form.watch('specifications.durability')} 
-                              onValueChange={(value) => form.setValue('specifications.durability', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Boşluk seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="2mm">2 mm</SelectItem>
-                                <SelectItem value="3mm">3 mm (Standart)</SelectItem>
-                                <SelectItem value="5mm">5 mm</SelectItem>
-                                <SelectItem value="custom">Özel Boşluk</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Etiket Boyutu (mm)</Label>
+                        <Input placeholder="Örn: 50 x 30" />
                       </div>
 
-                      {/* Özel Özellikler */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">⚡ Özel Özellikler</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Ek Özellikler</Label>
-                            <div className="space-y-2">
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Perforasyon (kolay koparma)</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Köşe yuvarlama</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Sıcaklık dayanımlı</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Su geçirmez</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Kullanım Alanı</Label>
-                            <div className="space-y-2">
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Lojistik etiketleme</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Ürün etiketleme</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Barkod/QR kod</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Seri numaralama</span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Toplam Adet</Label>
+                        <Input placeholder="Örn: 10000" />
                       </div>
                     </div>
                   )}
 
                   {type === 'general_printing' && (
-                    <div className="space-y-8">
-                      {/* Ürün Tipi ve Kategori */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📖 Ürün Tipi ve Kategori</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Baskı Ürünü</Label>
-                            <Select 
-                              value={form.watch('specifications.material')} 
-                              onValueChange={(value) => form.setValue('specifications.material', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Ürün tipi seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="catalog">Katalog / Dergi</SelectItem>
-                                <SelectItem value="brochure">Broşür / Tanıtım</SelectItem>
-                                <SelectItem value="business-card">Kartvizit</SelectItem>
-                                <SelectItem value="letterhead">Antetli Kağıt</SelectItem>
-                                <SelectItem value="flyer">Flyer / El İlanı</SelectItem>
-                                <SelectItem value="poster">Poster / Afiş</SelectItem>
-                                <SelectItem value="book">Kitap / Dergi</SelectItem>
-                                <SelectItem value="manual">Manuel / Kılavuz</SelectItem>
-                                <SelectItem value="calendar">Takvim</SelectItem>
-                                <SelectItem value="packaging">Ambalaj / Kutu</SelectItem>
-                                <SelectItem value="certificate">Sertifika / Diploma</SelectItem>
-                                <SelectItem value="presentation">Sunum Dosyası</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Boyut Standardı</Label>
-                            <Select 
-                              value={form.watch('specifications.size')} 
-                              onValueChange={(value) => form.setValue('specifications.size', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Boyut seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="a0">A0 (841 x 1189 mm)</SelectItem>
-                                <SelectItem value="a1">A1 (594 x 841 mm)</SelectItem>
-                                <SelectItem value="a2">A2 (420 x 594 mm)</SelectItem>
-                                <SelectItem value="a3">A3 (297 x 420 mm)</SelectItem>
-                                <SelectItem value="a4">A4 (210 x 297 mm)</SelectItem>
-                                <SelectItem value="a5">A5 (148 x 210 mm)</SelectItem>
-                                <SelectItem value="a6">A6 (105 x 148 mm)</SelectItem>
-                                <SelectItem value="85x55">Kartvizit (85 x 55 mm)</SelectItem>
-                                <SelectItem value="100x70">Kartvizit Jumbo (100 x 70 mm)</SelectItem>
-                                <SelectItem value="custom">Özel Boyut</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Yönlendirme</Label>
-                            <Select 
-                              value={form.watch('specifications.shape')} 
-                              onValueChange={(value) => form.setValue('specifications.shape', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Yön seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="portrait">Dikey (Portrait)</SelectItem>
-                                <SelectItem value="landscape">Yatay (Landscape)</SelectItem>
-                                <SelectItem value="square">Kare</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Baskı Tipi</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Tip seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="catalog">Katalog</SelectItem>
+                            <SelectItem value="brochure">Broşür</SelectItem>
+                            <SelectItem value="business-card">Kartvizit</SelectItem>
+                            <SelectItem value="flyer">Flyer</SelectItem>
+                            <SelectItem value="other">Diğer</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
-                      {/* Kağıt ve Malzeme */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📄 Kağıt ve Malzeme Özellikleri</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Kağıt Tipi</Label>
-                            <Select 
-                              value={form.watch('specifications.adhesive')} 
-                              onValueChange={(value) => form.setValue('specifications.adhesive', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Kağıt tipi seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="offset-80gsm">Offset 80 gsm</SelectItem>
-                                <SelectItem value="offset-90gsm">Offset 90 gsm</SelectItem>
-                                <SelectItem value="kuşe-115gsm">Kuşe 115 gsm</SelectItem>
-                                <SelectItem value="kuşe-135gsm">Kuşe 135 gsm</SelectItem>
-                                <SelectItem value="kuşe-170gsm">Kuşe 170 gsm</SelectItem>
-                                <SelectItem value="kuşe-250gsm">Kuşe 250 gsm</SelectItem>
-                                <SelectItem value="kuşe-300gsm">Kuşe 300 gsm</SelectItem>
-                                <SelectItem value="bristol-250gsm">Bristol 250 gsm</SelectItem>
-                                <SelectItem value="bristol-300gsm">Bristol 300 gsm</SelectItem>
-                                <SelectItem value="kraft-200gsm">Kraft 200 gsm</SelectItem>
-                                <SelectItem value="recycled-80gsm">Geri Dönüşüm 80 gsm</SelectItem>
-                                <SelectItem value="special-paper">Özel Kağıt</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Kağıt Yüzeyi</Label>
-                            <Select 
-                              value={form.watch('specifications.layout')} 
-                              onValueChange={(value) => form.setValue('specifications.layout', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Yüzey seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="matte">Mat</SelectItem>
-                                <SelectItem value="glossy">Parlak</SelectItem>
-                                <SelectItem value="silk">İpek Mat</SelectItem>
-                                <SelectItem value="textured">Dokulu</SelectItem>
-                                <SelectItem value="linen">Keten Dokulu</SelectItem>
-                                <SelectItem value="hammered">Dövme Dokulu</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Kalınlık/Gramaj</Label>
-                            <Select 
-                              value={form.watch('specifications.finishing')} 
-                              onValueChange={(value) => form.setValue('specifications.finishing', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Gramaj seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="light">Hafif (80-90 gsm)</SelectItem>
-                                <SelectItem value="standard">Standart (115-135 gsm)</SelectItem>
-                                <SelectItem value="medium">Orta (170-200 gsm)</SelectItem>
-                                <SelectItem value="heavy">Ağır (250-300 gsm)</SelectItem>
-                                <SelectItem value="cardboard">Karton (350+ gsm)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Sayfa Sayısı</Label>
+                        <Input placeholder="Örn: 24" />
                       </div>
 
-                      {/* Baskı Özellikleri */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">🎨 Baskı Özellikleri</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Baskı Teknolojisi</Label>
-                            <Select 
-                              value={form.watch('specifications.color')} 
-                              onValueChange={(value) => form.setValue('specifications.color', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Teknoloji seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="digital-hp-indigo">Dijital HP Indigo</SelectItem>
-                                <SelectItem value="digital-xerox">Dijital Xerox</SelectItem>
-                                <SelectItem value="offset-sheet">Ofset Tabaka</SelectItem>
-                                <SelectItem value="offset-web">Ofset Rotativ</SelectItem>
-                                <SelectItem value="uv-offset">UV Ofset</SelectItem>
-                                <SelectItem value="screen-printing">Serigrafi</SelectItem>
-                                <SelectItem value="large-format">Geniş Format</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Renk Seçenekleri</Label>
-                            <Select 
-                              value={form.watch('specifications.application')} 
-                              onValueChange={(value) => form.setValue('specifications.application', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Renk seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1-0">1+0 (Tek Yüz Siyah)</SelectItem>
-                                <SelectItem value="1-1">1+1 (Çift Yüz Siyah)</SelectItem>
-                                <SelectItem value="4-0">4+0 (Tek Yüz Renkli)</SelectItem>
-                                <SelectItem value="4-4">4+4 (Çift Yüz Renkli)</SelectItem>
-                                <SelectItem value="4-1">4+1 (Renkli + Siyah)</SelectItem>
-                                <SelectItem value="5-0">5+0 (4 Renk + Pantone)</SelectItem>
-                                <SelectItem value="5-5">5+5 (Çift Yüz + Pantone)</SelectItem>
-                                <SelectItem value="spot-color">Özel Pantone Renkleri</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Sayfa Sayısı</Label>
-                            <Input 
-                              type="number"
-                              placeholder="Örn: 24 sayfa"
-                              value={form.watch('specifications.durability')}
-                              onChange={(e) => form.setValue('specifications.durability', e.target.value)}
-                            />
-                            <p className="text-xs text-gray-500">Kitap/Dergi için geçerli</p>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Boyut</Label>
+                        <Input placeholder="Örn: 21x29.7 cm" />
                       </div>
 
-                      {/* Son İşlemler */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">✨ Son İşlemler ve Ciltleme</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Yüzey İşlemleri</Label>
-                            <div className="space-y-2">
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Mat Laminasyon</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Parlak Laminasyon</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">UV Vernik (Selective)</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">UV Vernik (Full)</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Altın Yaldız</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Gümüş Yaldız</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Kesim ve Ciltleme</Label>
-                            <div className="space-y-2">
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Spiral Cilt</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Tel Dikis</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Karton Kapak</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Kalın Kapak (Ciltli)</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Özel Kesim (Die-Cut)</span>
-                              </label>
-                              <label className="flex items-center space-x-2">
-                                <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Perforasyon</span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Miktar ve Teslimat */}
-                      <div className="border border-gray-200 rounded-lg p-6">
-                        <h4 className="font-semibold text-gray-900 mb-4">📦 Miktar ve Teslimat</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label>Toplam Adet</Label>
-                            <Input 
-                              type="number"
-                              placeholder="Minimum 100 adet"
-                              value={form.watch('specifications.quantity')}
-                              onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
-                            />
-                            <p className="text-xs text-gray-500">Min: 100, Optimum: 500+</p>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Paketleme</Label>
-                            <Select>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Paketleme seçin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="standard">Standart Paketleme</SelectItem>
-                                <SelectItem value="individual">Tek Tek Ambalajlama</SelectItem>
-                                <SelectItem value="bulk">Toplu Paketleme</SelectItem>
-                                <SelectItem value="gift-wrap">Hediye Paketleme</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Aciliyet</Label>
-                            <Select>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Teslimat hızı" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="standard">Standart (5-7 gün)</SelectItem>
-                                <SelectItem value="fast">Hızlı (3-4 gün)</SelectItem>
-                                <SelectItem value="express">Ekspres (1-2 gün)</SelectItem>
-                                <SelectItem value="same-day">Aynı Gün</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Adet</Label>
+                        <Input placeholder="Örn: 500" />
                       </div>
                     </div>
                   )}
@@ -2046,10 +1083,10 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                         e.preventDefault();
                         e.stopPropagation();
                         console.log("🎯 Explicit submit button clicked");
-
+                        
                         // Get current form values
                         const formValues = form.getValues();
-
+                        
                         // Manual validation and submission
                         const isValid = await form.trigger();
                         if (isValid) {

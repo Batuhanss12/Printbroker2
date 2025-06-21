@@ -71,10 +71,10 @@ export const securityHeaders = (req: any, res: any, next: any) => {
   // Content Security Policy (basic)
   res.setHeader('Content-Security-Policy', 
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.ideogram.ai *.replit.com https://replit.com; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.ideogram.ai; " +
     "style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data: blob: *.ideogram.ai; " +
-    "connect-src 'self' *.ideogram.ai localhost:* ws://localhost:* wss://localhost:* *.replit.dev *.replit.com ws: wss:; " +
+    "connect-src 'self' *.ideogram.ai; " +
     "font-src 'self'; " +
     "object-src 'none'; " +
     "base-uri 'self'"
