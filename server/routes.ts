@@ -801,6 +801,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ success: false, message: "Kayıt başarısız" });
         }
         
+        // Broadcast new company registration to all connected clients
+        broadcastToRoom('global', {
+          type: 'company_registered',
+          category: 'user_management',
+          message: `Yeni firma kaydı: ${userData.companyName}`,
+          data: {
+            companyId: newUser.id,
+            companyName: userData.companyName,
+            role: userData.role
+          },
+          timestamp: new Date().toISOString()
+        });
+
+        console.log(`👥 New company registered and broadcasted: ${userData.companyName} (${userData.role})`);
+        
         res.json({ 
           success: true, 
           user: req.session.user,
@@ -1651,10 +1666,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.json(publicData);
         }
       } else {
-        // User is NOT authenticated - allow public access to printer companies for Firmalar page
-        const activePrinters = users.filter(user => user.role === 'printer' && user.isActive);
+        // User is NOT authenticated - allow public access to all companies for Firmalar page
+        const activeUsers = users.filter(user => user.isActive);
         
-        const publicData = activePrinters.map(user => ({
+        const publicData = activeUsers.map(user => ({
             id: user.id,
             companyName: user.companyName,
             firstName: user.firstName,
@@ -1679,7 +1694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             foundedYear: new Date().getFullYear() - Math.floor(Math.random() * 20) - 5
           }));
         
-        console.log(`🌐 Public access: ${publicData.length} printer companies fetched`);
+        console.log(`🌐 Public access: ${publicData.length} companies and users fetched`);
         res.json(publicData);
       }
     } catch (error) {
