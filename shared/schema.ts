@@ -175,16 +175,15 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Order status tracking table
-export const orderStatuses = pgTable("order_statuses", {
+// Design generations table
+export const designGenerations = pgTable("design_generations", {
   id: uuid("id").primaryKey().defaultRandom(),
-  quoteId: uuid("quote_id").references(() => quotes.id).notNull(),
-  status: varchar("status").notNull(),
-  title: varchar("title").notNull(),
-  description: text("description").notNull(),
-  timestamp: timestamp("timestamp").notNull(),
-  metadata: jsonb("metadata"),
-  createdAt: timestamp("created_at").defaultNow(),
+  userId: varchar("userId").references(() => users.id).notNull(),
+  prompt: text("prompt").notNull(),
+  options: jsonb("options"),
+  result: jsonb("result"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
 // Relations
@@ -333,7 +332,7 @@ export const insertFileSchema = createInsertSchema(files).omit({ id: true, creat
 export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
 export const insertContractSchema = createInsertSchema(contracts).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertOrderStatusSchema = createInsertSchema(orderStatuses).omit({ id: true, createdAt: true });
+export const insertDesignGenerationSchema = createInsertSchema(designGenerations).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
@@ -354,5 +353,5 @@ export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type Contract = typeof contracts.$inferSelect;
-export type InsertOrderStatus = z.infer<typeof insertOrderStatusSchema>;
-export type OrderStatus = typeof orderStatuses.$inferSelect;
+export type InsertDesignGeneration = z.infer<typeof insertDesignGenerationSchema>;
+export type DesignGeneration = typeof designGenerations.$inferSelect;

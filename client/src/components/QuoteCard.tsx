@@ -9,6 +9,7 @@ import {
   Disc,
   Printer
 } from "lucide-react";
+import { Link } from "wouter";
 
 interface Quote {
   id: string;
@@ -115,13 +116,44 @@ export default function QuoteCard({
     const specs = quote.specifications;
     const summaryItems: string[] = [];
 
-    // Common specifications to show
+    // Değer dönüşümü fonksiyonu
+    const getDisplayValue = (val: any): string => {
+      if (typeof val === 'string') {
+        switch (val) {
+          case 'sticker-transparent': return 'Şeffaf Etiket';
+          case 'sticker-opaque': return 'Opak Etiket';
+          case 'sticker-paper': return 'Kağıt Etiket';
+          case 'vinyl': return 'Vinil';
+          case 'polyester': return 'Polyester';
+          case 'thermal': return 'Termal';
+          case 'direct-thermal': return 'Direkt Termal';
+          case 'transfer': return 'Transfer';
+          case 'straight': return 'Düz Kesim';
+          case 'rounded': return 'Oval Kesim';
+          case 'custom': return 'Özel Kesim';
+          case 'individual': return 'Tekli';
+          case 'bulk': return 'Toplu';
+          case 'roll': return 'Rulo';
+          case 'sheet': return 'Tabaka';
+          case 'full-color': return 'Full Renkli';
+          case 'bw': return 'Siyah Beyaz';
+          case 'spot-color': return 'Spot Renk';
+          default: return String(val);
+        }
+      }
+      return String(val);
+    };
+
+    // Common specifications to show with Turkish labels
     if (specs.quantity) summaryItems.push(`${specs.quantity} adet`);
     if (specs.width && specs.height) summaryItems.push(`${specs.width}x${specs.height}mm`);
     if (specs.diameter && specs.length) summaryItems.push(`${specs.diameter}x${specs.length}mm`);
-    if (specs.size) summaryItems.push(specs.size);
-    if (specs.paperType) summaryItems.push(specs.paperType);
-    if (specs.material) summaryItems.push(specs.material);
+    if (specs.size && specs.size !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.size));
+    if (specs.paperType && specs.paperType !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.paperType));
+    if (specs.material && specs.material !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.material));
+    if (specs.color && specs.color !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.color));
+    if (specs.cutting && specs.cutting !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.cutting));
+    if (specs.packaging && specs.packaging !== 'Belirtilmedi') summaryItems.push(getDisplayValue(specs.packaging));
 
     return summaryItems.slice(0, 3).join(', ');
   };
@@ -130,6 +162,11 @@ export default function QuoteCard({
   const typeConfig = getTypeConfig(quote.type);
   const quoteCount = getQuoteCount();
   const specSummary = getSpecificationSummary();
+
+  const handleViewQuotes = () => {
+    console.log("Viewing quotes for:", quote.id);
+    window.location.href = `/quote-detail/${quote.id}`;
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -203,11 +240,11 @@ export default function QuoteCard({
                 </Button>
               )}
 
-              {quote.status === 'received_quotes' && onViewDetails && (
-                <Button
+              {quote.status === 'received_quotes' && (
+                <Button 
                   size="sm"
-                  onClick={() => onViewDetails(quote)}
                   className="h-7 px-3 text-xs bg-primary hover:bg-blue-700"
+                  onClick={handleViewQuotes}
                 >
                   Teklifleri Gör
                 </Button>

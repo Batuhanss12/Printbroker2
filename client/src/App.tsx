@@ -5,16 +5,17 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingPage from "@/components/LoadingPage";
-
+import { NotificationSystem } from "@/components/NotificationSystem";
 import Landing from "./pages/Landing";
 import LandingNew from "./pages/LandingNew";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import CustomerDashboard from "@/pages/CustomerDashboard";
+import QuoteFormNew from "@/pages/QuoteFormNew";
+import QuoteDetail from "@/pages/QuoteDetail";
 import PrinterDashboard from "@/pages/PrinterDashboard";
 import Firmalar from "@/pages/Firmalar";
 import AdminDashboard from "@/pages/AdminDashboard";
-import QuoteForm from "@/pages/QuoteForm";
 import Payment from "./pages/Payment";
 import CustomerRegister from "./pages/CustomerRegister";
 import PrinterRegister from "./pages/PrinterRegister";
@@ -102,15 +103,36 @@ function AppRouter() {
           <Route path="/customer-dashboard" component={CustomerDashboard} />
           <Route path="/printer-dashboard" component={PrinterDashboard} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
-
-          <Route path="/quote/:type" component={() => {
+          
+          {/* Quote form routes - specific paths first */}
+          <Route path="/quote/sheet_label" component={() => {
             const userRole = (user as any)?.role;
             if (userRole !== 'customer') {
               window.location.href = '/';
               return null;
             }
-            return <QuoteForm />;
+            return <QuoteFormNew />;
           }} />
+          <Route path="/quote/roll_label" component={() => {
+            const userRole = (user as any)?.role;
+            if (userRole !== 'customer') {
+              window.location.href = '/';
+              return null;
+            }
+            return <QuoteFormNew />;
+          }} />
+          <Route path="/quote/general_printing" component={() => {
+            const userRole = (user as any)?.role;
+            if (userRole !== 'customer') {
+              window.location.href = '/';
+              return null;
+            }
+            return <QuoteFormNew />;
+          }} />
+          
+          {/* Quote detail routes - UUID patterns */}
+          <Route path="/quote-detail/:id" component={QuoteDetail} />
+          <Route path="/quote/:id" component={QuoteDetail} />
 
           <Route path="/payment" component={Payment} />
         </>
@@ -138,13 +160,13 @@ function AppRouter() {
 // Enhanced global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', event.reason);
-  
+
   // Log additional details for debugging
   if (event.reason instanceof Error) {
     console.error('Error stack:', event.reason.stack);
     console.error('Error message:', event.reason.message);
   }
-  
+
   // Prevent the default browser behavior
   event.preventDefault();
 });
@@ -161,7 +183,7 @@ function App() {
       <TooltipProvider>
         <Router>
           <AppRouter />
-
+          <NotificationSystem />
           <Toaster />
         </Router>
       </TooltipProvider>

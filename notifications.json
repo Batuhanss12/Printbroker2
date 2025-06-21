@@ -12,762 +12,123 @@
     "createdAt": "2025-06-16T20:15:26.493Z"
   },
   {
-    "id": "9f7f146a-c721-480a-8b53-10ccac1fa21d",
+    "id": "c96723e5-0ecb-42f2-a534-1f9cd78856fe",
     "userId": "PRT-1749037737494-E603AD",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.619Z"
+    "createdAt": "2025-06-21T06:40:43.704Z"
   },
   {
-    "id": "e576bc0e-72ae-47a9-9806-0f209dadec04",
+    "id": "a6873fa4-7de3-40a9-ab02-764a409c68ef",
     "userId": "PRT-1749043658182-GLSYSM",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.626Z"
+    "createdAt": "2025-06-21T06:40:43.718Z"
   },
   {
-    "id": "7d70eeb4-328a-41ac-8394-09426be1e19a",
+    "id": "cc9cc42a-b3a0-4065-9fd3-7268443adb0a",
     "userId": "PRT-TEST-001",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.634Z"
+    "createdAt": "2025-06-21T06:40:43.726Z"
   },
   {
-    "id": "e814d410-ee4d-4949-aa58-3ac0b7a09d20",
+    "id": "c34776f0-cb77-492a-b6b9-ae64786ba3ab",
     "userId": "PRT-1749232946404-GJLVD5",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.639Z"
+    "createdAt": "2025-06-21T06:40:43.732Z"
   },
   {
-    "id": "23398a91-071a-47a9-ad0d-b3ba04c6a3a3",
+    "id": "6e1f2215-2722-4033-95d3-ddad3810a61f",
     "userId": "dev-user-1748981533183",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.645Z"
+    "createdAt": "2025-06-21T06:40:43.762Z"
   },
   {
-    "id": "541fd046-d3b5-43f2-9e97-159c453393b8",
+    "id": "e529b80f-ebc6-42f4-abbe-f4ef84b72378",
     "userId": "dev-user-1748984472808",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.649Z"
+    "createdAt": "2025-06-21T06:40:43.768Z"
   },
   {
-    "id": "223d9222-6f1f-4154-bf80-fb715e029b40",
+    "id": "be747d45-878c-4e3a-9c64-7130872a53db",
     "userId": "dev-user-1748993436134",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.655Z"
+    "createdAt": "2025-06-21T06:40:43.793Z"
   },
   {
-    "id": "ce6e2baf-f15d-4c25-ba05-ec563cfabbc7",
+    "id": "0ce663bd-2b94-4841-b339-008e7a283e7c",
     "userId": "dev-user-1749034069202",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.661Z"
+    "createdAt": "2025-06-21T06:40:43.800Z"
   },
   {
-    "id": "7f665d03-b7d9-420f-84c6-4034f9e14653",
+    "id": "3c9802ea-f6fc-4ee0-b6f0-e28740663317",
     "userId": "dev-user-1749034375398",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.667Z"
+    "createdAt": "2025-06-21T06:40:43.806Z"
   },
   {
-    "id": "2db97661-1d5f-4ccb-8e83-3e48ab2fea07",
+    "id": "d80a4a47-ae61-4080-afda-e3ac988e4ad6",
     "userId": "PRT-1749647865027-C37PE8",
     "type": "new_quote",
     "title": "Yeni Teklif Talebi",
-    "message": "Premium Ambalaj - 21,607 adet - ₺26003",
+    "message": "Güvenlik Etiket - 31,337 adet - ₺18168",
     "data": {
-      "quoteId": "b05902c4-eaca-4b7f-bca6-e78dc3ed9b17"
+      "quoteId": "66b16dce-c0d1-4c48-ad94-e1d77726bc04"
     },
     "isRead": false,
-    "createdAt": "2025-06-21T07:51:16.672Z"
-  },
-  {
-    "id": "1386e624-492c-46e8-a45e-f3a22981272d",
-    "userId": "PRT-1749037737494-E603AD",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.391Z"
-  },
-  {
-    "id": "9375f0a8-1647-45d3-8083-7f867c55cfb5",
-    "userId": "PRT-1749043658182-GLSYSM",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.398Z"
-  },
-  {
-    "id": "4931fadb-1639-4d24-b55c-26deefe1500e",
-    "userId": "PRT-TEST-001",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.406Z"
-  },
-  {
-    "id": "01309795-8cc5-4e55-9923-14a475cae2df",
-    "userId": "PRT-1749232946404-GJLVD5",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.412Z"
-  },
-  {
-    "id": "f9c28e74-6e4b-4147-9efd-01188d33c689",
-    "userId": "dev-user-1748981533183",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.420Z"
-  },
-  {
-    "id": "ea4f8e55-9b44-42c4-bee2-92d3a0e866fc",
-    "userId": "dev-user-1748984472808",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.425Z"
-  },
-  {
-    "id": "309bb79e-08fe-4688-90bb-fc3857dfe91b",
-    "userId": "dev-user-1748993436134",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.431Z"
-  },
-  {
-    "id": "c5420797-b3d6-42da-b8b9-86514996f50a",
-    "userId": "dev-user-1749034069202",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.439Z"
-  },
-  {
-    "id": "7beca90a-b496-438d-b787-e2e7aeda476d",
-    "userId": "dev-user-1749034375398",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.445Z"
-  },
-  {
-    "id": "a2a7b54b-b588-45cd-a5ae-8ad979d63c95",
-    "userId": "PRT-1749647865027-C37PE8",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T07:58:36.451Z"
-  },
-  {
-    "id": "a6cb644e-211a-4b2b-9dc3-7a620e0dcd54",
-    "userId": "PRT-1749037737494-E603AD",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.232Z"
-  },
-  {
-    "id": "00b00026-2c4f-4661-ac90-7cc0bd2be324",
-    "userId": "PRT-1749043658182-GLSYSM",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.238Z"
-  },
-  {
-    "id": "197abf49-f463-4668-b19e-16c22675c71b",
-    "userId": "PRT-TEST-001",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.249Z"
-  },
-  {
-    "id": "1027df3a-b6c0-40c2-80d3-ad430da40db2",
-    "userId": "PRT-1749232946404-GJLVD5",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.254Z"
-  },
-  {
-    "id": "aacfe089-b570-44ec-99be-703a7849d137",
-    "userId": "dev-user-1748981533183",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.259Z"
-  },
-  {
-    "id": "ba052d04-45ce-40d8-b299-7b5f7a26da51",
-    "userId": "dev-user-1748984472808",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.266Z"
-  },
-  {
-    "id": "9ee1b68b-34f3-49a1-ad19-08c2fcfa444d",
-    "userId": "dev-user-1748993436134",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.278Z"
-  },
-  {
-    "id": "afc3eb86-c70f-4f8c-93c2-c2060cbcda41",
-    "userId": "dev-user-1749034069202",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.286Z"
-  },
-  {
-    "id": "04ebd5f3-f769-4415-971f-e72baf87c4af",
-    "userId": "dev-user-1749034375398",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.291Z"
-  },
-  {
-    "id": "18d4b8d6-ae51-4e68-9dbe-516fa4a9f12a",
-    "userId": "PRT-1749647865027-C37PE8",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Güvenlik Etiket - 39,872 adet - ₺17752",
-    "data": {
-      "quoteId": "e2872cb8-f570-4866-84cc-836d16fc1703"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:04:47.296Z"
-  },
-  {
-    "id": "c9bc6c92-7546-4c56-aab0-f323c86cf97b",
-    "userId": "PRT-1749037737494-E603AD",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.088Z"
-  },
-  {
-    "id": "1d272901-a912-4a61-9a7d-1d3aad8f4033",
-    "userId": "PRT-1749043658182-GLSYSM",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.095Z"
-  },
-  {
-    "id": "f8c1615c-6736-46c3-bd6c-77ef16dddcfd",
-    "userId": "PRT-TEST-001",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.101Z"
-  },
-  {
-    "id": "630a116b-67ab-492b-bb01-1e004bacc551",
-    "userId": "PRT-1749232946404-GJLVD5",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.110Z"
-  },
-  {
-    "id": "d891a14a-f816-497e-a3eb-456b03316ab0",
-    "userId": "dev-user-1748981533183",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.126Z"
-  },
-  {
-    "id": "bc1aad85-042a-430b-8b81-08254b15496b",
-    "userId": "dev-user-1748984472808",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.138Z"
-  },
-  {
-    "id": "0f3bf964-d62a-4cc3-808b-70ccf3232cc7",
-    "userId": "dev-user-1748993436134",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.145Z"
-  },
-  {
-    "id": "0944a7f5-8758-4e6a-8098-9dfbecdfa776",
-    "userId": "dev-user-1749034069202",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.150Z"
-  },
-  {
-    "id": "0c4f0770-e1a7-4e95-8dca-5fc90828fd43",
-    "userId": "dev-user-1749034375398",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.159Z"
-  },
-  {
-    "id": "640f7dac-0962-4f70-b376-32cda0a7ea30",
-    "userId": "PRT-1749647865027-C37PE8",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:16:37.170Z"
-  },
-  {
-    "id": "c36caf41-9836-4fff-ad97-f37f7487e7f3",
-    "userId": "CUS-1749640755370-ACTPK3",
-    "type": "quote_response",
-    "title": "Teklif Yanıtı Alındı",
-    "message": "Ala Etiket firmasından teklif geldi: ₺1520 - 2 gün",
-    "data": {
-      "quoteId": "dc2d1316-726c-459d-aaf3-e4bff4c547d5",
-      "printerQuoteId": "2c10211b-217e-4a8a-a309-1eee1e34302d"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:17:45.238Z"
-  },
-  {
-    "id": "ea688bbc-889e-4316-a273-79af296010e6",
-    "userId": "CUS-1749640755370-ACTPK3",
-    "type": "quote_response",
-    "title": "Teklif Yanıtı Alındı",
-    "message": "Ala Etiket firmasından teklif geldi: ₺15000 - 5 gün",
-    "data": {
-      "quoteId": "58180bdb-c267-43cd-9d08-42efe299fb1f",
-      "printerQuoteId": "1fc4ad68-a3cb-412e-8761-c5fb2ba03b0f"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:22:15.054Z"
-  },
-  {
-    "id": "41cfd5f8-ff4a-447e-a970-21216422642b",
-    "userId": "PRT-1749037737494-E603AD",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.929Z"
-  },
-  {
-    "id": "7e66bbc5-2b1b-4f1e-b3ef-e87bc20ddc6e",
-    "userId": "PRT-1749043658182-GLSYSM",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.938Z"
-  },
-  {
-    "id": "5c986833-02ea-4370-b992-be3485bba2b7",
-    "userId": "PRT-TEST-001",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.945Z"
-  },
-  {
-    "id": "ea3ac36c-b404-4538-9524-b670755ebd47",
-    "userId": "PRT-1749232946404-GJLVD5",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.954Z"
-  },
-  {
-    "id": "c8af2c16-6984-4b2b-89c1-26b6ac3195ec",
-    "userId": "dev-user-1748981533183",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.968Z"
-  },
-  {
-    "id": "d826e5ea-01c5-47fb-946a-577765c9dc16",
-    "userId": "dev-user-1748984472808",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.977Z"
-  },
-  {
-    "id": "7efa07b3-39fe-425f-9f26-7b0faf6d1b6a",
-    "userId": "dev-user-1748993436134",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.988Z"
-  },
-  {
-    "id": "9813d1f7-1212-42c9-9434-98d8afbc74d3",
-    "userId": "dev-user-1749034069202",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:27.998Z"
-  },
-  {
-    "id": "4e934e65-c0f6-4843-b195-76aa9706951f",
-    "userId": "dev-user-1749034375398",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:28.005Z"
-  },
-  {
-    "id": "18224839-3188-41cf-91d8-8088aab93331",
-    "userId": "PRT-1749647865027-C37PE8",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "undefined - undefined adet - ₺undefined",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:37:28.032Z"
-  },
-  {
-    "id": "52c09bda-49a5-41f4-9846-f917d256fcf0",
-    "userId": "CUS-1749640755370-ACTPK3",
-    "type": "quote_response",
-    "title": "Teklif Yanıtı Alındı",
-    "message": "Ala Etiket firmasından teklif geldi: ₺34 - 34 gün",
-    "data": {
-      "quoteId": "21c59345-cfa4-4936-9811-24716168bd32",
-      "printerQuoteId": "5425c76f-d36b-4a34-a528-f38e308c0d27"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T08:38:13.084Z"
-  },
-  {
-    "id": "d83c137a-d379-4835-8e12-ed31bb33aed8",
-    "userId": "PRT-1749037737494-E603AD",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.037Z"
-  },
-  {
-    "id": "d2660323-cdc6-458b-8de9-a3b0cf4fe51f",
-    "userId": "PRT-1749043658182-GLSYSM",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.047Z"
-  },
-  {
-    "id": "4f805546-6415-483f-9196-a7e2ba81a7d4",
-    "userId": "PRT-TEST-001",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.054Z"
-  },
-  {
-    "id": "afa2de3e-c5c5-470c-bc5c-24680722a790",
-    "userId": "PRT-1749232946404-GJLVD5",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.061Z"
-  },
-  {
-    "id": "98273e23-5d60-4500-a110-501f6deb634d",
-    "userId": "dev-user-1748981533183",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.069Z"
-  },
-  {
-    "id": "b96ce46d-1e05-4a69-b205-865aa85e72a4",
-    "userId": "dev-user-1748984472808",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.074Z"
-  },
-  {
-    "id": "9197201b-b99e-4665-9921-18011eecec5b",
-    "userId": "dev-user-1748993436134",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.084Z"
-  },
-  {
-    "id": "5759a0aa-efc0-42cd-9be7-1e5244085073",
-    "userId": "dev-user-1749034069202",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.094Z"
-  },
-  {
-    "id": "e6d8a81c-f7d4-4355-9929-0a66b2db222a",
-    "userId": "dev-user-1749034375398",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.106Z"
-  },
-  {
-    "id": "84c22ace-b052-4eb4-9f2f-a3a96c4d81c7",
-    "userId": "PRT-1749647865027-C37PE8",
-    "type": "new_quote",
-    "title": "Yeni Teklif Talebi",
-    "message": "Farmasötik - 68,619 adet - ₺17753",
-    "data": {
-      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
-    },
-    "isRead": false,
-    "createdAt": "2025-06-21T09:15:31.118Z"
+    "createdAt": "2025-06-21T06:40:43.814Z"
   }
 ]
