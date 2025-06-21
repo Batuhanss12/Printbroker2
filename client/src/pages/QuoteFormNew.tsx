@@ -34,6 +34,198 @@ import {
   Zap
 } from "lucide-react";
 import { Link } from "wouter";
+import { useLocation } from "wouter";
+import { Loader2, FileText, Package } from "lucide-react";
+
+// Form field configurations
+const getFormFieldsByType = (type: string) => {
+  const commonFields = {
+    quantity: { type: 'number', required: true, label: 'Miktar (Adet)' },
+    description: { type: 'textarea', required: false, label: 'Açıklama' },
+    deadline: { type: 'date', required: false, label: 'Termin Tarihi' },
+    budget: { type: 'number', required: false, label: 'Bütçe (₺)' }
+  };
+
+  const typeSpecificFields = {
+    sheet_label: {
+      paperType: { 
+        type: 'select', 
+        options: [
+          { value: 'kuse', label: 'Kuşe Kağıt' },
+          { value: 'mat', label: 'Mat Kuşe' },
+          { value: 'parlak', label: 'Parlak Kuşe' },
+          { value: 'bristol', label: 'Bristol' }
+        ], 
+        label: 'Kağıt Türü' 
+      },
+      size: { 
+        type: 'select', 
+        options: [
+          { value: 'a4', label: 'A4 (210x297mm)' },
+          { value: 'a3', label: 'A3 (297x420mm)' },
+          { value: 'custom', label: 'Özel Boyut' }
+        ], 
+        label: 'Boyut' 
+      },
+      customWidth: { type: 'number', label: 'Genişlik (mm)', condition: 'size', conditionValue: 'custom' },
+      customHeight: { type: 'number', label: 'Yükseklik (mm)', condition: 'size', conditionValue: 'custom' },
+      adhesiveType: { 
+        type: 'select', 
+        options: [
+          { value: 'permanent', label: 'Kalıcı Yapışkan' },
+          { value: 'removable', label: 'Çıkarılabilir' },
+          { value: 'freezer', label: 'Dondurucu Yapışkan' }
+        ], 
+        label: 'Yapışkan Türü' 
+      },
+      printType: { 
+        type: 'select', 
+        options: [
+          { value: 'digital', label: 'Dijital Baskı' },
+          { value: 'offset', label: 'Offset Baskı' }
+        ], 
+        label: 'Baskı Türü' 
+      },
+      finishType: { 
+        type: 'select', 
+        options: [
+          { value: 'matte', label: 'Mat Selefon' },
+          { value: 'glossy', label: 'Parlak Selefon' },
+          { value: 'none', label: 'Yüzey İşlemi Yok' }
+        ], 
+        label: 'Yüzey İşlemi' 
+      }
+    },
+    roll_label: {
+      material: { 
+        type: 'select', 
+        options: [
+          { value: 'pp-white', label: 'PP Beyaz' },
+          { value: 'pp-transparent', label: 'PP Şeffaf' },
+          { value: 'pe-white', label: 'PE Beyaz' },
+          { value: 'thermal', label: 'Termal Kağıt' }
+        ], 
+        label: 'Malzeme' 
+      },
+      rollWidth: { type: 'number', label: 'Rulo Genişlik (mm)' },
+      rollLength: { type: 'number', label: 'Rulo Uzunluk (m)' },
+      coreSize: { 
+        type: 'select', 
+        options: [
+          { value: '25', label: '25mm Makara' },
+          { value: '40', label: '40mm Makara' },
+          { value: '76', label: '76mm Makara' }
+        ], 
+        label: 'Makara Çapı' 
+      },
+      labelType: { 
+        type: 'select', 
+        options: [
+          { value: 'thermal-direct', label: 'Termal Direkt' },
+          { value: 'thermal-transfer', label: 'Termal Transfer' },
+          { value: 'inkjet', label: 'Inkjet' }
+        ], 
+        label: 'Etiket Türü' 
+      },
+      adhesiveType: { 
+        type: 'select', 
+        options: [
+          { value: 'permanent', label: 'Kalıcı Yapışkan' },
+          { value: 'removable', label: 'Çıkarılabilir' },
+          { value: 'freezer', label: 'Dondurucu Yapışkan' }
+        ], 
+        label: 'Yapışkan Türü' 
+      },
+      windingDirection: { 
+        type: 'select', 
+        options: [
+          { value: 'in', label: 'İçe Sarım' },
+          { value: 'out', label: 'Dışa Sarım' }
+        ], 
+        label: 'Sarım Yönü' 
+      },
+      perforationGap: { 
+        type: 'select', 
+        options: [
+          { value: '3', label: '3mm Perfore' },
+          { value: '5', label: '5mm Perfore' },
+          { value: 'custom', label: 'Özel Perfore' }
+        ], 
+        label: 'Perfore Aralığı' 
+      }
+    },
+    general_printing: {
+      printType: { 
+        type: 'select', 
+        options: [
+          { value: 'poster', label: 'Poster' },
+          { value: 'banner', label: 'Banner' },
+          { value: 'brochure', label: 'Broşür' },
+          { value: 'business_card', label: 'Kartvizit' },
+          { value: 'catalog', label: 'Katalog' },
+          { value: 'magazine', label: 'Dergi' },
+          { value: 'book', label: 'Kitap' }
+        ], 
+        label: 'Baskı Türü' 
+      },
+      printSize: { 
+        type: 'select', 
+        options: [
+          { value: 'a4', label: 'A4' },
+          { value: 'a3', label: 'A3' },
+          { value: 'a2', label: 'A2' },
+          { value: 'a1', label: 'A1' },
+          { value: 'custom', label: 'Özel Boyut' }
+        ], 
+        label: 'Boyut' 
+      },
+      printPaper: { 
+        type: 'select', 
+        options: [
+          { value: 'kuse', label: 'Kuşe Kağıt' },
+          { value: 'bristol', label: 'Bristol' },
+          { value: 'kraft', label: 'Kraft Kağıt' },
+          { value: 'vinyl', label: 'Vinil' }
+        ], 
+        label: 'Kağıt Türü' 
+      },
+      printColor: { 
+        type: 'select', 
+        options: [
+          { value: 'cmyk', label: 'CMYK (4 Renk)' },
+          { value: 'pantone', label: 'Pantone Renk' },
+          { value: 'black', label: 'Siyah Beyaz' }
+        ], 
+        label: 'Renk Seçeneği' 
+      },
+      printQuantity: { 
+        type: 'select', 
+        options: [
+          { value: '100', label: '100 Adet' },
+          { value: '500', label: '500 Adet' },
+          { value: '1000', label: '1000 Adet' },
+          { value: '5000', label: '5000 Adet' },
+          { value: 'custom', label: 'Özel Miktar' }
+        ], 
+        label: 'Miktar' 
+      },
+      foilType: { 
+        type: 'select', 
+        options: [
+          { value: 'none', label: 'Yaldız Yok' },
+          { value: 'gold', label: 'Altın Yaldız' },
+          { value: 'silver', label: 'Gümüş Yaldız' }
+        ], 
+        label: 'Yaldız Türü' 
+      }
+    }
+  };
+
+  return {
+    ...commonFields,
+    ...(typeSpecificFields[type as keyof typeof typeSpecificFields] || {})
+  };
+};
 
 const quoteSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
@@ -57,6 +249,19 @@ const quoteSchema = z.object({
 });
 
 type QuoteFormData = z.infer<typeof quoteSchema>;
+
+function getQuoteTypeDisplay(type: string): string {
+  switch (type) {
+    case 'sheet_label':
+      return 'Tabaka Etiket';
+    case 'roll_label':
+      return 'Rulo Etiket';
+    case 'general_printing':
+      return 'Genel Baskı';
+    default:
+      return 'Teklif';
+  }
+}
 
 export default function QuoteForm() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -440,6 +645,30 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
   };
 
   const typeConfig = getTypeConfig();
+
+  // Get form type from URL
+  const pathParts = window.location.pathname.split('/');
+  const quoteType = pathParts[pathParts.length - 1] as 'sheet_label' | 'roll_label' | 'general_printing';
+
+  // Get form fields configuration
+  const formFields = getFormFieldsByType(quoteType);
+
+  const [formData, setFormData] = useState(() => {
+    const initialData: any = {
+      title: '',
+      description: '',
+      quantity: '',
+      deadline: '',
+      budget: '',
+    };
+
+    // Initialize all form fields
+    Object.keys(formFields).forEach(key => {
+      initialData[key] = '';
+    });
+
+    return initialData;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -1163,10 +1392,10 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                         e.preventDefault();
                         e.stopPropagation();
                         console.log("🎯 Explicit submit button clicked");
-                        
+
                         // Get current form values
                         const formValues = form.getValues();
-                        
+
                         // Manual validation and submission
                         const isValid = await form.trigger();
                         if (isValid) {
