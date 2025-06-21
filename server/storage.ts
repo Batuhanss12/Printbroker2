@@ -9,6 +9,7 @@ import {
   chatMessages,
   contracts,
   notifications,
+  orderStatuses,
   type User,
   type UpsertUser,
   type InsertQuote,
@@ -600,25 +601,15 @@ export class DatabaseStorage implements IStorage {
 
   async getNotifications(userId: string): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      
-      console.log('📂 Getting notifications for user:', userId);
-      
-      if (fs.existsSync(filePath)) {
-        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        const userNotifications = notifications
-          .filter((notification: any) => notification.userId === userId)
-          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 50); // Last 50 notifications
-          
-        console.log('📂 Found notifications for user:', userId, userNotifications.length);
-        return userNotifications;
-      }
-      
-      console.log('📂 No notifications file found, returning empty array');
-      return [];
+      const userNotifications = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.recipientId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+        
+      console.log('📬 Found notifications:', userNotifications.length);
+      return userNotifications;
     } catch (error) {
       console.error('Error getting notifications:', error);
       return [];
@@ -626,7 +617,69 @@ export class DatabaseStorage implements IStorage {
   }
 
   async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
-    // Placeholder implementation
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true, updatedAt: new Date() })
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  }
+
+  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+    try {
+      await db
+        .delete(notifications)
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  }
+
+  // Order status operations
+  async createOrderStatus(status: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<any> {
+    try {
+      const [newStatus] = await db.insert(orderStatuses).values({
+        quoteId: status.quoteId,
+        status: status.status,
+        title: status.title,
+        description: status.description,
+        timestamp: status.timestamp,
+        metadata: status.metadata
+      }).returning();
+      
+      return newStatus;
+    } catch (error) {
+      console.error('Error creating order status:', error);
+      return null;
+    }
+  }
+  
+  async getOrderStatusesByQuote(quoteId: string): Promise<any[]> {
+    try {
+      return await db
+        .select()
+        .from(orderStatuses)
+        .where(eq(orderStatuses.quoteId, quoteId))
+        .orderBy(desc(orderStatuses.timestamp));
+    } catch (error) {
+      console.error('Error getting order statuses:', error);
+      return [];
+    }
   }
 
   // Design operations
