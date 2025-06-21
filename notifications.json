@@ -649,5 +649,125 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T08:38:13.084Z"
+  },
+  {
+    "id": "d83c137a-d379-4835-8e12-ed31bb33aed8",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.037Z"
+  },
+  {
+    "id": "d2660323-cdc6-458b-8de9-a3b0cf4fe51f",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.047Z"
+  },
+  {
+    "id": "4f805546-6415-483f-9196-a7e2ba81a7d4",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.054Z"
+  },
+  {
+    "id": "afa2de3e-c5c5-470c-bc5c-24680722a790",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.061Z"
+  },
+  {
+    "id": "98273e23-5d60-4500-a110-501f6deb634d",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.069Z"
+  },
+  {
+    "id": "b96ce46d-1e05-4a69-b205-865aa85e72a4",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.074Z"
+  },
+  {
+    "id": "9197201b-b99e-4665-9921-18011eecec5b",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.084Z"
+  },
+  {
+    "id": "5759a0aa-efc0-42cd-9be7-1e5244085073",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.094Z"
+  },
+  {
+    "id": "e6d8a81c-f7d4-4355-9929-0a66b2db222a",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.106Z"
+  },
+  {
+    "id": "84c22ace-b052-4eb4-9f2f-a3a96c4d81c7",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Farmasötik - 68,619 adet - ₺17753",
+    "data": {
+      "quoteId": "7e4418cd-6c59-485c-9a6e-21e5f6212c71"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:15:31.118Z"
   }
 ]
