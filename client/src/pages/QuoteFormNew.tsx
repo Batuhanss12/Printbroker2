@@ -80,6 +80,7 @@ export default function QuoteForm() {
         quantity: 1000,
         material: "",
         size: "",
+        color: "",
         description: ""
       },
       contactInfo: {
@@ -576,11 +577,45 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                 </TabsContent>
 
                 <TabsContent value="specifications" className="space-y-6">
+                  {/* Seçilen Özellikler Özeti */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                    <h3 className="font-semibold text-blue-900 mb-4 text-lg">📋 Seçilen Ürün Özellikleri</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <span className="text-xs text-blue-600 font-medium block mb-1">Malzeme:</span>
+                        <div className="text-sm font-bold text-blue-900">
+                          {form.watch('specifications.material') || '❌ Seçilmedi'}
+                        </div>
+                      </div>
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <span className="text-xs text-blue-600 font-medium block mb-1">Boyut:</span>
+                        <div className="text-sm font-bold text-blue-900">
+                          {form.watch('specifications.size') || '❌ Seçilmedi'}
+                        </div>
+                      </div>
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <span className="text-xs text-blue-600 font-medium block mb-1">Adet:</span>
+                        <div className="text-sm font-bold text-blue-900">
+                          {form.watch('specifications.quantity') || 0}
+                        </div>
+                      </div>
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <span className="text-xs text-blue-600 font-medium block mb-1">Renk:</span>
+                        <div className="text-sm font-bold text-blue-900">
+                          {form.watch('specifications.color') || '❌ Seçilmedi'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {type === 'sheet_label' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>Kağıt Tipi</Label>
-                        <Select>
+                        <Select 
+                          value={form.watch('specifications.material')} 
+                          onValueChange={(value) => form.setValue('specifications.material', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Kağıt tipini seçin" />
                           </SelectTrigger>
@@ -597,7 +632,10 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
 
                       <div className="space-y-2">
                         <Label>Boyut</Label>
-                        <Select>
+                        <Select 
+                          value={form.watch('specifications.size')} 
+                          onValueChange={(value) => form.setValue('specifications.size', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Boyut seçin" />
                           </SelectTrigger>
@@ -611,12 +649,20 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
 
                       <div className="space-y-2">
                         <Label>Adet</Label>
-                        <Input placeholder="Örn: 1000" />
+                        <Input 
+                          type="number"
+                          placeholder="Örn: 1000"
+                          value={form.watch('specifications.quantity')}
+                          onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
+                        />
                       </div>
 
                       <div className="space-y-2">
                         <Label>Renk</Label>
-                        <Select>
+                        <Select 
+                          value={form.watch('specifications.color')} 
+                          onValueChange={(value) => form.setValue('specifications.color', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Renk seçin" />
                           </SelectTrigger>
@@ -634,7 +680,10 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>Etiket Tipi</Label>
-                        <Select>
+                        <Select 
+                          value={form.watch('specifications.material')} 
+                          onValueChange={(value) => form.setValue('specifications.material', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Tip seçin" />
                           </SelectTrigger>
@@ -648,17 +697,30 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
 
                       <div className="space-y-2">
                         <Label>Rulo Çapı (mm)</Label>
-                        <Input placeholder="Örn: 76" />
+                        <Input 
+                          placeholder="Örn: 76"
+                          value={form.watch('specifications.size')}
+                          onChange={(e) => form.setValue('specifications.size', e.target.value)}
+                        />
                       </div>
 
                       <div className="space-y-2">
                         <Label>Etiket Boyutu (mm)</Label>
-                        <Input placeholder="Örn: 50 x 30" />
+                        <Input 
+                          placeholder="Örn: 50 x 30"
+                          value={form.watch('specifications.color')}
+                          onChange={(e) => form.setValue('specifications.color', e.target.value)}
+                        />
                       </div>
 
                       <div className="space-y-2">
                         <Label>Toplam Adet</Label>
-                        <Input placeholder="Örn: 10000" />
+                        <Input 
+                          type="number"
+                          placeholder="Örn: 10000"
+                          value={form.watch('specifications.quantity')}
+                          onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
+                        />
                       </div>
                     </div>
                   )}
@@ -667,7 +729,10 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>Baskı Tipi</Label>
-                        <Select>
+                        <Select 
+                          value={form.watch('specifications.material')} 
+                          onValueChange={(value) => form.setValue('specifications.material', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Tip seçin" />
                           </SelectTrigger>
@@ -683,17 +748,31 @@ const onSubmit = async (data: QuoteFormData, isExplicitSubmit: boolean = false) 
 
                       <div className="space-y-2">
                         <Label>Sayfa Sayısı</Label>
-                        <Input placeholder="Örn: 24" />
+                        <Input 
+                          type="number"
+                          placeholder="Örn: 24"
+                          value={form.watch('specifications.color')}
+                          onChange={(e) => form.setValue('specifications.color', e.target.value)}
+                        />
                       </div>
 
                       <div className="space-y-2">
                         <Label>Boyut</Label>
-                        <Input placeholder="Örn: 21x29.7 cm" />
+                        <Input 
+                          placeholder="Örn: 21x29.7 cm"
+                          value={form.watch('specifications.size')}
+                          onChange={(e) => form.setValue('specifications.size', e.target.value)}
+                        />
                       </div>
 
                       <div className="space-y-2">
                         <Label>Adet</Label>
-                        <Input placeholder="Örn: 500" />
+                        <Input 
+                          type="number"
+                          placeholder="Örn: 500"
+                          value={form.watch('specifications.quantity')}
+                          onChange={(e) => form.setValue('specifications.quantity', parseInt(e.target.value) || 0)}
+                        />
                       </div>
                     </div>
                   )}
