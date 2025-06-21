@@ -1333,13 +1333,27 @@ export default function PrinterDashboard() {
                                       'perforation': 'Perforasyon',
                                       'roundCorners': 'Köşe Yuvarlama',
                                       
-                                      // Etiket Özellikleri (Sheet & Roll)
+                                      // Etiket Özellikleri (Sheet & Roll) - Genişletilmiş
                                       'labelType': 'Etiket Türü',
                                       'adhesive': 'Yapışkan',
                                       'adhesiveType': 'Yapışkan Türü',
                                       'application': 'Uygulama Alanı',
+                                      'sheetSize': 'Sayfa Boyutu',
+                                      'labelCount': 'Etiket Sayısı',
+                                      'labelsPerSheet': 'Sayfa Başı Etiket',
+                                      'sheetMaterial': 'Sayfa Malzemesi',
+                                      'labelSize': 'Etiket Boyutu',
+                                      'sheetOrientation': 'Sayfa Yönü',
+                                      'marginSize': 'Kenar Boşluğu',
+                                      'bleedArea': 'Taşma Alanı',
+                                      'backingPaper': 'Silikon Kağıt',
+                                      'proofRequired': 'Örnek İsteniyormu',
+                                      'diecut': 'Özel Kesim',
+                                      'numbering': 'Numaralama',
+                                      'barcode': 'Barkod',
+                                      'qrCode': 'QR Kod',
                                       
-                                      // Roll Label Özel Alanları
+                                      // Roll Label Özel Alanları - Genişletilmiş
                                       'rollWidth': 'Rulo Genişliği',
                                       'rollHeight': 'Rulo Yüksekliği',
                                       'coreDiameter': 'Makara Çapı',
@@ -1349,8 +1363,24 @@ export default function PrinterDashboard() {
                                       'labelSpacing': 'Etiket Arası Mesafe',
                                       'rollDiameter': 'Rulo Çapı',
                                       'unwindDirection': 'Açılma Yönü',
+                                      'coreSize': 'Makara Boyutu',
+                                      'labelPerRoll': 'Rulo Başı Etiket',
+                                      'rollsCount': 'Rulo Sayısı',
+                                      'perforationBetweenLabels': 'Etiket Arası Perforasyon',
+                                      'printDirection': 'Baskı Yönü',
+                                      'maxRollDiameter': 'Maksimum Rulo Çapı',
+                                      'minRollDiameter': 'Minimum Rulo Çapı',
+                                      'rollMaterial': 'Rulo Malzemesi',
+                                      'labelGap': 'Etiket Aralığı',
+                                      'rollLength': 'Rulo Uzunluğu',
+                                      'thermalPrinting': 'Termal Baskı',
+                                      'transferRibbon': 'Transfer Ribbon',
+                                      'winding': 'Sarım',
+                                      'core': 'Makara',
+                                      'rollWeight': 'Rulo Ağırlığı',
+                                      'rollPackaging': 'Rulo Paketleme',
                                       
-                                      // General Printing Özel Alanları
+                                      // General Printing Özel Alanları - Kapsamlı
                                       'pageCount': 'Sayfa Sayısı',
                                       'bindingType': 'Cilt Türü',
                                       'coverType': 'Kapak Türü',
@@ -1364,6 +1394,27 @@ export default function PrinterDashboard() {
                                       'hardcover': 'Sert Kapak',
                                       'softcover': 'Yumuşak Kapak',
                                       'dustJacket': 'Kitap Kılıfı',
+                                      'copies': 'Kopya Sayısı',
+                                      'foldingType': 'Katlama Türü',
+                                      'trimming': 'Kesim',
+                                      'drilling': 'Delme',
+                                      'stapling': 'Zımbalama',
+                                      'scoring': 'Çizgi Çekme',
+                                      'creasing': 'Kıvırma',
+                                      'collating': 'Harmanlama',
+                                      'bookletMaking': 'Broşür Yapımı',
+                                      'wireBound': 'Tel Cilt',
+                                      'ringBound': 'Halka Cilt',
+                                      'thermalBind': 'Termal Cilt',
+                                      'glueBind': 'Tutkal Cilt',
+                                      'caseBind': 'Kutu Cilt',
+                                      'japaneseBind': 'Japon Cilt',
+                                      'layflat': 'Layflat Cilt',
+                                      'saddle-stitch': 'Tel Dikiş',
+                                      'perfect-bind': 'Amerikan Cilt',
+                                      'spiral-bind': 'Spiral Cilt',
+                                      'wire-o': 'Wire-O Cilt',
+                                      'japanese-bind': 'Japon Cilt',
                                       
                                       // Paketleme ve Teslimat
                                       'packaging': 'Paketleme',
@@ -1713,7 +1764,7 @@ export default function PrinterDashboard() {
                                         'kaliteli': 'Kaliteli'
                                       };
 
-                                      // Check all mappings
+                                      // Check all mappings - Genişletilmiş
                                       return sheetMaterials[strVal] ||
                                              rollMaterials[strVal] ||
                                              printingMaterials[strVal] ||
@@ -1734,6 +1785,9 @@ export default function PrinterDashboard() {
                                              varnishTypes[strVal] ||
                                              materialValues[strVal] ||
                                              cellophaneTypes[strVal] ||
+                                             bindingTypes[strVal] ||
+                                             paperWeights[strVal] ||
+                                             coreDiameters[strVal] ||
                                              commonValues[strVal] ||
                                              String(val);
                                     };
