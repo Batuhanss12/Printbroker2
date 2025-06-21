@@ -52,6 +52,39 @@ export function EnterpriseNotificationSystem() {
     audioRef.current.volume = 0.3;
   }, []);
 
+  // Fetch existing notifications from server
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch('/api/notifications');
+        if (response.ok) {
+          const data = await response.json();
+          const serverNotifications = data.notifications.map((notif: any) => ({
+            id: notif.id,
+            type: notif.type,
+            title: notif.title,
+            message: notif.message,
+            quote: notif.data?.quote,
+            timestamp: notif.createdAt,
+            priority: notif.data?.priority || 'medium',
+            category: notif.data?.category || 'general',
+            isRead: notif.isRead,
+            actionRequired: notif.data?.actionRequired || false,
+            metadata: notif.data?.metadata || {}
+          }));
+          setNotifications(serverNotifications);
+          setUnreadCount(serverNotifications.filter((n: any) => !n.isRead).length);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, [isAuthenticated, user]);
+
   // WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!isAuthenticated || !user) return;
@@ -160,26 +193,90 @@ export function EnterpriseNotificationSystem() {
     };
   }, [isAuthenticated, user, soundEnabled, autoRefresh, toast]);
 
-  const markAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  const markAsRead = async (notificationId: string) => {
+    try {
+      const response = await fetch(`/api/notifications/${notificationId}/read`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        setNotifications(prev => 
+          prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      // Still update UI even if server call fails
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    setUnreadCount(0);
+  const markAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      
+      // Mark all unread notifications as read on server
+      await Promise.all(
+        unreadNotifications.map(notif => 
+          fetch(`/api/notifications/${notif.id}/read`, { method: 'POST' })
+        )
+      );
+      
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+      // Still update UI even if server call fails
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    }
   };
 
-  const deleteNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const response = await fetch(`/api/notifications/${notificationId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        const notification = notifications.find(n => n.id === notificationId);
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        if (notification && !notification.isRead) {
+          setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      // Still update UI even if server call fails
+      const notification = notifications.find(n => n.id === notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      if (notification && !notification.isRead) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    }
   };
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
-    setUnreadCount(0);
+  const clearAllNotifications = async () => {
+    try {
+      // Delete all notifications on server
+      await Promise.all(
+        notifications.map(notif => 
+          fetch(`/api/notifications/${notif.id}`, { method: 'DELETE' })
+        )
+      );
+      
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+      // Still update UI even if server call fails
+      setNotifications([]);
+      setUnreadCount(0);
+    }
   };
 
   const getPriorityIcon = (priority: string) => {
