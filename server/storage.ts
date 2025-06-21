@@ -8,6 +8,7 @@ import {
   chatRooms,
   chatMessages,
   contracts,
+  orderStatuses,
   type User,
   type UpsertUser,
   type InsertQuote,
@@ -26,6 +27,8 @@ import {
   type ChatMessage,
   type InsertContract,
   type Contract,
+  type InsertOrderStatus,
+  type OrderStatus,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, sql } from "drizzle-orm";
@@ -302,6 +305,27 @@ export class DatabaseStorage implements IStorage {
       .update(orders)
       .set({ status })
       .where(eq(orders.id, id));
+  }
+
+  // Order status operations
+  async createOrderStatus(orderStatus: {
+    quoteId: string;
+    status: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    metadata?: any;
+  }): Promise<OrderStatus> {
+    const [newOrderStatus] = await db.insert(orderStatuses).values(orderStatus).returning();
+    return newOrderStatus;
+  }
+
+  async getOrderStatusesByQuote(quoteId: string): Promise<OrderStatus[]> {
+    return await db
+      .select()
+      .from(orderStatuses)
+      .where(eq(orderStatuses.quoteId, quoteId))
+      .orderBy(desc(orderStatuses.timestamp));
   }
 
   // Rating operations

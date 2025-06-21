@@ -28,7 +28,6 @@ import {
   User,
   BarChart3,
   Calendar,
-  Download,
   Edit,
   Filter,
   Search,
@@ -47,7 +46,6 @@ import {
   AlertCircle,
   XCircle,
   Upload,
-  Download2,
   Linkedin,
   AlertTriangle,
   Info,
@@ -70,6 +68,7 @@ import Chat from "@/components/Chat";
 import StatsCard from "@/components/StatsCard";
 import Navigation from "@/components/Navigation";
 import FirmVerificationPanel from "@/components/FirmVerificationPanel";
+import { PrinterOrderManager } from "@/components/PrinterOrderManager";
 import { InkDropletsLoader } from "@/components/Loaders";
 
 // QuoteFilesViewer Component
