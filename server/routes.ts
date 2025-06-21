@@ -2278,13 +2278,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Approve quote and create chat room
+  // Approve specific printer quote by customer
   app.post('/api/quotes/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
       const quoteId = req.params.id;
-      // Enhanced user ID extraction for session-based auth
       const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
-      const { printerId } = req.body;
+      const { printerQuoteId } = req.body;
 
       if (!userId) {
         return res.status(401).json({ message: "User session not found" });
@@ -2301,30 +2300,276 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only quote owner can approve" });
       }
 
-      // Update quote status to approved
+      // Get printer quote details
+      const printerQuote = await storage.getPrinterQuote(printerQuoteId);
+      if (!printerQuote) {
+        return res.status(404).json({ message: "Printer quote not found" });
+      }
+
+      // Update printer quote status to approved
+      await storage.updatePrinterQuoteStatus(printerQuoteId, 'approved');
+      
+      // Update main quote status to approved
       await storage.updateQuoteStatus(quoteId, "approved");
 
-      // Create chat room automatically when contract is approved
-      try {
-        const existingRoom = await storage.getChatRoomByQuote(quoteId, quote.customerId, printerId);
+      // Create initial order status
+      await storage.createOrderStatus({
+        quoteId,
+        status: 'approved',
+        title: 'Sipariş Onaylandı',
+        description: 'Müşteri tarafından teklif onaylandı. Üretim süreci başlatılacak.',
+        timestamp: new Date(),
+        metadata: { printerQuoteId, approvedBy: userId }
+      });
 
+      // Create chat room for communication
+      try {
+        const existingRoom = await storage.getChatRoomByQuote(quoteId, quote.customerId, printerQuote.printerId);
         if (!existingRoom) {
           await storage.createChatRoom({
             quoteId,
             customerId: quote.customerId,
-            printerId,
+            printerId: printerQuote.printerId,
             status: 'active'
           });
         }
       } catch (chatError) {
         console.error("Error creating chat room:", chatError);
-        // Don't fail the approval if chat room creation fails
       }
 
-      res.json({ message: "Quote approved and chat room created" });
+      // Notify printer about approval
+      try {
+        const printer = await storage.getUser(printerQuote.printerId);
+        if (printer) {
+          await storage.createNotification({
+            userId: printerQuote.printerId,
+            type: 'quote_approved',
+            title: 'Teklif Onaylandı',
+            message: `${quote.title} siparişiniz müşteri tarafından onaylandı. Üretim sürecini başlatabilirsiniz.`,
+            data: { quoteId, printerQuoteId },
+            isRead: false,
+            createdAt: new Date()
+          });
+
+          // Send real-time notification
+          notificationService.broadcastToUser(printerQuote.printerId, {
+            type: 'quote_approved_notification',
+            title: 'Teklif Onaylandı',
+            message: `${quote.title} siparişiniz müşteri tarafından onaylandı.`,
+            priority: 'high',
+            category: 'order',
+            actionRequired: true,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              status: 'approved'
+            },
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (notifError) {
+        console.error(`Failed to notify printer ${printerQuote.printerId}:`, notifError);
+      }
+
+      res.json({ 
+        success: true,
+        message: "Teklif onaylandı ve sipariş süreci başlatıldı" 
+      });
     } catch (error) {
       console.error("Error approving quote:", error);
       res.status(500).json({ message: "Failed to approve quote" });
+    }
+  });
+
+  // Reject specific printer quote by customer
+  app.post('/api/quotes/:id/reject', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.id;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const { printerQuoteId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      // Get quote details
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify user is the customer for this quote
+      if (quote.customerId !== userId) {
+        return res.status(403).json({ message: "Only quote owner can reject" });
+      }
+
+      // Update printer quote status to rejected
+      await storage.updatePrinterQuoteStatus(printerQuoteId, 'rejected');
+
+      // Get printer quote details for notification
+      const printerQuote = await storage.getPrinterQuote(printerQuoteId);
+      
+      // Notify printer about rejection
+      if (printerQuote) {
+        try {
+          await storage.createNotification({
+            userId: printerQuote.printerId,
+            type: 'quote_rejected',
+            title: 'Teklif Reddedildi',
+            message: `${quote.title} için gönderdiğiniz teklif müşteri tarafından reddedildi.`,
+            data: { quoteId, printerQuoteId },
+            isRead: false,
+            createdAt: new Date()
+          });
+
+          // Send real-time notification
+          notificationService.broadcastToUser(printerQuote.printerId, {
+            type: 'quote_rejected_notification',
+            title: 'Teklif Reddedildi',
+            message: `${quote.title} için gönderdiğiniz teklif reddedildi.`,
+            priority: 'medium',
+            category: 'quote',
+            actionRequired: false,
+            quote: {
+              id: quote.id,
+              title: quote.title,
+              status: 'rejected'
+            },
+            timestamp: new Date().toISOString()
+          });
+        } catch (notifError) {
+          console.error(`Failed to notify printer ${printerQuote.printerId}:`, notifError);
+        }
+      }
+
+      res.json({ 
+        success: true,
+        message: "Teklif reddedildi" 
+      });
+    } catch (error) {
+      console.error("Error rejecting quote:", error);
+      res.status(500).json({ message: "Failed to reject quote" });
+    }
+  });
+
+  // Get order status for a quote
+  app.get('/api/orders/status/:quoteId', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.quoteId;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      // Get quote details to verify access
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify user has access to this quote (customer or assigned printer)
+      const userRole = req.user?.role || req.session?.user?.role;
+      if (userRole === 'customer' && quote.customerId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Get order statuses for this quote
+      const orderStatuses = await storage.getOrderStatusesByQuote(quoteId);
+      res.json(orderStatuses || []);
+    } catch (error) {
+      console.error("Error fetching order status:", error);
+      res.status(500).json({ message: "Failed to fetch order status" });
+    }
+  });
+
+  // Update order status (printer only)
+  app.post('/api/orders/status/:quoteId', isAuthenticated, async (req: any, res) => {
+    try {
+      const quoteId = req.params.quoteId;
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const userRole = req.user?.role || req.session?.user?.role;
+      const { status, title, description, metadata } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User session not found" });
+      }
+
+      if (userRole !== 'printer') {
+        return res.status(403).json({ message: "Only printers can update order status" });
+      }
+
+      // Get quote details
+      const quote = await storage.getQuote(quoteId);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Verify printer is assigned to this quote
+      const printerQuotes = await storage.getPrinterQuotesByQuote(quoteId);
+      const printerQuote = printerQuotes.find((pq: any) => pq.printerId === userId && pq.status === 'approved');
+      
+      if (!printerQuote) {
+        return res.status(403).json({ message: "You are not assigned to this order" });
+      }
+
+      // Create new order status
+      const orderStatus = await storage.createOrderStatus({
+        quoteId,
+        status,
+        title,
+        description,
+        timestamp: new Date(),
+        metadata: metadata || {}
+      });
+
+      // Update quote status if needed
+      if (status === 'completed') {
+        await storage.updateQuoteStatus(quoteId, 'completed');
+      } else if (status === 'in_production') {
+        await storage.updateQuoteStatus(quoteId, 'in_progress');
+      }
+
+      // Notify customer about status update
+      try {
+        await storage.createNotification({
+          userId: quote.customerId,
+          type: 'order_status_update',
+          title: `Sipariş Durumu: ${title}`,
+          message: description,
+          data: { quoteId, orderStatusId: orderStatus.id, status },
+          isRead: false,
+          createdAt: new Date()
+        });
+
+        // Send real-time notification to customer
+        notificationService.broadcastToUser(quote.customerId, {
+          type: 'order_status_update_notification',
+          title: `Sipariş Durumu: ${title}`,
+          message: description,
+          priority: status === 'completed' ? 'high' : 'medium',
+          category: 'order',
+          actionRequired: false,
+          order: {
+            id: quoteId,
+            title: quote.title,
+            status,
+            statusTitle: title
+          },
+          timestamp: new Date().toISOString()
+        });
+      } catch (notifError) {
+        console.error(`Failed to notify customer ${quote.customerId}:`, notifError);
+      }
+
+      res.json({ 
+        success: true,
+        orderStatus,
+        message: "Sipariş durumu güncellendi" 
+      });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
     }
   });
 
