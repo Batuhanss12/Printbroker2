@@ -140,6 +140,7 @@ async function initializePythonServices() {
       if (reason instanceof Error) {
         console.error('Stack:', reason.stack);
       }
+      // Don't exit the process, just log the error
     });
 
     // Global uncaught exception handler
@@ -147,6 +148,13 @@ async function initializePythonServices() {
       console.error('💥 Uncaught Exception:', error);
       console.error('Stack:', error.stack);
       process.exit(1);
+    });
+
+    // Add warning handler for unhandled promise rejections
+    process.on('warning', (warning) => {
+      if (warning.name === 'UnhandledPromiseRejectionWarning') {
+        console.warn('⚠️ UnhandledPromiseRejectionWarning:', warning.message);
+      }
     });
 
   } catch (startupError) {
