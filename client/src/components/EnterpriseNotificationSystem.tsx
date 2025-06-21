@@ -58,24 +58,33 @@ export function EnterpriseNotificationSystem() {
 
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('/api/notifications');
+        const response = await fetch(`/api/notifications?userId=${user.id}`);
         if (response.ok) {
           const data = await response.json();
-          const serverNotifications = data.notifications.map((notif: any) => ({
+          console.log('📬 Fetched notifications for user:', user.id, data);
+          
+          // Handle both array response and object with notifications property
+          const notificationsList = Array.isArray(data) ? data : (data.notifications || []);
+          
+          const serverNotifications = notificationsList.map((notif: any) => ({
             id: notif.id,
             type: notif.type,
             title: notif.title,
             message: notif.message,
             quote: notif.data?.quote,
-            timestamp: notif.createdAt,
-            priority: notif.data?.priority || 'medium',
-            category: notif.data?.category || 'general',
-            isRead: notif.isRead,
-            actionRequired: notif.data?.actionRequired || false,
-            metadata: notif.data?.metadata || {}
+            timestamp: notif.createdAt || notif.timestamp,
+            priority: notif.data?.priority || notif.priority || 'medium',
+            category: notif.data?.category || notif.category || 'general',
+            isRead: notif.isRead || false,
+            actionRequired: notif.data?.actionRequired || notif.actionRequired || false,
+            metadata: notif.data?.metadata || notif.metadata || {}
           }));
+          
+          console.log('📬 Processed notifications:', serverNotifications.length);
           setNotifications(serverNotifications);
           setUnreadCount(serverNotifications.filter((n: any) => !n.isRead).length);
+        } else {
+          console.error('Failed to fetch notifications:', response.status);
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -110,11 +119,14 @@ export function EnterpriseNotificationSystem() {
           type: 'authenticate',
           userId: user.id,
           role: user.role,
+          email: user.email,
           preferences: {
             soundEnabled,
             autoRefresh
           }
         }));
+        
+        console.log('🔌 WebSocket authenticated for user:', user.id, user.role);
       };
 
       websocket.onmessage = (event) => {
@@ -429,6 +441,9 @@ export function EnterpriseNotificationSystem() {
                 <div className="p-6 text-center text-muted-foreground">
                   <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>Henüz bildirim yok</p>
+                  {connectionStatus === 'disconnected' && (
+                    <p className="text-xs mt-2 text-red-500">Bağlantı kesildi</p>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-1">

@@ -593,13 +593,21 @@ export class DatabaseStorage implements IStorage {
       const fs = require('fs');
       const path = require('path');
       const filePath = path.join(process.cwd(), 'notifications.json');
+      
+      console.log('📂 Getting notifications for user:', userId);
+      
       if (fs.existsSync(filePath)) {
         const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        return notifications
+        const userNotifications = notifications
           .filter((notification: any) => notification.userId === userId)
           .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .slice(0, 50); // Last 50 notifications
+          
+        console.log('📂 Found notifications for user:', userId, userNotifications.length);
+        return userNotifications;
       }
+      
+      console.log('📂 No notifications file found, returning empty array');
       return [];
     } catch (error) {
       console.error('Error getting notifications:', error);
