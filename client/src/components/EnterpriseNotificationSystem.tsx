@@ -35,8 +35,22 @@ export function EnterpriseNotificationSystem() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [ws, setWs] = useState<WebSocket | null>(null);
-  const [notifications, setNotifications] = useState<EnterpriseNotification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  // Load notifications from localStorage on component mount
+  const [notifications, setNotifications] = useState<EnterpriseNotification[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`notifications_${user?.id || 'guest'}`);
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+  
+  const [unreadCount, setUnreadCount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`unreadCount_${user?.id || 'guest'}`);
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
   const [showPanel, setShowPanel] = useState(false);
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
@@ -55,6 +69,11 @@ export function EnterpriseNotificationSystem() {
   // WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!isAuthenticated || !user) return;
+    
+    // Cleanup existing connection
+    if (ws?.readyState === WebSocket.OPEN || ws?.readyState === WebSocket.CONNECTING) {
+      ws.close();
+    }
 
     const connectWebSocket = () => {
       setConnectionStatus('connecting');
@@ -106,8 +125,17 @@ export function EnterpriseNotificationSystem() {
               metadata: data.metadata || {}
             };
             
-            setNotifications(prev => [notification, ...prev.slice(0, 49)]); // Keep max 50 notifications
-            setUnreadCount(prev => prev + 1);
+            setNotifications(prev => {
+              const updatedNotifications = [notification, ...prev.slice(0, 49)]; // Keep max 50 notifications
+              // Save to localStorage
+              localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updatedNotifications));
+              return updatedNotifications;
+            });
+            setUnreadCount(prev => {
+              const newCount = prev + 1;
+              localStorage.setItem(`unreadCount_${user.id}`, newCount.toString());
+              return newCount;
+            });
             
             // Play sound if enabled
             if (soundEnabled && audioRef.current) {
@@ -133,12 +161,12 @@ export function EnterpriseNotificationSystem() {
         setConnectionStatus('disconnected');
       };
 
-      websocket.onclose = () => {
-        console.log('Enterprise NotificationSystem WebSocket disconnected');
+      websocket.onclose = (event) => {
+        console.log('Enterprise NotificationSystem WebSocket disconnected', event.code);
         setConnectionStatus('disconnected');
         
-        // Auto-reconnect after 3 seconds
-        if (autoRefresh) {
+        // Only auto-reconnect if it wasn't a manual close (code 1000)
+        if (autoRefresh && event.code !== 1000) {
           reconnectTimeoutRef.current = setTimeout(() => {
             connectWebSocket();
           }, 3000);
@@ -161,25 +189,63 @@ export function EnterpriseNotificationSystem() {
   }, [isAuthenticated, user, soundEnabled, autoRefresh, toast]);
 
   const markAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(prev => {
+      const updatedNotifications = prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n);
+      if (user?.id) {
+        localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updatedNotifications));
+      }
+      return updatedNotifications;
+    });
+    setUnreadCount(prev => {
+      const newCount = Math.max(0, prev - 1);
+      if (user?.id) {
+        localStorage.setItem(`unreadCount_${user.id}`, newCount.toString());
+      }
+      return newCount;
+    });
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    setNotifications(prev => {
+      const updatedNotifications = prev.map(n => ({ ...n, isRead: true }));
+      if (user?.id) {
+        localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updatedNotifications));
+      }
+      return updatedNotifications;
+    });
     setUnreadCount(0);
+    if (user?.id) {
+      localStorage.setItem(`unreadCount_${user.id}`, '0');
+    }
   };
 
   const deleteNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(prev => {
+      const notification = prev.find(n => n.id === notificationId);
+      const newNotifications = prev.filter(n => n.id !== notificationId);
+      if (notification && !notification.isRead) {
+        setUnreadCount(prevCount => {
+          const newCount = Math.max(0, prevCount - 1);
+          if (user?.id) {
+            localStorage.setItem(`unreadCount_${user.id}`, newCount.toString());
+          }
+          return newCount;
+        });
+      }
+      if (user?.id) {
+        localStorage.setItem(`notifications_${user.id}`, JSON.stringify(newNotifications));
+      }
+      return newNotifications;
+    });
   };
 
   const clearAllNotifications = () => {
     setNotifications([]);
     setUnreadCount(0);
+    if (user?.id) {
+      localStorage.setItem(`notifications_${user.id}`, JSON.stringify([]));
+      localStorage.setItem(`unreadCount_${user.id}`, '0');
+    }
   };
 
   const getPriorityIcon = (priority: string) => {
