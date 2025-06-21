@@ -322,6 +322,12 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id));
   }
 
+  async getOrderStatuses(quoteId: string): Promise<any[]> {
+    // For now, return empty array since we're using a simpler order tracking system
+    // In the future, this could track detailed order status history
+    return [];
+  }
+
   // Rating operations
   async createRating(rating: InsertRating): Promise<Rating> {
     const [newRating] = await db.insert(ratings).values(rating).returning();

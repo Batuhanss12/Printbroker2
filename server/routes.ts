@@ -2729,27 +2729,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get detailed information for each order
       const orders = [];
       for (const pq of approvedQuotes) {
-        const quote = await storage.getQuote(pq.quoteId);
-        const customer = await storage.getUser(quote.customerId);
-        const orderStatuses = await storage.getOrderStatuses(pq.quoteId);
-        
-        orders.push({
-          id: pq.quoteId,
-          printerQuoteId: pq.id,
-          title: quote.title,
-          type: quote.type,
-          customer: {
-            name: `${customer.firstName} ${customer.lastName}`,
-            company: customer.companyName
-          },
-          price: pq.price,
-          estimatedDays: pq.estimatedDays,
-          deadline: quote.deadline,
-          currentStatus: quote.status,
-          orderStatuses: orderStatuses.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
-          createdAt: pq.createdAt,
-          specifications: quote.specifications
-        });
+        try {
+          const quote = await storage.getQuote(pq.quoteId);
+          if (!quote) continue;
+
+          const customer = await storage.getUser(quote.customerId);
+          if (!customer) continue;
+
+          const orderStatuses = await storage.getOrderStatuses(pq.quoteId);
+          
+          orders.push({
+            id: pq.quoteId,
+            printerQuoteId: pq.id,
+            title: quote.title || 'Sipariş',
+            type: quote.type || 'general_printing',
+            customer: {
+              name: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Müşteri',
+              company: customer.companyName || 'Firma'
+            },
+            price: pq.price,
+            estimatedDays: pq.estimatedDays,
+            deadline: quote.deadline,
+            currentStatus: quote.status || 'approved',
+            orderStatuses: orderStatuses || [],
+            createdAt: pq.createdAt,
+            specifications: quote.specifications || {},
+            status: 'approved', // Simplified status for orders
+            totalAmount: pq.price
+          });
+        } catch (orderError) {
+          console.error(`Error processing order for quote ${pq.quoteId}:`, orderError);
+          continue;
+        }
       }
 
       res.json(orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
