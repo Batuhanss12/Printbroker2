@@ -8,7 +8,6 @@ import {
   chatRooms,
   chatMessages,
   contracts,
-  orderStatuses,
   type User,
   type UpsertUser,
   type InsertQuote,
@@ -27,8 +26,6 @@ import {
   type ChatMessage,
   type InsertContract,
   type Contract,
-  type InsertOrderStatus,
-  type OrderStatus,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, sql } from "drizzle-orm";
@@ -159,16 +156,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: any): Promise<User> {
-    // Ensure ID is provided and properly formatted
-    const userDataWithId = {
-      ...userData,
-      id: userData.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    console.log('Creating user with data:', userDataWithId);
-    const [newUser] = await db.insert(users).values(userDataWithId).returning();
+    const [newUser] = await db.insert(users).values(userData).returning();
     return newUser;
   }
 
@@ -220,44 +208,12 @@ export class DatabaseStorage implements IStorage {
     return quote;
   }
 
-  async getQuotesByCustomer(customerId: string): Promise<any[]> {
-    const quotesData = await db
+  async getQuotesByCustomer(customerId: string): Promise<Quote[]> {
+    return await db
       .select()
       .from(quotes)
       .where(eq(quotes.customerId, customerId))
       .orderBy(desc(quotes.createdAt));
-
-    // For each quote, get associated printer quotes with printer details
-    const quotesWithPrinterQuotes = await Promise.all(
-      quotesData.map(async (quote) => {
-        const printerQuotesData = await db
-          .select({
-            id: printerQuotes.id,
-            printerId: printerQuotes.printerId,
-            price: printerQuotes.price,
-            estimatedDays: printerQuotes.estimatedDays,
-            notes: printerQuotes.notes,
-            status: printerQuotes.status,
-            createdAt: printerQuotes.createdAt,
-            // Printer details
-            printerName: users.firstName,
-            companyName: users.companyName,
-            rating: users.averageRating,
-            totalRatings: users.totalRatings,
-          })
-          .from(printerQuotes)
-          .leftJoin(users, eq(printerQuotes.printerId, users.id))
-          .where(eq(printerQuotes.quoteId, quote.id))
-          .orderBy(printerQuotes.price);
-
-        return {
-          ...quote,
-          printerQuotes: printerQuotesData,
-        };
-      })
-    );
-
-    return quotesWithPrinterQuotes;
   }
 
   async getQuotesForPrinter(): Promise<Quote[]> {
@@ -346,27 +302,6 @@ export class DatabaseStorage implements IStorage {
       .update(orders)
       .set({ status })
       .where(eq(orders.id, id));
-  }
-
-  // Order status operations
-  async createOrderStatus(orderStatus: {
-    quoteId: string;
-    status: string;
-    title: string;
-    description: string;
-    timestamp: Date;
-    metadata?: any;
-  }): Promise<OrderStatus> {
-    const [newOrderStatus] = await db.insert(orderStatuses).values(orderStatus).returning();
-    return newOrderStatus;
-  }
-
-  async getOrderStatusesByQuote(quoteId: string): Promise<OrderStatus[]> {
-    return await db
-      .select()
-      .from(orderStatuses)
-      .where(eq(orderStatuses.quoteId, quoteId))
-      .orderBy(desc(orderStatuses.timestamp));
   }
 
   // Rating operations

@@ -294,7 +294,7 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
                         </div>
                       )}
 
-                      {printerQuote.status === 'pending' && quote.status === 'received_quotes' && (
+                      {printerQuote.status === 'pending' && quote.status !== 'approved' && (
                         <div className="flex gap-2 pt-4 border-t">
                           <Button
                             onClick={() => handleApproveQuote(printerQuote.id)}
