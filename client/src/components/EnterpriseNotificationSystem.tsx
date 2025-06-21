@@ -58,7 +58,9 @@ export function EnterpriseNotificationSystem() {
 
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('/api/notifications');
+        const response = await fetch('/api/notifications', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const data = await response.json();
           console.log('📬 Fetched notifications for user:', user.id, data);
@@ -212,7 +214,8 @@ export function EnterpriseNotificationSystem() {
   const markAsRead = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}/read`, {
-        method: 'POST'
+        method: 'POST',
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -255,7 +258,8 @@ export function EnterpriseNotificationSystem() {
   const deleteNotification = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       
       if (response.ok) {

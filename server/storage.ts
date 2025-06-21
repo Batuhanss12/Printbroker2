@@ -852,35 +852,58 @@ export class DatabaseStorage implements IStorage {
 
   async getNotifications(userId: string): Promise<any[]> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      if (fs.existsSync(filePath)) {
-        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        return notifications
-          .filter((notification: any) => notification.userId === userId)
-          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 50);
+      console.log('📬 Querying notifications for userId:', userId);
+      
+      // First try database query
+      const userNotifications = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.recipientId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+        
+      console.log('📬 Database returned notifications:', userNotifications.length);
+      
+      if (userNotifications.length > 0) {
+        console.log('📬 Sample notification data:', userNotifications[0]);
+        return userNotifications;
       }
+      
+      // Fallback to file-based storage if no database notifications
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(process.cwd(), 'notifications.json');
+        if (fs.existsSync(filePath)) {
+          const fileNotifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+          const userFileNotifications = fileNotifications
+            .filter((notification: any) => notification.userId === userId || notification.recipientId === userId)
+            .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 50);
+          
+          console.log('📬 File returned notifications:', userFileNotifications.length);
+          return userFileNotifications;
+        }
+      } catch (fileError) {
+        console.error('Error reading file notifications:', fileError);
+      }
+      
       return [];
-    } catch {
+    } catch (error) {
+      console.error('Error getting notifications:', error);
       return [];
     }
   }
 
   async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      if (fs.existsSync(filePath)) {
-        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        const notification = notifications.find((n: any) => n.id === notificationId && n.userId === userId);
-        if (notification) {
-          notification.isRead = true;
-          fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-        }
-      }
+      await db
+        .update(notifications)
+        .set({ isRead: true, updatedAt: new Date() })
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -888,15 +911,12 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNotification(notificationId: string, userId: string): Promise<void> {
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'notifications.json');
-      if (fs.existsSync(filePath)) {
-        let notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        notifications = notifications.filter((n: any) => !(n.id === notificationId && n.userId === userId));
-        fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
-        console.log('✅ Notification deleted:', notificationId);
-      }
+      await db
+        .delete(notifications)
+        .where(and(
+          eq(notifications.id, notificationId),
+          eq(notifications.recipientId, userId)
+        ));
     } catch (error) {
       console.error('Error deleting notification:', error);
     }

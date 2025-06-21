@@ -65,6 +65,16 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
   const queryClient = useQueryClient();
   const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
 
+  // Handle approve quote
+  const handleApproveQuote = (printerQuoteId: string) => {
+    approveQuoteMutation.mutate(printerQuoteId);
+  };
+
+  // Handle reject quote
+  const handleRejectQuote = (printerQuoteId: string) => {
+    rejectQuoteMutation.mutate(printerQuoteId);
+  };
+
   // Fetch order status updates for approved quotes
   const { data: orderStatuses } = useQuery({
     queryKey: ['/api/orders/status', quote.id],
@@ -108,10 +118,11 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
     onSuccess: () => {
       toast({
         title: 'Teklif Reddedildi',
-        description: 'Seçtiğiniz teklif reddedildi.',
+        description: 'Seçtiğiniz teklif başarıyla reddedildi.',
         variant: 'default',
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quotes'] });
+      onClose();
     },
     onError: (error: any) => {
       toast({
@@ -122,14 +133,7 @@ export function CustomerQuoteManager({ quote, onClose }: CustomerQuoteManagerPro
     },
   });
 
-  const handleApproveQuote = (printerQuoteId: string) => {
-    setSelectedQuoteId(printerQuoteId);
-    approveQuoteMutation.mutate(printerQuoteId);
-  };
-
-  const handleRejectQuote = (printerQuoteId: string) => {
-    rejectQuoteMutation.mutate(printerQuoteId);
-  };
+  
 
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat('tr-TR', {
