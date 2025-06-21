@@ -42,6 +42,7 @@ const quoteSchema = z.object({
     quantity: z.number().min(1, "Miktar en az 1 olmalı"),
     material: z.string().min(1, "Malzeme seçimi gerekli"),
     size: z.string().min(1, "Boyut bilgisi gerekli"),
+    color: z.string().optional(),
     description: z.string().min(10, "En az 10 karakter açıklama gerekli")
   }),
   contactInfo: z.object({
