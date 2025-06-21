@@ -1817,7 +1817,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get quote form configuration by type
+  // Get quote form configuration by type - must come BEFORE the UUID route
+  app.get('/api/quotes/sheet_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'sheet_label',
+        title: 'Tabaka Etiket Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading sheet label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/roll_label', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'roll_label',
+        title: 'Rulo Etiket Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading roll label form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  app.get('/api/quotes/general_printing', async (req: any, res) => {
+    try {
+      const formConfig = {
+        type: 'general_printing',
+        title: 'Genel Baskı Teklif Formu',
+        status: 'ready'
+      };
+      res.json(formConfig);
+    } catch (error) {
+      console.error("Error loading general printing form:", error);
+      res.status(500).json({ message: "Failed to load quote form" });
+    }
+  });
+
+  // Get quote form configuration by type (alternative endpoint)
   app.get('/api/quotes/form/:type', async (req: any, res) => {
     try {
       const { type } = req.params;
