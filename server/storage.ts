@@ -589,8 +589,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNotifications(userId: string): Promise<any[]> {
-    // Return empty array for now - can be implemented with proper notification table later
-    return [];
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'notifications.json');
+      if (fs.existsSync(filePath)) {
+        const notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return notifications
+          .filter((notification: any) => notification.userId === userId)
+          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 50); // Last 50 notifications
+      }
+      return [];
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
   }
 
   async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
@@ -770,6 +784,22 @@ export class DatabaseStorage implements IStorage {
       }
     } catch (error) {
       console.error('Error marking notification as read:', error);
+    }
+  }
+
+  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'notifications.json');
+      if (fs.existsSync(filePath)) {
+        let notifications = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        notifications = notifications.filter((n: any) => !(n.id === notificationId && n.userId === userId));
+        fs.writeFileSync(filePath, JSON.stringify(notifications, null, 2));
+        console.log('✅ Notification deleted:', notificationId);
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
     }
   }
 }

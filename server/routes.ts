@@ -3620,6 +3620,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/notifications/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id || req.session?.user?.id;
+      const notificationId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      await storage.deleteNotification(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ message: "Failed to delete notification" });
+    }
+  });
+
   // Contract management routes
   app.get('/api/contracts', isAuthenticated, async (req: any, res) => {
     try {

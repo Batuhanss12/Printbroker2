@@ -756,5 +756,138 @@
     },
     "isRead": false,
     "createdAt": "2025-06-21T09:31:54.532Z"
+  },
+  {
+    "id": "39ce420e-4db6-41ef-8fd7-cf1596aa8deb",
+    "userId": "PRT-1749037737494-E603AD",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.413Z"
+  },
+  {
+    "id": "bc23512a-2c9a-43ea-87bf-de545bfb35cd",
+    "userId": "PRT-1749043658182-GLSYSM",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.419Z"
+  },
+  {
+    "id": "bf71ce8e-edc1-4a7e-b3f8-62c67a39a3b4",
+    "userId": "PRT-TEST-001",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.433Z"
+  },
+  {
+    "id": "49f613dd-19a9-421e-88c3-4963a729c737",
+    "userId": "PRT-1749232946404-GJLVD5",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.452Z"
+  },
+  {
+    "id": "07cbfa1b-d351-4806-9d6a-3ac07ad3af11",
+    "userId": "dev-user-1748981533183",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.458Z"
+  },
+  {
+    "id": "5e588718-1551-446e-94bd-7501f1dd11a9",
+    "userId": "dev-user-1748984472808",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.469Z"
+  },
+  {
+    "id": "3f1b0f2e-511c-4388-9fb3-267d856489e1",
+    "userId": "dev-user-1748993436134",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.479Z"
+  },
+  {
+    "id": "e8f924ea-8909-49a1-ad86-0c363fb4ac87",
+    "userId": "dev-user-1749034069202",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.491Z"
+  },
+  {
+    "id": "9f88c4bf-5107-49a4-9909-f057b35e8a18",
+    "userId": "dev-user-1749034375398",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.500Z"
+  },
+  {
+    "id": "8ebbc692-062d-4914-a09e-693beb048d70",
+    "userId": "PRT-1749647865027-C37PE8",
+    "type": "new_quote",
+    "title": "Yeni Teklif Talebi",
+    "message": "Güvenlik Etiket - 33,576 adet - ₺25544",
+    "data": {
+      "quoteId": "37d0878d-cd7c-4c66-bad5-1b9e55572ea9"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:38:36.508Z"
+  },
+  {
+    "id": "eebd0850-db55-4cd1-aa3e-974c7b5b9b3a",
+    "userId": "CUS-1749640755370-ACTPK3",
+    "type": "quote_response",
+    "title": "Teklif Yanıtı Alındı",
+    "message": "Ala Etiket firmasından teklif geldi: ₺5000 - 5 gün",
+    "data": {
+      "quoteId": "aec0ce95-0c10-4495-9c4e-db47c073260b",
+      "printerQuoteId": "5fcc259b-6178-4b8f-8ecb-a3df45d2bb8c"
+    },
+    "isRead": false,
+    "createdAt": "2025-06-21T09:42:50.860Z"
   }
 ]
